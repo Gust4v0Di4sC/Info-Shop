@@ -1,0 +1,166 @@
+@use '@angular/material' as mat;
+
+.parallax-background {
+  transition: transform 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+
+.outer-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.parallax-background {
+  position: absolute;
+  top: -5%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
+  background-image: url("/bg-temp.png");
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.1s ease-out;
+}
+
+.login-container {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+
+
+
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  margin: 20px;
+  padding: 20px;
+  background: #206097;
+  border-radius: 16px;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.logo {
+  width: auto;
+  height: auto;
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.login-button {
+  margin-top: 16px;
+  padding: 8px;
+  font-size: 16px;
+}
+
+mat-form-field {
+  margin-bottom: 16px;
+}
+
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #1870e4;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  gap: 8px;
+  text-transform: none;
+  font-weight: 600;
+  font-size: 14px;
+  background: #fff; // fundo branco para destacar
+  border-radius: 6px;
+  padding: 8px 12px;
+
+  .social-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.google-btn {
+  border: 1px solid #db4437;
+  color: #db4437;
+
+  &:hover {
+    background: #db4437;
+    color: #fff;
+  }
+}
+
+.microsoft-btn {
+  border: 1px solid #1870e4;
+  color: #1870e4;
+
+  &:hover {
+    background: #1870e4;
+    color: #fff;
+  }
+}
+
+
+.container-back{
+   top: 20px;    // distância do topo
+  left: 20px;   // canto superior esquerdo
+  z-index: 1000;
+  position: absolute;
+
+  .btn-back-btn{
+    color: #FFFFFF;
+    background-color: #206097;
+    border: transparent ;
+    border-radius: 32px;
+    font-size: 16px;
+    padding: 16px;
+    transition: all ease 0.5s;
+  }
+
+  .btn-back-btn:hover{
+    color: #FFFFFF;
+    background-color: #164269;
+    
+  }
+}
+
+.button-home {
+  @include mat.button-overrides((
+    protected-container-color: #368AD4,
+    protected-disabled-container-color: #368AD4,
+    protected-label-text-color: #FFFFFF,
+    protected-disabled-label-text-color:#FFFFFF, 
+    outlined-hover-state-layer-opacity: 0.06,
+  ));
+}
+
+.customformfield {
+  @include mat.form-field-overrides((
+    outlined-outline-color: #368AD4,
+    outlined-container-shape: 8px,
+    outlined-label-text-color: #ffff,
+    outlined-input-text-color: #ffff,
+    outlined-hover-label-text-color: #ffff,
+    outlined-hover-outline-color: #68A7DF,
+    outlined-focus-outline-color: #081821,
+    outlined-focus-label-text-color: #ffff,
+  ));
+}

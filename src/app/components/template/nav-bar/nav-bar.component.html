@@ -1,0 +1,43 @@
+<mat-sidenav-container class="sidenav-container container">
+    <mat-sidenav #sidenav class="stylenav" mode="side" opened class="custom-sidenav" 
+    [class.open]="isOpen"
+    (mouseleave)="closeMenu()"
+    (mouseenter)="openMenu()"
+     fixedInViewport="true">
+    <div class="logo-nav">
+        <img src="/Logo2.svg" alt="InfoShop Logo" class="logo">
+      </div>
+      <mat-nav-list class="nav-list">
+        <a mat-list-item routerLink="/dash" routerLinkActive="active">
+          <div class="nav-item-content">
+            <i class="material-icons nav-icon">home</i>
+            <span class="nav-text">Início</span>
+          </div>
+        </a>
+        <a mat-list-item routerLink="/products" routerLinkActive="active">
+          <div class="nav-item-content">
+            <i class="material-icons nav-icon">storefront</i>
+            <span class="nav-text">Produtos</span>
+          </div>
+        </a>
+        <a mat-list-item routerLink="/clients" routerLinkActive="active">
+          <div class="nav-item-content">
+            <i class="material-icons nav-icon">people</i>
+            <span class="nav-text">Clientes</span>
+          </div>
+        </a>
+      </mat-nav-list>
+      
+        
+        <div class="logout-container">
+            <button class="logout-button" mat-icon-button  (click)="logout()">
+              <i class="material-icons">logout</i>
+            </button>
+          </div>
+    </mat-sidenav>
+    <mat-sidenav-content class="content" >
+      <div [@routeAnimations]="prepareRoute(outlet)">
+        <router-outlet #outlet="outlet"></router-outlet>
+      </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

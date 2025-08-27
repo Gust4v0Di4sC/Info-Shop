@@ -1,0 +1,39 @@
+<div class="client-container">
+    <mat-toolbar class="search-toolbar">
+      <mat-form-field appearance="outline" class="search-field">
+        <input  matInput [formControl]="searchControl" placeholder="Buscar Cliente" type="text">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+    </mat-toolbar>
+  
+   
+      <mat-card *ngFor="let client of filteredClients" class="client-card" >
+        <mat-card-content class="clients-list">
+          <div class="client-info"(click)="openEditForm(client)">
+            <div class="client-avatar">
+              <div class="client-image">
+                <img loading="lazy" mat-card-image *ngIf="client.imageUrl" [src]="client.imageUrl" alt="{{client.name}}">
+              </div>
+            </div>
+      
+            <div class="client-details">
+              <h3>{{client.name}}</h3>
+              <p>{{client.address}}</p>
+            </div>
+          </div>
+
+          <mat-card-actions class="remove-client-button">
+            <button mat-flat-button (click)="client.id ? deleteClient(client.id) : null"> <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-card-actions>
+      
+        </mat-card-content>
+      </mat-card>
+    
+  
+    <button mat-raised-button color="primary" class="add-client-button" (click)="openClientForm()">
+      <mat-icon>add</mat-icon>
+      Novo Cliente
+    </button>
+  </div>
+  <app-nav></app-nav>

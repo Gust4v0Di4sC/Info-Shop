@@ -1,0 +1,76 @@
+/* Importação do Bootstrap e Font Awesome */
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+
+
+
+// styles.css (global)
+.page-container {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+
+.flying-cart {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  background-color: #2b90ec;         // azul
+  border: 2px solid black;           // borda preta
+  border-radius: 10px;               // bordas arredondadas
+  z-index: 9999;
+  pointer-events: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+  font-size: 18px;
+}
+
+
+html {
+  color-scheme: light;
+  @include mat.theme((
+    color: mat.$cyan-palette,
+    typography: Roboto,
+    density: 0
+  ));
+}/* You can add global styles to this file, and also import other style files */
+
+
+body {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+
+.custom-form-field {
+  .mat-form-field-outline {
+    border-color: #ff5722; /* Sua cor */
+  }
+
+  .mat-form-field-label {
+    color: #ff5722;
+  }
+}
+// Customize the entire app. Change :root to your selector if you want to scope the styles.
+
+
+// remove o background do modal
+.custom-modal .mat-mdc-dialog-surface {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+
+
+

@@ -1,0 +1,75 @@
+<div class="form-container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>description</mat-icon>
+          {{ isEditMode ? 'Editar Pedido' : 'Novo Pedido' }}
+        </mat-card-title>
+      </mat-card-header>
+  
+      <mat-card-content>
+        <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+          <div class="form-fields">
+            <mat-form-field appearance="outline">
+              <mat-label >Nome</mat-label>
+                <mat-select formControlName="clientId" (selectionChange)="onClientChange($event.value)">
+                  <mat-option *ngFor="let client of clients" [value]="client.id">{{client.name}}</mat-option>
+                </mat-select>
+              <mat-error *ngIf="orderForm.get('name')?.invalid">
+                {{getErrorMessage('name')}}
+              </mat-error>
+              <button mat-icon-button matSuffix>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>ID do Usuário</mat-label>
+              <input matInput formControlName="userId" placeholder="ID do usuário"  />
+              <mat-error *ngIf="orderForm.get('userId')?.invalid">
+                {{getErrorMessage('userId')}}
+              </mat-error>
+              <button mat-icon-button matSuffix>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>Endereço</mat-label>
+              <input matInput formControlName="address" placeholder="Endereço">
+              <mat-error *ngIf="orderForm.get('address')?.invalid">
+                {{getErrorMessage('address')}}
+              </mat-error>
+              <button mat-icon-button matSuffix>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>Produto</mat-label>
+              <mat-select formControlName="productId">
+                <mat-option *ngFor="let product of products" [value]="product.id">{{product.name}}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="orderForm.get('product')?.invalid">
+                {{getErrorMessage('product')}}
+              </mat-error>
+              <button mat-icon-button matSuffix>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+  
+          <div class="form-actions">
+            <button class="edit-button" mat-raised-button color="primary" type="submit">
+              <mat-icon>add</mat-icon>
+              {{ isEditMode ? 'Atualizar Pedido' : 'Criar Pedido' }}
+            </button>
+            <button class="cancel-button" mat-raised-button type="button" (click)="onCancel()">
+              <mat-icon>close</mat-icon>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>

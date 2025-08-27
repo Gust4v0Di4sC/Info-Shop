@@ -1,0 +1,28 @@
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+      <h2 class="text-center mb-5">O que nossos clientes dizem</h2>
+      <div class="row">
+        <div class="col-md-4 mb-4" *ngFor="let testimonial of testimonials">
+          <div class="card bg-dark h-100">
+            <div class="card-body">
+              <div class="mb-3">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+              </div>
+              <p class="card-text">"{{ testimonial.text }}"</p>
+              <div class="d-flex align-items-center mt-3">
+                <img [src]="testimonial.avatar" class="rounded-circle me-3" width="50" [alt]="testimonial.name">
+                <div>
+                  <h6 class="mb-0">{{ testimonial.name }}</h6>
+                  <small class="text-muted">{{ testimonial.role }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

@@ -1,0 +1,49 @@
+{
+  "name": "info-shop-angular",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "dev": "concurrently \"npm run server\" \"npm run start\"",
+    "server": "node server.js",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "serve:ssr:infoshop": "node dist/infoshop/server/server.mjs"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^19.1.0",
+    "@angular/cdk": "^19.1.5",
+    "@angular/common": "^19.1.0",
+    "@angular/compiler": "^19.1.0",
+    "@angular/core": "^19.1.0",
+    "@angular/forms": "^19.1.0",
+    "@angular/material": "^19.1.5",
+    "@angular/platform-browser": "^19.1.0",
+    "@angular/platform-browser-dynamic": "^19.1.0",
+    "@angular/router": "^19.1.0",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@supabase/supabase-js": "^2.55.0",
+    "bootstrap": "^5.3.5",
+    "path": "^0.12.7",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular-builders/custom-webpack": "^19.0.1",
+    "@angular-devkit/build-angular": "^19.1.8",
+    "@angular/cli": "^19.1.8",
+    "@angular/compiler-cli": "^19.1.0",
+    "@types/jasmine": "~5.1.0",
+    "jasmine-core": "~5.5.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.7.2",
+    "webpack-bundle-analyzer": "^4.10.2"
+  }
+}

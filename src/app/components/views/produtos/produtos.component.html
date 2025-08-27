@@ -1,0 +1,43 @@
+  
+<div class="container">
+  
+    <mat-toolbar color="secondary" class="toolbar">
+      <mat-form-field appearance="outline" class="search-field">
+        <input  matInput 
+        placeholder="Buscar Produto" 
+        [formControl]="searchControl"
+        type="text">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      
+      <button mat-raised-button color="accent" class="new-product-btn" (click)="openProductForm()">
+        <mat-icon>add</mat-icon>
+        Novo Produto
+      </button>
+    </mat-toolbar>
+  
+    <div class="products-grid product-list">
+      <mat-card *ngFor="let product of filteredProducts" class="product-card" >
+        <mat-card-header >
+          <mat-card-title>{{product.name}}</mat-card-title>
+          <mat-card-subtitle>{{product.model}}</mat-card-subtitle>
+        </mat-card-header>
+  
+        <mat-card-content (click)="openEditForm(product)">
+          <div class="product-image" >
+            <img loading="lazy" mat-card-image *ngIf="product.imageUrl" [src]="product.imageUrl" alt="{{product.name}}">
+          </div>
+          <p class="description">{{product.description}}</p>
+          <p>R$ {{product.price}}</p>
+        </mat-card-content>
+  
+        <mat-card-actions>
+          <button mat-flat-button color="warn" class="exclude-button" (click)="product.id ? deleteProduct(product.id) : null">Excluir</button>
+        </mat-card-actions>
+      </mat-card> 
+      
+    </div>
+  </div>
+  <app-nav></app-nav>
+
+ 

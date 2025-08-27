@@ -1,0 +1,74 @@
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #031321;
+  color: #fff;
+  padding: 40px 30px;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.footer-section {
+  flex: 1 1 200px;
+  min-width: 180px;
+}
+
+.logo-section .logo {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.logo-section .info {
+  background: white;
+  color: black;
+  padding: 2px 6px;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+.logo-section .shop {
+  font-weight: bold;
+  margin-left: 6px;
+}
+
+.logo-section p {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 10px 0;
+  max-width: 280px;
+}
+
+.social-icons {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.social-icons i {
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.social-icons i:hover {
+  color: #4da6ff;
+}
+
+.footer-section h4 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.footer-section ul li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

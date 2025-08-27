@@ -1,0 +1,163 @@
+.offer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 95px;
+  margin-bottom: 95px;
+
+  background-color: #000000;
+  color: white;
+  padding: 30px;
+  gap: 20px;
+}
+
+
+.offer-right {
+  position: relative;
+
+  .image-wrapper {
+    width: 100%;
+    height: 566px;
+    position: relative;
+   
+    
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      display: block;
+    }
+
+    
+
+    .countdown-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 45px 90px;
+      font-size: clamp(12px, 2vw, 32px);
+      background-color: rgba(0, 0, 0, 0.75);
+      color: white;
+      border-radius: 6px;
+      text-align: center;
+
+      span {
+        display: block;
+        font-weight: bold;
+        font-size: 20px;
+        color: #ccc;
+      }
+
+      .countdown {
+        font-size: 32px;
+        font-weight: bold;
+        margin-top: 2px;
+      }
+    }
+  }
+}
+
+.offer-left, .offer-right {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.offer-left h3 {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.offer-left p {
+  font-size: 14px;
+  margin: 15px 0;
+  color: #ccc;
+}
+
+.price-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.price {
+  color: #00ffcc;
+}
+
+.old-price {
+  text-decoration: line-through;
+  color: #aaa;
+  font-size: 14px;
+}
+
+.discount-badge {
+  background-color: #ff4444;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  color: white;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #555;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 15px 0;
+}
+
+.progress-fill {
+  width: 75%;
+  height: 100%;
+  background-color: #00cc99;
+}
+
+.buttons {
+  display: flex;
+  
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.buy-now {
+  background-color: #4da6ff;
+  font-family: "Roboto Flex", sans-serif;
+  font-size: 16px;
+  color: white;
+  border: none;
+  padding: 20px 80px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.buy-now:hover{
+  background: rgba(79, 159, 250, 0.247);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.add-to-cart {
+  background-color: transparent;
+  font-size: 16px;
+  color: white;
+  border: 1px solid white;
+  font-family: "Roboto Flex", sans-serif;
+  padding: 20px 80px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-to-cart:hover{
+  background: #f8f9fa;
+      color: #206097;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}

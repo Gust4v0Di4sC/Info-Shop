@@ -1,0 +1,30 @@
+<section id="produtos" class="py-5">
+    <div class="products-container">
+      <div class="products-head">
+        <h1>Produtos em Destaque</h1>
+        <p>Produtos cuidadosamente selecionados pela nossa equipe para garantir que você tenha acesso ao que há de mais
+          relevante e procurado no universo da informática. </p>
+      </div>
+ 
+  <div class="products-grid">
+    <div class="product-card" *ngFor="let product of products">
+      <img [src]="product.image" alt="{{ product.name }}" />
+      <div class="product-info">
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-price">{{ product.price }}</div>
+        <div class="product-rating">
+          <div>
+            <i class="fa fa-star"></i> {{ product.rating }}
+          </div>
+          
+          <button (click)="addToCart($event)" class="product-chart">
+            <i  class="fas fa-shopping-cart"></i>
+          </button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  </section>

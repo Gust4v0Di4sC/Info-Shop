@@ -1,0 +1,170 @@
+@use '@angular/material' as mat;
+
+
+mat-card{
+  width: 500px;
+  
+}
+mat-card img {
+  width: 100%; /* Força a imagem a ocupar 100% da largura do card */
+  height: 100px; /* Define uma altura fixa (ou use min-height e max-height) */
+  object-fit: cover; /* Garante que a imagem seja cortada para caber na área definida */
+  border-radius: 8px; /* Adiciona bordas arredondadas (opcional) */
+  display: block; /* Remove qualquer margem ou padding automático */
+}
+
+mat-card-content{
+  display: flex;
+  gap: 140px;
+}
+
+
+
+
+.client-container {
+    height: 100vh;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+    overflow: auto;
+  }
+  
+  .search-toolbar {
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+    margin-bottom: 32px;
+    
+    .search-field {
+      width: 400px;
+      height: 56px;
+     background-color: #FFFFFF;
+      border-radius: 26px;
+      border: none;
+    }
+  }
+  
+  .clients-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    place-items: center;
+  }
+  
+  .client-card {
+    margin-bottom: 16px;
+    padding: 16px;
+    display: grid;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: center;
+    background-color: white;
+    border-radius: 8px;
+    
+    &:hover {
+      background-color: #fafafa;
+    }
+  }
+  
+  .client-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .client-avatar {
+    .avatar-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 40px;
+      color: #1976d2;
+    }
+  }
+  
+  .client-details {
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    p {
+      margin: 4px 0 0;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+  
+  
+  .remove-client-button {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .add-client-button {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 45px;
+    margin-top: 32px;
+   
+    
+    .mat-icon {
+      margin-right: 8px;
+    }
+  }
+  .remove-client-button{
+    place-content: center;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 767px) {
+    .search-toolbar{
+      width: 250px;
+    }
+
+    
+
+    .clients-list{
+      flex-direction: column;
+    }
+
+    mat-card{
+      width: 250px;
+      
+    }
+
+    mat-card-content{
+      gap: 40px;
+    }
+  }
+
+  .add-client-button{
+    @include mat.button-overrides((
+     protected-container-shape: 16px,
+     protected-container-color: #206097,
+     protected-horizontal-padding: 51px,
+     protected-label-text-color: #FFFFFF,
+     protected-hover-state-layer-opacity: 0.4,
+    ));
+  }
+
+  .remove-client-button{
+    @include mat.button-overrides((
+      filled-container-color: #206097,
+    )); 
+  }
+  
+  .search-field {
+    @include mat.form-field-overrides((
+      outlined-container-shape: 26px,
+      outlined-input-text-placeholder-color: #206097,
+      outlined-focus-outline-color: #206097,
+    ));
+  }

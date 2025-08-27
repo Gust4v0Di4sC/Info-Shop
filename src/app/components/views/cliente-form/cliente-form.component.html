@@ -1,0 +1,98 @@
+<div class="form-container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>{{ isEditMode ? 'edit' : 'person'}}</mat-icon>
+          {{ isEditMode ? 'Editar Cliente' : 'Novo Cliente' }}
+        </mat-card-title>
+      </mat-card-header>
+  
+      <mat-card-content>
+        <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+          <div class="image-upload-container">
+            <div class="image-upload" 
+                 [class.has-image]="imagePreview"
+                 (click)="fileInput.click()">
+              <input #fileInput type="file" 
+                     accept="image/*" 
+                     (change)="onFileSelected($event)" 
+                     style="display: none">
+              <ng-container *ngIf="!imagePreview">
+                <mat-icon>upload</mat-icon>
+                <span>Upload da imagem</span>
+              </ng-container>
+              <img *ngIf="imagePreview" [src]="imagePreview" alt="Preview">
+            </div>
+          </div>
+  
+          <div class="form-fields">
+            <mat-form-field appearance="outline">
+              <mat-label>Nome</mat-label>
+              <input matInput formControlName="name" placeholder="Nome completo">
+              <mat-error *ngIf="clientForm.get('name')?.invalid">
+                {{getErrorMessage('name')}}
+              </mat-error>
+              <button mat-icon-button matSuffix>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>Idade</mat-label>
+              <input matInput formControlName="age" placeholder="Idade">
+              <mat-error *ngIf="clientForm.get('age')?.invalid">
+                {{getErrorMessage('age')}}
+              </mat-error>
+              <button mat-icon-button matSuffix>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Cpf</mat-label>
+              <input matInput formControlName="cpf" placeholder="CPF">
+              <mat-error *ngIf="clientForm.get('cpf')?.invalid">
+                {{getErrorMessage('cpf')}}
+              </mat-error>
+              <button mat-icon-button matSuffix>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Endereço</mat-label>
+              <input matInput formControlName="address" placeholder="Endereço">
+              <mat-error *ngIf="clientForm.get('address')?.invalid">
+                {{getErrorMessage('address')}}
+              </mat-error>
+              <button mat-icon-button matSuffix>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Telefone</mat-label>
+              <input matInput formControlName="phone" placeholder="Telefone">
+              <mat-error *ngIf="clientForm.get('phone')?.invalid">
+                {{getErrorMessage('phone')}}
+              </mat-error>
+              <button mat-icon-button matSuffix>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+  
+          <div class="form-actions">
+            <button class="edit-button" mat-raised-button color="primary" type="submit">
+              <mat-icon>add</mat-icon>
+              {{ isEditMode ? 'Editar Cliente' : 'Inserir Cliente' }}
+            </button>
+            <button class="cancel-button" mat-raised-button type="button" (click)="onCancel()">
+              <mat-icon>close</mat-icon>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>

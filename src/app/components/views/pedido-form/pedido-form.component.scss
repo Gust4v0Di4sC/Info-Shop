@@ -1,0 +1,101 @@
+@use '@angular/material' as mat;
+
+
+.form-container {
+    max-width: 95%;
+    margin: 2rem auto;
+    
+  }
+  
+  mat-card {
+    background-color: #7fb2e5;
+    border-radius: 12px;
+    padding: 24px;
+  }
+  
+  mat-card-header {
+    margin-bottom: 1rem;
+    
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      font-size: 1.2rem;
+      
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  
+  .form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    
+    mat-form-field {
+      width: 100%;
+      
+      ::ng-deep .mat-form-field-wrapper {
+        margin: 0;
+      }
+    }
+  }
+  
+  
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    
+    button {
+      min-width: 150px;
+      border-radius: 20px;
+    }
+  }
+
+  
+  
+  :host ::ng-deep {
+    .mat-form-field-appearance-outline .mat-form-field-outline {
+      background-color: white;
+      border-radius: 4px;
+    }
+    
+    .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+      color: #1976d2;
+    }
+  }
+  
+  @keyframes modalEnter {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .edit-button{
+    @include mat.button-overrides((
+     protected-container-shape: 32px,
+     protected-container-color: #206097,
+     protected-horizontal-padding: 45px,
+     protected-label-text-color: #FFFFFF,
+     protected-hover-state-layer-opacity: 0.4,
+    ));
+  }
+  .cancel-button{
+    @include mat.button-overrides((
+     protected-container-shape: 32px,
+     protected-container-color: #368AD4,
+     protected-horizontal-padding: 45px,
+     protected-label-text-color: #FFFFFF,
+     protected-hover-state-layer-opacity: 0.7,
+    ));
+  }

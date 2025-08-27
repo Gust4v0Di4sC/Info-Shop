@@ -1,0 +1,49 @@
+<div class="pedidos-container">
+  <h1 class="pedidos-title">Pedidos</h1>
+  
+    <mat-card class="main-card pedidos-card">
+      
+      <mat-card-content  >
+        <div class="pedidos-list">
+          <mat-card  class="pedido-item card-bg" *ngFor="let order of filteredOrders">
+            <mat-card-content class="pedido-content">
+              <mat-chip-listbox class="cliente-chip">
+                <mat-chip   class="name"  (mouseenter)="order.imageClient ? onMouseEnter(order.imageClient, $event) : null"
+                (mouseleave)="onMouseLeave()">{{order.name}}</mat-chip>
+                
+                <mat-chip class="content" (mouseenter)="order.imageProd ? onMouseEnter(order.imageProd, $event) : null"
+                (mouseleave)="onMouseLeave()">{{order.product}}</mat-chip>
+              </mat-chip-listbox>
+              
+              
+            </mat-card-content>
+            <div class="acoes">
+              <button class="action-button" mat-flat-button color="primary" (click)="openEditForm(order)">
+                <mat-icon>edit</mat-icon>
+                Editar
+              </button>
+              <button class="action-button" mat-flat-button color="warn" (click)="order.id ? deleteOrder(order.id) : null">
+                <mat-icon>delete</mat-icon>
+                Excluir
+              </button>
+            </div>
+          </mat-card>
+          <div class="image-container">
+            <img *ngIf="hoveredImage" [src]="hoveredImage" class="floating-image"
+            [style.left.px]="hoveredImageX"
+            [style.top.px]="hoveredImageY"/>
+          </div>
+        </div>
+       
+      </mat-card-content>
+    </mat-card>
+    
+    <div class="novo-pedido-container">
+      <button mat-raised-button color="primary" class="novo-pedido-button" (click)="openOrderForm()">
+        <mat-icon>add</mat-icon>
+        Novo Pedido
+      </button>
+    </div>
+   
+  </div>
+  <app-nav></app-nav>
