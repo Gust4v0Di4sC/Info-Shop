@@ -1,42 +1,44 @@
 <header class="header">
-      <!-- Top banner -->
-      <div class="top-banner">
-        <span>Frete Grátis para compras acima de R$99,90</span>
+  <!-- Top banner -->
+  <div class="top-banner">
+    <span>Frete Grátis para compras acima de R$99,90</span>
+  </div>
+
+  <!-- Main header -->
+  <div class="main-header">
+    <!-- Logo -->
+    <div class="logo">
+      <img src="/Logo1.svg" alt="InfoShop Logo" class="logo">
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navigation">
+      <a href="#" class="nav-link">Home</a>
+      <a href="#" class="nav-link">About</a>
+      <a href="#" class="nav-link">Offers</a>
+      <a href="#" class="nav-link">Contact</a>
+    </nav>
+
+    <!-- Search and user actions -->
+    <div class="header-actions">
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Buscar...">
+        <button class="search-btn">
+          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        </button>
       </div>
-      
-      <!-- Main header -->
-      <div class="main-header">
-        <!-- Logo -->
-        <div class="logo">
-          <img src="/Logo1.svg" alt="InfoShop Logo" class="logo">
-        </div>
-        
-        <!-- Navigation -->
-        <nav class="navigation">
-          <a href="#" class="nav-link">Home</a>
-          <a href="#" class="nav-link">About</a>
-          <a href="#" class="nav-link">Offers</a>
-          <a href="#" class="nav-link">Contact</a>
-        </nav>
-        
-        <!-- Search and user actions -->
-        <div class="header-actions">
-          <div class="search-container">
-            <input type="text" class="search-input" placeholder="Buscar...">
-            <button class="search-btn">
-              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-            </button>
-          </div>
-          
-          <div  class="user-actions">
-            <button class="user-btn" (click)="goToHome()">
-              <i class="fas fa-user-tie text-xl" ></i>
-            </button>
-            <button class="cart-btn">
-              <i  class="fas fa-shopping-cart cart-top-icon text-xl"></i>
-              <span *ngIf="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
-            </button>
-          </div>
-        </div>
+
+      <div  class="user-actions">
+        <button class="user-btn" (click)="goToHome()">
+          <i class="fas fa-user-tie text-xl" ></i>
+        </button>
+        <button class="cart-btn">
+          <i  class="fas fa-shopping-cart cart-top-icon text-xl"></i>
+          @if (cartCount > 0) {
+            <span class="cart-badge">{{ cartCount }}</span>
+          }
+        </button>
       </div>
-    </header>
+    </div>
+  </div>
+</header>

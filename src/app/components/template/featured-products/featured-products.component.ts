@@ -1,10 +1,10 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { CartServiceService } from '../../../services/cart-service.service';
 
 @Component({
   selector: 'app-featured-products',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './featured-products.component.html',
   styleUrls: ['./featured-products.component.scss']
 })

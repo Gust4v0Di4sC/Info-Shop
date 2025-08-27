@@ -2,7 +2,7 @@
   <div class="parallax-background" [style.transform]="getParallaxStyle()">
   </div>
 
-  
+
 
   <div class="login-container"  >
     <div class="container-back">
@@ -12,7 +12,7 @@
     </div>
 
     <mat-card class="login-card">
-     
+
       <mat-card-content>
         <div class="logo-container">
           <img src="/Logo1.svg" alt="InfoShop Logo" class="logo">
@@ -21,28 +21,34 @@
           <mat-form-field appearance="outline" class="full-width customformfield">
             <mat-label>E-mail</mat-label>
             <input matInput formControlName="email" type="email" >
-            <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
-              Email é obrigatório
-            </mat-error>
-            <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
-              Email inválido
-            </mat-error>
+            @if (loginForm.get('email')?.hasError('required')) {
+              <mat-error>
+                Email é obrigatório
+              </mat-error>
+            }
+            @if (loginForm.get('email')?.hasError('email')) {
+              <mat-error>
+                Email inválido
+              </mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width customformfield">
             <mat-label>Senha</mat-label>
-            <input class="inptcustom" matInput formControlName="password" 
-                   [type]="hidePassword ? 'password' : 'text'">
+            <input class="inptcustom" matInput formControlName="password"
+              [type]="hidePassword ? 'password' : 'text'">
             <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
               <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
-            <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
-              Senha é obrigatória
-            </mat-error>
+            @if (loginForm.get('password')?.hasError('required')) {
+              <mat-error>
+                Senha é obrigatória
+              </mat-error>
+            }
           </mat-form-field>
 
           <button mat-raised-button class="full-width login-button button-home"
-                  [disabled]="loginForm.invalid || isLoading">
+            [disabled]="loginForm.invalid || isLoading">
             {{isLoading ? 'Entrando...' : 'Entrar'}}
           </button>
         </form>

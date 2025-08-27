@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, Optional } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -18,7 +18,7 @@ import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-pedido-form',
-  imports: [MatCardModule, MatIcon, MatFormFieldModule, CommonModule, MatInputModule, MatButtonModule, MatSelectModule, ReactiveFormsModule],
+  imports: [MatCardModule, MatIcon, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, ReactiveFormsModule],
   providers: [OrderFormService],
   templateUrl: './pedido-form.component.html',
   styleUrl: './pedido-form.component.scss'

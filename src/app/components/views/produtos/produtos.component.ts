@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -21,7 +21,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 
 @Component({
   selector: 'app-produtos',
-  imports: [MatFormFieldModule, MatIcon, MatCardModule, MatToolbarModule, MatMenuModule, CommonModule, MatInputModule, MatButtonModule, NavBarComponent, ReactiveFormsModule],
+  imports: [MatFormFieldModule, MatIcon, MatCardModule, MatToolbarModule, MatMenuModule, MatInputModule, MatButtonModule, NavBarComponent, ReactiveFormsModule],
   providers: [ProductService],
   templateUrl: './produtos.component.html',
   styleUrl: './produtos.component.scss'

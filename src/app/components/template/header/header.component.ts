@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CartServiceService } from '../../../services/cart-service.service';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })

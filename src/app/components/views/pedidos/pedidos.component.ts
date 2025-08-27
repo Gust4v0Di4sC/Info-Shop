@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { MatButton } from '@angular/material/button';
 import { Component, OnInit } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
@@ -17,7 +17,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 
 @Component({
   selector: 'app-pedidos',
-  imports: [CommonModule, MatButton, MatIcon, MatCard, MatCardContent, MatChipsModule, NavBarComponent],
+  imports: [MatButton, MatIcon, MatCard, MatCardContent, MatChipsModule, NavBarComponent],
   providers: [OrderService],
   templateUrl: './pedidos.component.html',
   styleUrl: './pedidos.component.scss'

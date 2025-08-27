@@ -11,18 +11,20 @@
       <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
         <div class="image-upload-container">
           <div class="image-upload"
-               [class.has-image]="imagePreview"
-               (click)="fileInput.click()">
-            <input #fileInput 
-                   type="file"
-                   accept="image/*"
-                   (change)="onFileSelected($event)"
-                   style="display: none">
-            <ng-container *ngIf="!imagePreview">
+            [class.has-image]="imagePreview"
+            (click)="fileInput.click()">
+            <input #fileInput
+              type="file"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              style="display: none">
+            @if (!imagePreview) {
               <mat-icon>upload</mat-icon>
               <span>Upload da imagem</span>
-            </ng-container>
-            <img *ngIf="imagePreview" [src]="imagePreview" alt="Preview">
+            }
+            @if (imagePreview) {
+              <img [src]="imagePreview" alt="Preview">
+            }
           </div>
         </div>
 
@@ -30,9 +32,11 @@
           <mat-form-field appearance="outline">
             <mat-label>Nome</mat-label>
             <input matInput formControlName="name" placeholder="Nome do produto">
-            <mat-error *ngIf="productForm.get('name')?.invalid">
-              {{getErrorMessage('name')}}
-            </mat-error>
+            @if (productForm.get('name')?.invalid) {
+              <mat-error>
+                {{getErrorMessage('name')}}
+              </mat-error>
+            }
             <button type="button" mat-icon-button matSuffix>
               <mat-icon>close</mat-icon>
             </button>
@@ -41,9 +45,11 @@
           <mat-form-field appearance="outline">
             <mat-label>Modelo</mat-label>
             <input matInput formControlName="model" placeholder="Modelo">
-            <mat-error *ngIf="productForm.get('model')?.invalid">
-              {{getErrorMessage('model')}}
-            </mat-error>
+            @if (productForm.get('model')?.invalid) {
+              <mat-error>
+                {{getErrorMessage('model')}}
+              </mat-error>
+            }
             <button type="button" mat-icon-button matSuffix>
               <mat-icon>close</mat-icon>
             </button>
@@ -52,9 +58,11 @@
           <mat-form-field appearance="outline">
             <mat-label>Preço</mat-label>
             <input matInput type="number" formControlName="price" placeholder="Preço">
-            <mat-error *ngIf="productForm.get('price')?.invalid">
-              {{getErrorMessage('price')}}
-            </mat-error>
+            @if (productForm.get('price')?.invalid) {
+              <mat-error>
+                {{getErrorMessage('price')}}
+              </mat-error>
+            }
             <button type="button" mat-icon-button matSuffix>
               <mat-icon>close</mat-icon>
             </button>
@@ -63,9 +71,11 @@
           <mat-form-field appearance="outline">
             <mat-label>Custo</mat-label>
             <input matInput type="number" formControlName="cost" placeholder="Custo">
-            <mat-error *ngIf="productForm.get('cost')?.invalid">
-              {{getErrorMessage('cost')}}
-            </mat-error>
+            @if (productForm.get('cost')?.invalid) {
+              <mat-error>
+                {{getErrorMessage('cost')}}
+              </mat-error>
+            }
             <button type="button" mat-icon-button matSuffix>
               <mat-icon>close</mat-icon>
             </button>
@@ -74,9 +84,11 @@
           <mat-form-field appearance="outline">
             <mat-label>Descrição</mat-label>
             <input matInput formControlName="description" placeholder="Descrição">
-            <mat-error *ngIf="productForm.get('description')?.invalid">
-              {{getErrorMessage('description')}}
-            </mat-error>
+            @if (productForm.get('description')?.invalid) {
+              <mat-error>
+                {{getErrorMessage('description')}}
+              </mat-error>
+            }
             <button type="button" mat-icon-button matSuffix>
               <mat-icon>close</mat-icon>
             </button>

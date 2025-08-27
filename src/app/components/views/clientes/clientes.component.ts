@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import {  MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,7 +19,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 
 @Component({
   selector: 'app-clientes',
-  imports: [MatButtonModule,MatFormFieldModule,MatIcon,MatCardModule,MatToolbarModule,CommonModule,MatInputModule,NavBarComponent, ReactiveFormsModule],
+  imports: [MatButtonModule, MatFormFieldModule, MatIcon, MatCardModule, MatToolbarModule, MatInputModule, NavBarComponent, ReactiveFormsModule],
   providers: [ClientService],
   templateUrl: './clientes.component.html',
   styleUrl: './clientes.component.scss'

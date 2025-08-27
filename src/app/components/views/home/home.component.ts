@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
@@ -23,9 +23,8 @@ import { AuthServiceService } from '../../../services/auth-service.service'; // 
     MatFormFieldModule,
     MatInputModule,
     MatSnackBarModule,
-    ReactiveFormsModule,
-    CommonModule,
-  ],
+    ReactiveFormsModule
+],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

@@ -1,4 +1,4 @@
-import { CommonModule} from '@angular/common';
+
 import { Component, Inject, OnInit, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,7 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-produto-form',
   standalone: true,
-  imports: [MatCardModule,MatFormFieldModule,MatIcon,MatInputModule,MatButtonModule,CommonModule, MatDialogModule, ReactiveFormsModule],
+  imports: [MatCardModule, MatFormFieldModule, MatIcon, MatInputModule, MatButtonModule, MatDialogModule, ReactiveFormsModule],
   providers: [ProductFormService],
   templateUrl: './produto-form.component.html',
   styleUrl: './produto-form.component.scss'
