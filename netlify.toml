@@ -1,5 +1,5 @@
 [build]
-  publish = "dist/infoshop/browser"
+  publish = "dist/info-shop-angular"
   command = "ng build --configuration production"
 
 [build.environment]
