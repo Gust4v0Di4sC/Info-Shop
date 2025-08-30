@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Client } from '@app/models/client.model';
-import { environment } from '@environments/environment';
+import { environment } from '@environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class ClientService {
 
   private httpOptions = {
     headers: new HttpHeaders({
-      'apikey': environment.supabaseAnonKey,
+      'apikey': environment.supabaseAnonKey!,
       'Authorization': `Bearer ${environment.supabaseAnonKey}`,
       'Content-Type': 'application/json'
     })
