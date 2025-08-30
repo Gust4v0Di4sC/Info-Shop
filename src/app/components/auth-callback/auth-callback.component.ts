@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { supabase } from '../../../supabase.client';
+import { supabase } from '@app/services/supabase.client';
 
 @Component({
   selector: 'app-auth-callback',

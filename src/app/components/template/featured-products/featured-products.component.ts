@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
-import { CartServiceService } from '../../../services/cart-service.service';
+import { CartServiceService } from '@app/services/cart-service.service';
 
 @Component({
   selector: 'app-featured-products',

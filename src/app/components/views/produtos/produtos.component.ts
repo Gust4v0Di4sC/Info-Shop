@@ -7,16 +7,16 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatMenuModule} from '@angular/material/menu';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { ProdutoFormComponent } from '../produto-form/produto-form.component';
-import { ProductService } from '../../../services/product.service';
+import { ProdutoFormComponent } from '@app/components/views/produto-form/produto-form.component';
+import { ProductService } from '@app/services/product.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
-import { NavBarComponent } from "../../template/nav-bar/nav-bar.component";
+import { NavBarComponent } from "@app/components/template/nav-bar/nav-bar.component";
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Product } from '../../../models/product.model';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { Product } from '@app/models/product.model';
+import { ConfirmDialogComponent } from '@app/components/views/confirm-dialog/confirm-dialog.component';
 
 
 @Component({

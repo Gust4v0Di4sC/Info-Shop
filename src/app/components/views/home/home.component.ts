@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthServiceService } from '../../../services/auth-service.service'; // já refatorado p/ Supabase
+import { AuthServiceService } from '@app/services/auth-service.service'; // já refatorado p/ Supabase
 
 @Component({
   selector: 'app-home',

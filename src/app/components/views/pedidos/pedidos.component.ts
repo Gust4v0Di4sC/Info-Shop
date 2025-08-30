@@ -4,14 +4,14 @@ import { Component, OnInit } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard, MatCardContent, } from '@angular/material/card';
 import {MatChipsModule} from '@angular/material/chips';
-import { Order } from '../../../models/order.model';
-import { PedidoFormComponent } from '../pedido-form/pedido-form.component';
- import { OrderService } from './../../../services/order.service';
+import { Order } from '@app/models/order.model';
+import { PedidoFormComponent } from '@app/components/views/pedido-form/pedido-form.component';
+ import { OrderService } from '@app/services/order.service';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NavBarComponent } from "../../template/nav-bar/nav-bar.component";
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { NavBarComponent } from "@app/components/template/nav-bar/nav-bar.component";
+import { ConfirmDialogComponent } from '@app/components/views/confirm-dialog/confirm-dialog.component';
 
 
 

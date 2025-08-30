@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, map } from 'rxjs';
-import { Order } from '../models/order.model';
-import { supabase } from '../../supabase.client';
+import { Order } from '@app/models/order.model';
+import { supabase } from '@app/services/supabase.client';
 
 @Injectable({
   providedIn: 'root'

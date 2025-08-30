@@ -6,16 +6,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
-import { NavBarComponent } from '../../template/nav-bar/nav-bar.component';
-import { Client } from '../../../models/client.model';
+import { NavBarComponent } from '@app/components/template/nav-bar/nav-bar.component';
+import { Client } from '@app/models/client.model';
 import { FormControl } from '@angular/forms';
-import { ClientService } from '../../../services/client.service';
+import { ClientService } from '@app/services/client.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { ClienteFormComponent } from '../cliente-form/cliente-form.component';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { ClienteFormComponent } from '@app/components/views/cliente-form/cliente-form.component';
+import { ConfirmDialogComponent } from '@app/components/views/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-clientes',

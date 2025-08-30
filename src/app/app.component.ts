@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {MatButtonModule} from '@angular/material/button';
-import { AuthServiceService } from './services/auth-service.service';
+import { AuthServiceService } from '@app/services/auth-service.service';
 import { MatDialogModule } from '@angular/material/dialog';
 
 

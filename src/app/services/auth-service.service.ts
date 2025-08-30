@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, from, map, of, catchError } from 'rxjs';
 import { Router } from '@angular/router';
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
-import { supabase } from '../../supabase.client';
+import { supabase } from '@app/services/supabase.client';
 
 @Injectable({
   providedIn: 'root',

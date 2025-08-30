@@ -6,14 +6,14 @@ import { MatIcon } from '@angular/material/icon';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { Order } from '../../../models/order.model';
+import { Order } from '@app/models/order.model';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
-import { Client } from '../../../models/client.model';
+import { Client } from '@app/models/client.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReactiveFormsModule } from '@angular/forms';
-import { OrderFormService } from '../../../services/order-form.service';
-import { Product } from '../../../models/product.model';
+import { OrderFormService } from '@app/services/order-form.service';
+import { Product } from '@app/models/product.model';
 import { forkJoin } from 'rxjs';
 
 @Component({

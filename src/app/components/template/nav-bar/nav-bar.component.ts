@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { ActivatedRoute, RouterOutlet} from '@angular/router';
 
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthServiceService } from '../../../services/auth-service.service';
+import { AuthServiceService } from '@app/services/auth-service.service';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 
@@ -18,8 +18,10 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./nav-bar.component.scss']
 })
 export class NavBarComponent {
-  constructor(private authService: AuthServiceService,
-    protected route: ActivatedRoute) {
+  constructor(
+    @Inject(AuthServiceService) private authService: AuthServiceService,
+    protected route: ActivatedRoute
+  ) {
   }
 
   isOpen = false;

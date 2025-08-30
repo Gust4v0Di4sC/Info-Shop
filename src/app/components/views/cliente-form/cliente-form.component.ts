@@ -6,9 +6,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Client } from '../../../models/client.model';
+import { Client } from '@app/models/client.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ClientFormService } from './../../../services/client-form.service';
+import { ClientFormService } from '@app/services/client-form.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 
