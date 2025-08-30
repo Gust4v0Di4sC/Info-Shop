@@ -3,4 +3,4 @@
   command = "ng build --configuration production"
 
 [build.environment]
-  NODE_VERSION = "20.19.0"
+  NODE_VERSION = "22.13.1"
