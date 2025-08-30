@@ -1,0 +1,6 @@
+[build]
+  publish = "dist/infoshop/browser"
+  command = "ng build --configuration production"
+
+[build.environment]
+  NODE_VERSION = "20.12.2"
