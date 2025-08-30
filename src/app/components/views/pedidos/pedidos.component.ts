@@ -22,7 +22,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
   templateUrl: './pedidos.component.html',
   styleUrl: './pedidos.component.scss'
 })
-export class PedidosComponent implements OnInit {
+export default class PedidosComponent implements OnInit {
   searchControl = new FormControl('');
   orders: Order[] = [];
   filteredOrders: Order[] = [];

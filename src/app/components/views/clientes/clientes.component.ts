@@ -24,7 +24,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
   templateUrl: './clientes.component.html',
   styleUrl: './clientes.component.scss'
 })
-export class ClientesComponent implements OnInit {
+export default class ClientesComponent implements OnInit {
   searchControl = new FormControl('');
   clients: Client[] = [];
   filteredClients: Client[] = [];

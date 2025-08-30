@@ -12,3 +12,67 @@ p{
   font-weight: lighter;
   color: #3a3a3a;
 }
+
+:host {
+  display: block;
+  overflow: hidden; /* Garante que os componentes não fiquem visíveis fora do contêiner */
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.route-animation-enter {
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+.route-animation-leave {
+  animation: slideOut 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.fade-in-enter {
+  animation: fadeIn 0.4s ease-in-out forwards;
+}
+
+.fade-in-leave {
+  animation: fadeOut 0.4s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}

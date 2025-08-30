@@ -1,7 +1,10 @@
 
 <div class="page-container">
   <div [@routeAnimations]="prepareRoute(outlet)" >
-  <router-outlet #outlet="outlet"/>  
+    <router-outlet #outlet="outlet"
+    [animate.enter]="getAnimationClass(outlet, 'enter')"
+    [animate.leave]="getAnimationClass(outlet, 'leave')"
+  ></router-outlet> 
 </div>
 </div>
 

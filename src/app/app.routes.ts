@@ -5,30 +5,30 @@ import { AuthGuard, GuestGuard } from './guards/auth.guard';
 export const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./components/views/landing-page/landing-page.component').then(m=>m.LandingPageComponent),
+    loadComponent: () => import('./components/views/landing-page/landing-page.component'),
     canActivate: [GuestGuard] // Redireciona para /dash se já estiver logado
   },
   {
     path: 'home',
-    loadChildren: () => import('./components/views/home/home.component').then(m => m.HomeComponent),
+    loadComponent: () => import('./components/views/home/home.component'),
     data: { animation: 'login' },
     canActivate: [GuestGuard] // Redireciona para /dash se já estiver logado
   },
   {
     path: 'dash',
-    loadChildren: () => import('./components/views/pedidos/pedidos.component').then(m=> m.PedidosComponent),
+    loadComponent: () => import('./components/views/pedidos/pedidos.component'),
     data: { animation: 'dashboard' },
     canActivate: [AuthGuard]
   },
   {
     path: 'products',
-    loadChildren: () => import('./components/views/produtos/produtos.component').then(m=>m.ProdutosComponent),
+    loadComponent: () => import('./components/views/produtos/produtos.component'),
     data: { animation: 'products' },
     canActivate: [AuthGuard]
   },
   {
     path: 'clients',
-    loadChildren: ()=> import('./components/views/clientes/clientes.component').then(m=> m.ClientesComponent),
+    loadComponent: ()=> import('./components/views/clientes/clientes.component'),
     data: { animation: 'clients' },
     canActivate: [AuthGuard]
   },

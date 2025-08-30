@@ -28,7 +28,7 @@ import { AuthServiceService } from '../../../services/auth-service.service'; // 
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit {
+export default class HomeComponent implements OnInit {
   mouseX = 0;
   mouseY = 0;
   loginForm: FormGroup;

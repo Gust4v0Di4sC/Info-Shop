@@ -51,8 +51,6 @@ export class ClienteFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('ngOnInit - isEditMode:', this.isEditMode); // Debug log
-    console.log('ngOnInit - productId:', this.clientId); 
 
     if (this.clientId) {
       this.clientService.getClientById(this.clientId).subscribe({

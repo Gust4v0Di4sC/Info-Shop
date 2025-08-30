@@ -37,7 +37,11 @@
     </mat-sidenav>
     <mat-sidenav-content class="content" >
       <div [@routeAnimations]="prepareRoute(outlet)">
-        <router-outlet #outlet="outlet"></router-outlet>
+        <router-outlet 
+        #outlet="outlet"
+        [animate.enter]="'nav-animation-enter'"
+        [animate.leave]="'nav-animation-leave'"
+      ></router-outlet>
       </div>
     </mat-sidenav-content>
 </mat-sidenav-container>

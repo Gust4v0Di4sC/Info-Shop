@@ -131,3 +131,40 @@ span{
     icon-color: #FFFFFF,
   ));
 }
+
+/* nav-bar.component.scss */
+
+/* Animação de entrada e saída, pode ser usada para um fade-in e slide */
+.nav-animation-enter {
+  animation: nav-enter 300ms ease-out forwards;
+}
+
+.nav-animation-leave {
+  animation: nav-leave 300ms ease-in forwards;
+}
+
+@keyframes nav-enter {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes nav-leave {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-30px);
+  }
+}
+
+/* Opcional: Adicionar estilos para garantir o posicionamento correto */
+:host ::ng-deep .mat-drawer-content {
+  position: relative;
+  overflow: hidden;
+}
