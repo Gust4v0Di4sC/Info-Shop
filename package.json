@@ -3,13 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "dev": "concurrently \"npm run server\" \"npm run start\"",
-    "server": "node server.js",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:infoshop": "node dist/infoshop/server/server.mjs"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
