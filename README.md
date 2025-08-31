@@ -1,4 +1,3 @@
-Claro! Aqui está um README aprimorado para o seu repositório **Info-Shop**, que simula um e-commerce de produtos de informática utilizando Angular:
 
 ---
 
