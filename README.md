@@ -78,7 +78,7 @@ Info-Shop/
 
 ---
 
-## 📸 Screenshot (placeholder)
+## 📸 Screenshot 
 
 * Landing Page
 
@@ -92,7 +92,6 @@ Info-Shop/
 
 ![Tela de pedidos](./src/assets/img/image.png)
 
-> **Substitua** o link acima por uma screenshot real rodando seu projeto após criar/push da imagem no repositório.
 
 ---
 
