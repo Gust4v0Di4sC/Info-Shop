@@ -1,39 +1,46 @@
 import { Routes } from '@angular/router';
-import { AuthGuard, GuestGuard } from '@app/guards/auth.guard';
-
+import { AuthGuard, GuestGuard } from '@app/core/auth/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('@app/components/views/landing-page/landing-page.component'),
-    canActivate: [GuestGuard] // Redireciona para /dash se já estiver logado
+    pathMatch: 'full',
+    loadComponent: () => import('@app/features/public/landing-page/landing-page.component'),
+    canActivate: [GuestGuard],
   },
   {
     path: 'home',
-    loadComponent: () => import('@app/components/views/home/home.component'),
+    loadComponent: () => import('@app/features/auth/home/home.component'),
     data: { animation: 'login' },
-    canActivate: [GuestGuard] // Redireciona para /dash se já estiver logado
+    canActivate: [GuestGuard],
   },
   {
-    path: 'dash',
-    loadComponent: () => import('@app/components/views/pedidos/pedidos.component'),
-    data: { animation: 'dashboard' },
-    canActivate: [AuthGuard]
+    path: '',
+    loadComponent: () =>
+      import('@app/features/admin/admin-shell/admin-shell.component').then(
+        m => m.AdminShellComponent,
+      ),
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'dash',
+        loadComponent: () => import('@app/features/admin/orders/order-list/pedidos.component'),
+        data: { animation: 'dashboard' },
+      },
+      {
+        path: 'products',
+        loadComponent: () => import('@app/features/admin/products/product-list/produtos.component'),
+        data: { animation: 'products' },
+      },
+      {
+        path: 'clients',
+        loadComponent: () => import('@app/features/admin/clients/client-list/clientes.component'),
+        data: { animation: 'clients' },
+      },
+    ],
   },
   {
-    path: 'products',
-    loadComponent: () => import('@app/components/views/produtos/produtos.component'),
-    data: { animation: 'products' },
-    canActivate: [AuthGuard]
+    path: '**',
+    redirectTo: '',
   },
-  {
-    path: 'clients',
-    loadComponent: ()=> import('@app/components/views/clientes/clientes.component'),
-    data: { animation: 'clients' },
-    canActivate: [AuthGuard]
-  },
-  { 
-    path: '**', 
-    redirectTo: '' 
-  }
 ];
