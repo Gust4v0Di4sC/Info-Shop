@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -13,11 +13,11 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
   styleUrl: './home.component.scss',
 })
 export default class HomeComponent implements OnInit {
-  mouseX = 0;
-  mouseY = 0;
   loginForm: FormGroup;
   hidePassword = true;
   isLoading = false;
+  rememberMe = false;
+  selectedRole: 'client' | 'admin' = 'client';
 
   constructor(
     private fb: FormBuilder,
@@ -32,18 +32,6 @@ export default class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {}
-
-  @HostListener('mousemove', ['$event'])
-  onMouseMove(event: MouseEvent) {
-    this.mouseX = (event.clientX / window.innerWidth) * 200;
-    this.mouseY = (event.clientY / window.innerHeight) * 200;
-  }
-
-  getParallaxStyle(): string {
-    const moveX = (this.mouseX - 100) * 0.05;
-    const moveY = (this.mouseY - 100) * 0.05;
-    return `translate(${moveX}px, ${moveY}px)`;
-  }
 
   goToHome() {
     this.router.navigate(['/']);
@@ -74,7 +62,7 @@ export default class HomeComponent implements OnInit {
           if (success) {
             this.router.navigate(['/dash']);
           } else {
-            this.snackBar.open('Email ou senha inválidos', 'Fechar', {
+            this.snackBar.open('Email ou senha invalidos', 'Fechar', {
               duration: 3000,
               horizontalPosition: 'center',
               verticalPosition: 'bottom',

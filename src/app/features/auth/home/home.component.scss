@@ -1,166 +1,260 @@
 @use '@angular/material' as mat;
 
-.parallax-background {
-  transition: transform 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+.login-page {
+  background: #f3f6f9;
+  color: #111827;
+  min-height: 100vh;
 }
 
-
-.outer-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.parallax-background {
-  position: absolute;
-  top: -5%;
-  left: -5%;
-  width: 110%;
-  height: 110%;
-  background-image: url("/bg-temp.png");
-  background-size: cover;
-  background-position: center;
-  transition: transform 0.1s ease-out;
-}
-
-.login-container {
-  position: relative;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
+.login-header {
   align-items: center;
-  z-index: 1000;
+  background: #ffffff;
+  border-bottom: 1px solid #dfe5ed;
+  display: flex;
+  justify-content: space-between;
+  min-height: 86px;
+  padding: 0 9.5vw;
 }
 
+.logo-button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
 
+  img {
+    display: block;
+    height: 45px;
+    width: auto;
+  }
+}
 
+.back-link {
+  color: #111827;
+  font-size: 18px;
+  font-weight: 700;
 
+  mat-icon {
+    margin-right: 6px;
+  }
+}
+
+.login-main {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: 64px 24px;
+}
+
+.login-intro {
+  max-width: 620px;
+  text-align: center;
+
+  h1 {
+    color: #111827;
+    font-size: 38px;
+    font-weight: 850;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  p {
+    color: #5d6675;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.45;
+    margin: 16px 0 0;
+  }
+}
+
+.role-toggle {
+  @include mat.button-toggle-overrides((
+    background-color: #ffffff,
+    selected-state-background-color: #0f62cf,
+    selected-state-text-color: #ffffff,
+    text-color: #111827,
+    height: 56px,
+    shape: 16px,
+  ));
+
+  border: 1px solid #d6dde8;
+  border-radius: 18px;
+  margin-top: 42px;
+  overflow: hidden;
+  padding: 5px;
+  width: min(520px, 100%);
+
+  mat-button-toggle {
+    border: 0;
+    border-radius: 12px;
+    flex: 1;
+    font-size: 19px;
+    font-weight: 850;
+  }
+
+  .mat-button-toggle-label-content {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+}
 
 .login-card {
+  background: #ffffff;
+  border: 1px solid #dbe2ec;
+  border-radius: 22px;
+  box-shadow: 0 24px 55px rgba(15, 23, 42, 0.12);
+  margin-top: 20px;
+  max-width: 520px;
+  padding: 28px;
   width: 100%;
-  max-width: 400px;
-  margin: 20px;
-  padding: 20px;
-  background: #206097;
-  border-radius: 16px;
 }
 
-.logo-container {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.logo {
-  width: auto;
-  height: auto;
-  margin-bottom: 16px;
+.login-form {
+  display: flex;
+  flex-direction: column;
 }
 
 .full-width {
   width: 100%;
-  margin-bottom: 16px;
+}
+
+.login-field {
+  @include mat.form-field-overrides((
+    outlined-container-shape: 12px,
+    outlined-outline-color: #cbd5e1,
+    outlined-hover-outline-color: #94a3b8,
+    outlined-focus-outline-color: #0f62cf,
+    outlined-input-text-color: #111827,
+    outlined-label-text-color: #111827,
+    outlined-focus-label-text-color: #0f62cf,
+    leading-icon-color: #5d6675,
+    trailing-icon-color: #5d6675,
+  ));
+
+  margin-bottom: 18px;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+.form-options {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0 22px;
+}
+
+mat-checkbox {
+  color: #111827;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.text-link {
+  background: transparent;
+  border: 0;
+  color: #0f62cf;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 850;
+  padding: 0;
 }
 
 .login-button {
-  margin-top: 16px;
-  padding: 8px;
-  font-size: 16px;
+  @include mat.button-overrides((
+    filled-container-color: #0f62cf,
+    filled-label-text-color: #ffffff,
+    filled-disabled-container-color: #9bbbec,
+    filled-disabled-label-text-color: #ffffff,
+  ));
+
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 850;
+  height: 60px;
 }
 
-mat-form-field {
-  margin-bottom: 16px;
+.create-account {
+  color: #5d6675;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 28px;
+  text-align: center;
 }
 
 .social-login {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  color: #1870e4;
+  margin-top: 18px;
 }
 
 .social-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  gap: 8px;
-  text-transform: none;
-  font-weight: 600;
-  font-size: 14px;
-  background: #fff; // fundo branco para destacar
-  border-radius: 6px;
-  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: 850;
+  height: 48px;
+  width: 100%;
 
-  .social-icon {
-    width: 20px;
-    height: 20px;
+  i {
+    margin-right: 8px;
   }
 }
 
-.google-btn {
-  border: 1px solid #db4437;
-  color: #db4437;
+.terms {
+  color: #5d6675;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.45;
+  margin: 32px 0 0;
+  max-width: 540px;
+  text-align: center;
+}
 
-  &:hover {
-    background: #db4437;
-    color: #fff;
+@media (max-width: 720px) {
+  .login-header {
+    padding: 0 22px;
+  }
+
+  .back-link {
+    font-size: 15px;
+  }
+
+  .login-main {
+    padding: 46px 18px;
+  }
+
+  .login-intro h1 {
+    font-size: 30px;
+  }
+
+  .login-intro p {
+    font-size: 17px;
+  }
+
+  .role-toggle {
+    margin-top: 30px;
+
+    mat-button-toggle {
+      font-size: 15px;
+    }
+  }
+
+  .login-card {
+    border-radius: 18px;
+    padding: 22px;
+  }
+
+  .form-options {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
   }
 }
 
-.microsoft-btn {
-  border: 1px solid #1870e4;
-  color: #1870e4;
-
-  &:hover {
-    background: #1870e4;
-    color: #fff;
+@media (max-width: 420px) {
+  .role-toggle {
+    mat-icon {
+      display: none;
+    }
   }
-}
-
-
-.container-back{
-   top: 20px;    // distância do topo
-  left: 20px;   // canto superior esquerdo
-  z-index: 1000;
-  position: absolute;
-
-  .btn-back-btn{
-    color: #FFFFFF;
-    background-color: #206097;
-    border: transparent ;
-    border-radius: 32px;
-    font-size: 16px;
-    padding: 16px;
-    transition: all ease 0.5s;
-  }
-
-  .btn-back-btn:hover{
-    color: #FFFFFF;
-    background-color: #164269;
-    
-  }
-}
-
-.button-home {
-  @include mat.button-overrides((
-    protected-container-color: #368AD4,
-    protected-disabled-container-color: #368AD4,
-    protected-label-text-color: #FFFFFF,
-    protected-disabled-label-text-color:#FFFFFF, 
-    outlined-hover-state-layer-opacity: 0.06,
-  ));
-}
-
-.customformfield {
-  @include mat.form-field-overrides((
-    outlined-outline-color: #368AD4,
-    outlined-container-shape: 8px,
-    outlined-label-text-color: #ffff,
-    outlined-input-text-color: #ffff,
-    outlined-hover-label-text-color: #ffff,
-    outlined-hover-outline-color: #68A7DF,
-    outlined-focus-outline-color: #081821,
-    outlined-focus-label-text-color: #ffff,
-  ));
 }
