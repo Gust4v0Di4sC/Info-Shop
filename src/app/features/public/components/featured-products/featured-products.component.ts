@@ -9,30 +9,42 @@ import { CartServiceService } from '@app/services/cart-service.service';
   styleUrls: ['./featured-products.component.scss']
 })
 export class FeaturedProductsComponent {
-    products = [
+  products = [
     {
-      name: 'MacBook ProM2',
-      price: 'R$1890,00',
-      rating: 4.9,
-      image: '/product1.png'
+      name: 'Notebook UltraBook Pro M2',
+      description: '16GB RAM - 512GB SSD',
+      price: 'R$ 1.890,00',
+      installments: '12x de R$ 157,50 sem juros',
+      rating: '4,9 (214 avaliacoes)',
+      badge: 'Mais vendido',
+      image: '/product1.png',
     },
     {
-      name: 'iPhone 13',
-      price: 'R$1890,00',
-      rating: 4.9,
-      image: '/product2.png'
+      name: 'Smartphone Nova 5G',
+      description: '256GB - Tela 6,7"',
+      price: 'R$ 2.450,00',
+      installments: '12x de R$ 204,16 sem juros',
+      rating: '4,7 (168 avaliacoes)',
+      badge: '',
+      image: '/product2.png',
     },
     {
-      name: 'Samsung Galaxy',
-      price: 'R$1890,00',
-      rating: 4.9,
-      image: '/product3.png'
+      name: 'Headset Studio ANC',
+      description: 'Cancelamento de ruido - 40h',
+      price: 'R$ 690,00',
+      installments: '10x de R$ 69,00 sem juros',
+      rating: '4,8 (302 avaliacoes)',
+      badge: 'Novo',
+      image: '/product3.png',
     },
     {
-      name: 'Headphones',
-      price: 'R$1890,00',
-      rating: 4.9,
-      image: '/product4.png'
+      name: 'Kit Teclado + Mouse Gamer',
+      description: 'Mecanico - 16.000 DPI',
+      price: 'R$ 420,00',
+      installments: '8x de R$ 52,50 sem juros',
+      rating: '4,6 (121 avaliacoes)',
+      badge: '',
+      image: '/product4.png',
     }
   ];
 

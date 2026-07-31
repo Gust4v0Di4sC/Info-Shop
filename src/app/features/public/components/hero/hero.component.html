@@ -1,36 +1,66 @@
-<section class="hero">
-      <div class="hero-container">
-        <div class="hero-content">
-          <div class="hero-text">
-            <h1 class="hero-title">Tecnologia de Ponta ao Seu Alcance.</h1>
-            <p class="hero-description">
-              Na InfoShop, você encontra a tecnologia que impulsiona o seu mundo. Desempenho, inovação e as melhores marcas. Seu próximo upgrade está aqui.
-            </p>
-            <div class="hero-buttons">
-              <button class="btn btn-primary" (click)="goToLogin()">Gerenciar</button>
-              <button class="btn btn-secondary">Comprar</button>
-            </div>
-             <div class="hero-icons">
-                        <div class="hero-icons-container">
-                            <i class="fas fa-check-circle "></i>
-                            <span>Frete Gratis</span>
-                        </div>
-                        <div class="hero-icons-container">
-                            <i class="fas fa-check-circle "></i>
-                            <span>Garantia Anual</span>
-                        </div>
-                        <div class="hero-icons-container">
-                            <i class="fas fa-check-circle "></i>
-                            <span>Suporte 24H</span>
-                        </div>
-                    </div>
-          </div>
-        </div>
-        
-        <div class="hero-image">
-          <div class="image-container floating">
-            <img src="/imageHero.png" alt="Imagem Hero">
-          </div>
-        </div>
+<section id="inicio" class="hero">
+  <div class="hero-container">
+    <div class="hero-copy">
+      <span class="hero-badge">
+        <i class="fas fa-check-circle"></i>
+        Loja oficial - +12 mil clientes atendidos
+      </span>
+
+      <h1>Tecnologia que acompanha o seu ritmo</h1>
+      <p>
+        Notebooks, smartphones e perifericos selecionados, com preco justo,
+        entrega rapida e suporte humano de verdade antes e depois da compra.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn btn-primary" type="button">
+          Ver produtos
+          <i class="fas fa-arrow-right"></i>
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="goToLogin()">
+          Ofertas do dia
+        </button>
       </div>
-  </section>
+    </div>
+
+    <div class="hero-media" aria-hidden="true">
+      <img src="/imageHero.png" alt="">
+    </div>
+  </div>
+</section>
+
+<section class="benefits-strip" aria-label="Beneficios da loja">
+  <div class="benefits-container">
+    <article class="benefit-item">
+      <span class="benefit-icon"><i class="fas fa-truck"></i></span>
+      <div>
+        <h2>Frete gratis</h2>
+        <p>Em pedidos acima de R$ 99,90 para todo o Brasil.</p>
+      </div>
+    </article>
+
+    <article class="benefit-item">
+      <span class="benefit-icon"><i class="fas fa-shield-alt"></i></span>
+      <div>
+        <h2>Compra segura</h2>
+        <p>Pagamento criptografado e nota fiscal em todos os pedidos.</p>
+      </div>
+    </article>
+
+    <article class="benefit-item">
+      <span class="benefit-icon"><i class="fas fa-sync-alt"></i></span>
+      <div>
+        <h2>30 dias para trocar</h2>
+        <p>Devolucao simples, sem burocracia e sem custo extra.</p>
+      </div>
+    </article>
+
+    <article class="benefit-item">
+      <span class="benefit-icon"><i class="fas fa-medal"></i></span>
+      <div>
+        <h2>Garantia de 12 meses</h2>
+        <p>Assistencia tecnica autorizada em mais de 90 cidades.</p>
+      </div>
+    </article>
+  </div>
+</section>

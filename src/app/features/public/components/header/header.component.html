@@ -1,39 +1,36 @@
 <header class="header">
-  <!-- Top banner -->
   <div class="top-banner">
-    <span>Frete Grátis para compras acima de R$99,90</span>
+    <span><i class="fas fa-truck"></i> Frete gratis para compras acima de R$ 99,90</span>
   </div>
 
-  <!-- Main header -->
   <div class="main-header">
-    <!-- Logo -->
-    <div class="logo">
-      <img src="/Logo1.svg" alt="InfoShop Logo" class="logo">
+    <div class="brand">
+      <img src="/Logo1.svg" alt="InfoShop Logo" class="logo-image">
     </div>
 
-    <!-- Navigation -->
-    <nav class="navigation">
-      <a href="#" class="nav-link">Home</a>
-      <a href="#" class="nav-link">About</a>
-      <a href="#" class="nav-link">Offers</a>
-      <a href="#" class="nav-link">Contact</a>
+    <nav class="navigation" aria-label="Navegacao principal">
+      <a href="#inicio" class="nav-link">Inicio</a>
+      <a href="#categorias" class="nav-link">Categorias</a>
+      <a href="#produtos" class="nav-link">Produtos</a>
+      <a href="#ofertas" class="nav-link">Ofertas</a>
+      <a href="#contato" class="nav-link">Contato</a>
     </nav>
 
-    <!-- Search and user actions -->
     <div class="header-actions">
-      <div class="search-container">
-        <input type="text" class="search-input" placeholder="Buscar...">
-        <button class="search-btn">
-          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+      <label class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" class="search-input" placeholder="Buscar notebooks, celulares...">
+        <button class="search-btn" type="button" aria-label="Buscar">
+          <i class="fas fa-arrow-right"></i>
         </button>
-      </div>
+      </label>
 
-      <div  class="user-actions">
-        <button class="user-btn" (click)="goToHome()">
-          <i class="fas fa-user-tie text-xl" ></i>
+      <div class="user-actions">
+        <button class="icon-btn" (click)="goToHome()" type="button" aria-label="Entrar">
+          <i class="far fa-user"></i>
         </button>
-        <button class="cart-btn">
-          <i  class="fas fa-shopping-cart cart-top-icon text-xl"></i>
+        <button class="icon-btn cart-btn" type="button" aria-label="Carrinho">
+          <i class="fas fa-shopping-bag cart-top-icon"></i>
           @if (cartCount > 0) {
             <span class="cart-badge">{{ cartCount }}</span>
           }
