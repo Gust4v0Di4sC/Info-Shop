@@ -1,0 +1,41 @@
+<header class="header">
+  <div class="top-banner">
+    <span><i class="fas fa-truck"></i> Frete gratis para compras acima de R$ 99,90</span>
+  </div>
+
+  <div class="main-header">
+    <div class="brand">
+      <img src="/Logo1.svg" alt="InfoShop Logo" class="logo-image">
+    </div>
+
+    <nav class="navigation" aria-label="Navegacao principal">
+      <a href="#inicio" class="nav-link">Inicio</a>
+      <a href="#categorias" class="nav-link">Categorias</a>
+      <a href="#produtos" class="nav-link">Produtos</a>
+      <a href="#ofertas" class="nav-link">Ofertas</a>
+      <a href="#contato" class="nav-link">Contato</a>
+    </nav>
+
+    <div class="header-actions">
+      <label class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" class="search-input" placeholder="Buscar notebooks, celulares...">
+        <button class="search-btn" type="button" aria-label="Buscar">
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </label>
+
+      <div class="user-actions">
+        <button class="icon-btn" (click)="goToHome()" type="button" aria-label="Entrar">
+          <i class="far fa-user"></i>
+        </button>
+        <button class="icon-btn cart-btn" type="button" aria-label="Carrinho">
+          <i class="fas fa-shopping-bag cart-top-icon"></i>
+          @if (cartCount > 0) {
+            <span class="cart-badge">{{ cartCount }}</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

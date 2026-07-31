@@ -1,0 +1,41 @@
+<section id="produtos" class="products-section">
+  <div class="products-container">
+    <div class="products-head">
+      <div>
+        <h1>Produtos em destaque</h1>
+        <p>Selecionados pela nossa equipe tecnica nesta semana.</p>
+      </div>
+      <button class="catalog-button" type="button">
+        Ver catalogo completo
+        <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <div class="products-grid">
+      @for (product of products; track product.name) {
+        <article class="product-card">
+          <div class="product-media">
+            @if (product.badge) {
+              <span class="product-badge">{{ product.badge }}</span>
+            }
+            <img [src]="product.image" alt="{{ product.name }}">
+          </div>
+
+          <div class="product-info">
+            <h2>{{ product.name }}</h2>
+            <p class="product-description">{{ product.description }}</p>
+            <p class="product-rating">
+              <i class="fa fa-star"></i>
+              {{ product.rating }}
+            </p>
+            <strong class="product-price">{{ product.price }}</strong>
+            <p class="installments">{{ product.installments }}</p>
+            <button (click)="addToCart($event)" class="product-cart" type="button">
+              Adicionar ao carrinho
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+</section>
