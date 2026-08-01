@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { from, Observable, map } from 'rxjs';
 import { Order } from '@app/models/order.model';
 import { supabase } from '@app/core/supabase/supabase.client';
+import { getSupabaseData, getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +17,7 @@ export class OrderService {
         .select('*')
         .or(`name.ilike.%${term}%,product.ilike.%${term}%`)
     ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return data || [];
-      })
+      map(getSupabaseList)
     );
   }
 
@@ -30,10 +28,9 @@ export class OrderService {
         .from('orders')
         .select('*')
     ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return (data || []).filter(order => order.name && order.product);
-      })
+      map(result =>
+        getSupabaseList(result).filter(order => order.name && order.product)
+      )
     );
   }
 
@@ -46,10 +43,7 @@ export class OrderService {
         .eq('id', id)
         .single()
     ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return data as Order;
-      })
+      map(getSupabaseData)
     );
   }
 
@@ -61,10 +55,7 @@ export class OrderService {
         .delete()
         .eq('id', id)
     ).pipe(
-      map(({ error }) => {
-        if (error) throw error;
-        return;
-      })
+      map(throwSupabaseError)
     );
   }
 }

@@ -1,33 +1,24 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { from, map, Observable } from 'rxjs';
 import { Product } from '@app/models/product.model';
-import { environment } from '@environments/environment.prod';
+import { supabase } from '@app/core/supabase/supabase.client';
+import { getSupabaseData, getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-
-  private apiUrl = `${environment.supabaseUrl}/rest/v1/products`;
-
-  private httpOptions = {
-    headers: new HttpHeaders({
-      apikey: environment.supabaseAnonKey!,
-      Authorization: `Bearer ${environment.supabaseAnonKey}`,
-      'Content-Type': 'application/json'
-    })
-  };
-
-  constructor(private http: HttpClient) {}
-
   /**
    * Busca produtos por nome ou modelo usando Supabase
    */
   searchProducts(term: string): Observable<Product[]> {
-    return this.http.get<Product[]>(
-      `${this.apiUrl}?or=(name.ilike.%${term}%,model.ilike.%${term}%)&select=*`,
-      this.httpOptions
+    return from(
+      supabase
+        .from('products')
+        .select('*')
+        .or(`name.ilike.%${term}%,model.ilike.%${term}%`)
+    ).pipe(
+      map(getSupabaseList)
     );
   }
 
@@ -35,12 +26,13 @@ export class ProductService {
    * Lista todos os produtos
    */
   getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(
-      `${this.apiUrl}?select=*`,
-      this.httpOptions
+    return from(
+      supabase
+        .from('products')
+        .select('*')
     ).pipe(
-      map(products =>
-        products.filter(p => p.name && p.price != null && p.cost != null)
+      map(result =>
+        getSupabaseList(result).filter(p => p.name && p.price != null && p.cost != null)
       )
     );
   }
@@ -49,11 +41,14 @@ export class ProductService {
    * Busca um produto por ID
    */
   getProduct(id: string): Observable<Product> {
-    return this.http.get<Product[]>(
-      `${this.apiUrl}?id=eq.${id}&select=*`,
-      this.httpOptions
+    return from(
+      supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single()
     ).pipe(
-      map(res => res[0])
+      map(getSupabaseData)
     );
   }
 
@@ -61,9 +56,13 @@ export class ProductService {
    * Deleta um produto por ID
    */
   deleteProduct(id: string): Observable<void> {
-    return this.http.delete<void>(
-      `${this.apiUrl}?id=eq.${id}`,
-      this.httpOptions
+    return from(
+      supabase
+        .from('products')
+        .delete()
+        .eq('id', id)
+    ).pipe(
+      map(throwSupabaseError)
     );
   }
 }

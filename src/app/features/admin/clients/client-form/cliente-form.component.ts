@@ -1,7 +1,7 @@
 
 import { Component, Inject, OnInit, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Client } from '@app/models/client.model';
+import { Client, ClientInsert } from '@app/models/client.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClientFormService } from '@app/services/client-form.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -101,7 +101,7 @@ export class ClienteFormComponent implements OnInit {
 
    private saveClient(imageUrl?: string | null): void {
       // Prepara os dados do produto
-      const clientData: Client = {
+      const clientData: ClientInsert = {
         name: this.clientForm.value.name,
         age: Number(this.clientForm.value.age),
         address: this.clientForm.value.address,

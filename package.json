@@ -4,13 +4,21 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-     "prebuild": "node set.env", 
+    "prebuild": "node set.env",
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "supabase": "supabase",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:db:reset": "supabase db reset",
+    "supabase:types:local": "supabase gen types typescript --local > src/app/core/supabase/database.types.ts",
+    "supabase:types:linked": "supabase gen types typescript --linked > src/app/core/supabase/database.types.ts"
   },
   "private": true,
   "dependencies": {
+    "@angular/animations": "20.2.2",
     "@angular/cdk": "^20.2.1",
     "@angular/common": "^20.2.2",
     "@angular/compiler": "^20.2.2",
@@ -41,6 +49,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "supabase": "^2.111.0",
     "typescript": "~5.9.2",
     "webpack-bundle-analyzer": "^4.10.2"
   }

@@ -1,75 +1,81 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { Client } from '@app/models/client.model';
-import { environment } from '@environments/environment.prod';
+import { from, map, Observable } from 'rxjs';
+import { Client, ClientInsert, ClientUpdate } from '@app/models/client.model';
+import { supabase } from '@app/core/supabase/supabase.client';
+import { getSupabaseData, getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientService {
-
-  private apiUrl = `${environment.supabaseUrl}/rest/v1/clients`;
-
-  private httpOptions = {
-    headers: new HttpHeaders({
-      'apikey': environment.supabaseAnonKey!,
-      'Authorization': `Bearer ${environment.supabaseAnonKey}`,
-      'Content-Type': 'application/json'
-    })
-  };
-
-  constructor(private http: HttpClient) {}
-
   searchClients(term: string): Observable<Client[]> {
-    return this.http.get<Client[]>(
-      `${this.apiUrl}?name=ilike.%${term}%&select=*`,
-      this.httpOptions
+    return from(
+      supabase
+        .from('clients')
+        .select('*')
+        .ilike('name', `%${term}%`)
+    ).pipe(
+      map(getSupabaseList)
     );
   }
 
   getClients(): Observable<Client[]> {
-    return this.http.get<Client[]>(
-      `${this.apiUrl}?select=*`,
-      this.httpOptions
+    return from(
+      supabase
+        .from('clients')
+        .select('*')
     ).pipe(
-      map(clients => clients.filter(client => client.name && client.address))
+      map(result =>
+        getSupabaseList(result).filter(client => client.name && client.address)
+      )
     );
   }
 
   getClient(id: string): Observable<Client> {
-    return this.http.get<Client[]>(
-      `${this.apiUrl}?id=eq.${id}&select=*`,
-      this.httpOptions
+    return from(
+      supabase
+        .from('clients')
+        .select('*')
+        .eq('id', id)
+        .single()
     ).pipe(
-      map(res => res[0])
+      map(getSupabaseData)
     );
   }
 
-  createClient(client: Client): Observable<Client> {
-    return this.http.post<Client[]>(
-      `${this.apiUrl}?select=*`,
-      client,
-      this.httpOptions
+  createClient(client: ClientInsert): Observable<Client> {
+    return from(
+      supabase
+        .from('clients')
+        .insert(client)
+        .select()
+        .single()
     ).pipe(
-      map(res => res[0])
+      map(getSupabaseData)
     );
   }
 
-  updateClient(id: string, client: Client): Observable<Client> {
-    return this.http.patch<Client[]>(
-      `${this.apiUrl}?id=eq.${id}&select=*`,
-      client,
-      this.httpOptions
+  updateClient(id: string, client: ClientUpdate): Observable<Client> {
+    return from(
+      supabase
+        .from('clients')
+        .update(client)
+        .eq('id', id)
+        .select()
+        .single()
     ).pipe(
-      map(res => res[0])
+      map(getSupabaseData)
     );
   }
 
   deleteClient(id: string): Observable<void> {
-    return this.http.delete<void>(
-      `${this.apiUrl}?id=eq.${id}`,
-      this.httpOptions
+    return from(
+      supabase
+        .from('clients')
+        .delete()
+        .eq('id', id)
+    ).pipe(
+      map(throwSupabaseError)
     );
   }
 }

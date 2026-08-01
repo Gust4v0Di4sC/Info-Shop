@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { from, map, Observable } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
-import { Order } from '@app/models/order.model';
+import { Order, OrderInsert, OrderUpdate } from '@app/models/order.model';
 import { Product } from '@app/models/product.model';
 import { Client } from '@app/models/client.model';
+import { getSupabaseData, getSupabaseList } from '@app/core/supabase/supabase-response';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +16,8 @@ export class OrderFormService {
       supabase
         .from('clients')
         .select('*')
-        .then(({ data, error }) => {
-          if (error) throw error;
-          return data || [];
-        })
+    ).pipe(
+      map(getSupabaseList)
     );
   }
 
@@ -27,24 +26,20 @@ export class OrderFormService {
       supabase
         .from('products')
         .select('*')
-        .then(({ data, error }) => {
-          if (error) throw error;
-          return data || [];
-        })
+    ).pipe(
+      map(getSupabaseList)
     );
   }
 
-  createOrder(order: Omit<Order, 'id'>): Observable<Order> {
+  createOrder(order: OrderInsert): Observable<Order> {
     return from(
       supabase
         .from('orders')
         .insert(order)
         .select()
         .single()
-        .then(({ data, error }) => {
-          if (error) throw error;
-          return data as Order;
-        })
+    ).pipe(
+      map(getSupabaseData)
     );
   }
 
@@ -55,14 +50,12 @@ export class OrderFormService {
         .select('*')
         .eq('id', id)
         .single()
-        .then(({ data, error }) => {
-          if (error) throw error;
-          return data as Order;
-        })
+    ).pipe(
+      map(getSupabaseData)
     );
   }
 
-  updateOrder(id: string, orderData: Partial<Order>): Observable<Order> {
+  updateOrder(id: string, orderData: OrderUpdate): Observable<Order> {
     return from(
       supabase
         .from('orders')
@@ -70,10 +63,8 @@ export class OrderFormService {
         .eq('id', id)
         .select()
         .single()
-        .then(({ data, error }) => {
-          if (error) throw error;
-          return data as Order;
-        })
+    ).pipe(
+      map(getSupabaseData)
     );
   }
 }
