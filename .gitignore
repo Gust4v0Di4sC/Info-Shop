@@ -41,6 +41,7 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+AGENTS.MD
 
 # Local Netlify folder
 .netlify
