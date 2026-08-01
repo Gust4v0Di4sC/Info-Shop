@@ -1,10 +1,5 @@
-export interface Client{
-    id?: string;
-    name: string;
-    age: number;
-    address: string;
-    cpf: string;
-    cnpj?: string;
-    imageUrl?: string;
-    phone?: number;
-}
+import { Tables, TablesInsert, TablesUpdate } from '@app/core/supabase/database.types';
+
+export type Client = Tables<'clients'>;
+export type ClientInsert = TablesInsert<'clients'>;
+export type ClientUpdate = TablesUpdate<'clients'>;

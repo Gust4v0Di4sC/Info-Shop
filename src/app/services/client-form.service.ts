@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, map } from 'rxjs';
-import { Client } from '@app/models/client.model';
+import { Client, ClientInsert, ClientUpdate } from '@app/models/client.model';
 import { supabase } from '@app/core/supabase/supabase.client';
+import { getSupabaseData } from '@app/core/supabase/supabase-response';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class ClientFormService {
   }
 
   /** Criar cliente */
-  createClient(client: Omit<Client, 'id'>): Observable<Client> {
+  createClient(client: ClientInsert): Observable<Client> {
     return from(
       supabase
         .from('clients')
@@ -38,10 +39,7 @@ export class ClientFormService {
         .select()
         .single()
     ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return data as Client;
-      })
+      map(getSupabaseData)
     );
   }
 
@@ -54,15 +52,12 @@ export class ClientFormService {
         .eq('id', id)
         .single()
     ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return data as Client;
-      })
+      map(getSupabaseData)
     );
   }
 
   /** Atualizar cliente */
-  updateClient(id: string, clientData: Partial<Client>): Observable<Client> {
+  updateClient(id: string, clientData: ClientUpdate): Observable<Client> {
     return from(
       supabase
         .from('clients')
@@ -71,10 +66,7 @@ export class ClientFormService {
         .select()
         .single()
     ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return data as Client;
-      })
+      map(getSupabaseData)
     );
   }
 }

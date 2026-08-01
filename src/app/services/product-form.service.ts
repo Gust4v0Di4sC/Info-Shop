@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, switchMap, map } from 'rxjs';
-import { Product } from '@app/models/product.model';
+import { Product, ProductInsert, ProductUpdate } from '@app/models/product.model';
 import { supabase } from '@app/core/supabase/supabase.client';
+import { getSupabaseData } from '@app/core/supabase/supabase-response';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class ProductFormService {
   }
 
   /** Criar produto */
-  createProduct(product: Omit<Product, 'id'>): Observable<Product> {
+  createProduct(product: ProductInsert): Observable<Product> {
     return from(
       supabase
         .from('products')
@@ -38,10 +39,7 @@ export class ProductFormService {
         .select()
         .single()
     ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return data as Product;
-      })
+      map(getSupabaseData)
     );
   }
 
@@ -54,15 +52,12 @@ export class ProductFormService {
         .eq('id', id)
         .single()
     ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return data as Product;
-      })
+      map(getSupabaseData)
     );
   }
 
   /** Atualizar */
-  updateProduct(id: string, productData: Partial<Product>): Observable<Product> {
+  updateProduct(id: string, productData: ProductUpdate): Observable<Product> {
     return from(
       supabase
         .from('products')
@@ -71,10 +66,7 @@ export class ProductFormService {
         .select()
         .single()
     ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return data as Product;
-      })
+      map(getSupabaseData)
     );
   }
 }

@@ -3,7 +3,7 @@ import { Component, Inject, OnInit, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductFormService } from '@app/services/product-form.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import { Product } from '@app/models/product.model';
+import { Product, ProductInsert } from '@app/models/product.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 
@@ -103,7 +103,7 @@ export class ProdutoFormComponent implements OnInit {
 
   private saveProduct(imageUrl?: string | null): void {
     // Prepara os dados do produto
-    const productData: Product = {
+    const productData: ProductInsert = {
       name: this.productForm.value.name,
       model: this.productForm.value.model,
       price: Number(this.productForm.value.price),

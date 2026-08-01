@@ -1,9 +1,5 @@
-export interface Product {
-    id?: string; // Tornar opcional para lidar com casos de criação de produtos
-    name: string;
-    model?: string;
-    price: number;
-    cost: number;
-    description: string;
-    imageUrl?: string;
-  }
+import { Tables, TablesInsert, TablesUpdate } from '@app/core/supabase/database.types';
+
+export type Product = Tables<'products'>;
+export type ProductInsert = TablesInsert<'products'>;
+export type ProductUpdate = TablesUpdate<'products'>;

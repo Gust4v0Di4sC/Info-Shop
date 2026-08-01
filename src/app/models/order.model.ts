@@ -1,11 +1,5 @@
-export interface Order {
-  id?: string;
-  clientId?: string;
-  name: string;
-  userId?: string;
-  address: string;
-  productId?: string;
-  product: string;
-  imageProd?: string;
-  imageClient?: string;
-}
+import { Tables, TablesInsert, TablesUpdate } from '@app/core/supabase/database.types';
+
+export type Order = Tables<'orders'>;
+export type OrderInsert = TablesInsert<'orders'>;
+export type OrderUpdate = TablesUpdate<'orders'>;

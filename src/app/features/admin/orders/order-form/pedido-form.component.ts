@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, Optional } from '@angular/core';
 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Order } from '@app/models/order.model';
+import { Order, OrderInsert } from '@app/models/order.model';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Client } from '@app/models/client.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -112,7 +112,7 @@ export class PedidoFormComponent implements OnInit {
     }
   
     // Prepara os dados do Pedido com clientId e productId
-    const orderData: Order = {
+    const orderData: OrderInsert = {
       id: this.orderId, // Se for edição, mantém o ID atual
       clientId: selectedClient.id, // Agora salvamos o clientId corretamente
       name: selectedClient.name, // Ainda salvamos o nome para exibição
