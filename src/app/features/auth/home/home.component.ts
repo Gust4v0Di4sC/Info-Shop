@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +17,6 @@ export default class HomeComponent implements OnInit {
   loginForm: FormGroup;
   hidePassword = true;
   isLoading = false;
-  rememberMe = false;
   selectedRole: 'client' | 'admin' = 'client';
 
   constructor(
@@ -37,7 +37,19 @@ export default class HomeComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  goToRegister() {
+    if (this.isAdminView) {
+      return;
+    }
+
+    this.router.navigate(['/registro']);
+  }
+
   async loginWithGoogle() {
+    if (this.isAdminView) {
+      return;
+    }
+
     this.isLoading = true;
     try {
       await this.authService.signInWithGoogle();
@@ -52,32 +64,48 @@ export default class HomeComponent implements OnInit {
     }
   }
 
-  onSubmit() {
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      const { email, password } = this.loginForm.value;
-
-      this.authService.login(email, password).subscribe({
-        next: success => {
-          if (success) {
-            this.router.navigate(['/dash']);
-          } else {
-            this.snackBar.open('Email ou senha invalidos', 'Fechar', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-            });
-          }
-        },
-        error: () => {
-          this.snackBar.open('Erro ao fazer login', 'Fechar', {
-            duration: 3000,
-          });
-        },
-        complete: () => {
-          this.isLoading = false;
-        },
-      });
+  async onSubmit(): Promise<void> {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
     }
+
+    this.isLoading = true;
+    const { email, password } = this.loginForm.value;
+
+    try {
+      const success = await firstValueFrom(this.authService.login(email, password));
+
+      if (!success) {
+        this.snackBar.open('Email ou senha invalidos', 'Fechar', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
+        return;
+      }
+
+      if (this.isAdminView && !(await this.authService.isUserAdmin())) {
+        await this.authService.logout();
+        this.snackBar.open('Acesso administrativo restrito.', 'Fechar', {
+          duration: 4000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
+        return;
+      }
+
+      await this.authService.redirectAfterSignIn();
+    } catch {
+      this.snackBar.open('Erro ao fazer login', 'Fechar', {
+        duration: 3000,
+      });
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  get isAdminView(): boolean {
+    return this.selectedRole === 'admin';
   }
 }

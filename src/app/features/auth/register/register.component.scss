@@ -1,12 +1,12 @@
 @use '@angular/material' as mat;
 
-.login-page {
+.register-page {
   background: #f3f6f9;
   color: #111827;
   min-height: 100vh;
 }
 
-.login-header {
+.register-header {
   align-items: center;
   background: #ffffff;
   border-bottom: 1px solid #dfe5ed;
@@ -29,28 +29,24 @@
   }
 }
 
-.store-button {
-  border-color: #cbd5e1;
-  border-radius: 12px;
+.back-link {
   color: #111827;
   font-size: 18px;
-  font-weight: 850;
-  height: 46px;
-  padding: 0 18px;
+  font-weight: 700;
 
   mat-icon {
     margin-right: 6px;
   }
 }
 
-.login-main {
+.register-main {
   align-items: center;
   display: flex;
   flex-direction: column;
   padding: 64px 24px;
 }
 
-.login-intro {
+.register-intro {
   max-width: 620px;
   text-align: center;
 
@@ -71,51 +67,18 @@
   }
 }
 
-.role-toggle {
-  @include mat.button-toggle-overrides((
-    background-color: #ffffff,
-    selected-state-background-color: #0f62cf,
-    selected-state-text-color: #ffffff,
-    text-color: #111827,
-    height: 56px,
-    shape: 16px,
-  ));
-
-  border: 1px solid #d6dde8;
-  border-radius: 18px;
-  margin-top: 42px;
-  overflow: hidden;
-  padding: 5px;
-  width: min(520px, 100%);
-
-  mat-button-toggle {
-    border: 0;
-    border-radius: 12px;
-    flex: 1;
-    font-size: 19px;
-    font-weight: 850;
-  }
-
-  .mat-button-toggle-label-content {
-    align-items: center;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-}
-
-.login-card {
+.register-card {
   background: #ffffff;
   border: 1px solid #dbe2ec;
   border-radius: 22px;
   box-shadow: 0 24px 55px rgba(15, 23, 42, 0.12);
-  margin-top: 20px;
+  margin-top: 34px;
   max-width: 520px;
   padding: 28px;
   width: 100%;
 }
 
-.login-form {
+.register-form {
   display: flex;
   flex-direction: column;
 }
@@ -124,7 +87,7 @@
   width: 100%;
 }
 
-.login-field {
+.register-field {
   @include mat.form-field-overrides((
     outlined-container-shape: 12px,
     outlined-outline-color: #cbd5e1,
@@ -144,17 +107,27 @@
   }
 }
 
-.form-options {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  margin: 4px 0 22px;
+.register-button {
+  @include mat.button-overrides((
+    filled-container-color: #0f62cf,
+    filled-label-text-color: #ffffff,
+    filled-disabled-container-color: #9bbbec,
+    filled-disabled-label-text-color: #ffffff,
+  ));
+
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 850;
+  height: 60px;
+  margin-top: 4px;
 }
 
-.session-note {
+.login-account {
   color: #5d6675;
   font-size: 16px;
   font-weight: 500;
+  margin-top: 28px;
+  text-align: center;
 }
 
 .text-link {
@@ -167,53 +140,50 @@
   padding: 0;
 }
 
-.login-button {
-  @include mat.button-overrides((
-    filled-container-color: #0f62cf,
-    filled-label-text-color: #ffffff,
-    filled-disabled-container-color: #9bbbec,
-    filled-disabled-label-text-color: #ffffff,
-  ));
-
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: 850;
-  height: 60px;
-}
-
-.create-account {
-  color: #5d6675;
-  font-size: 16px;
-  font-weight: 500;
-  margin-top: 28px;
-  text-align: center;
-}
-
-.social-login {
-  margin-top: 18px;
-}
-
-.admin-access-note {
-  background: #f8fafc;
-  border: 1px solid #dbe2ec;
-  border-radius: 12px;
-  color: #475467;
-  font-size: 14px;
+.form-error {
+  color: #b42318;
+  font-size: 13px;
   font-weight: 750;
-  line-height: 1.45;
-  margin: 24px 0 0;
-  padding: 14px 16px;
-  text-align: center;
+  margin: -6px 0 16px;
 }
 
-.social-btn {
+.confirmation-panel {
+  align-items: flex-start;
+  background: #eef6ff;
+  border: 1px solid #bfdbfe;
   border-radius: 12px;
-  font-weight: 850;
-  height: 48px;
-  width: 100%;
+  color: #17324d;
+  display: flex;
+  gap: 14px;
+  margin-top: 22px;
+  padding: 16px;
 
-  i {
-    margin-right: 8px;
+  mat-icon {
+    color: #0f62cf;
+    flex: 0 0 auto;
+    margin-top: 2px;
+  }
+
+  strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 850;
+    line-height: 1.3;
+  }
+
+  p {
+    color: #3f5871;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.45;
+    margin: 5px 0 10px;
+    overflow-wrap: anywhere;
+  }
+
+  button {
+    color: #0f62cf;
+    font-weight: 850;
+    padding-inline: 0;
   }
 }
 
@@ -228,50 +198,28 @@
 }
 
 @media (max-width: 720px) {
-  .login-header {
+  .register-header {
     padding: 0 22px;
   }
 
-  .store-button {
+  .back-link {
     font-size: 15px;
   }
 
-  .login-main {
+  .register-main {
     padding: 46px 18px;
   }
 
-  .login-intro h1 {
+  .register-intro h1 {
     font-size: 30px;
   }
 
-  .login-intro p {
+  .register-intro p {
     font-size: 17px;
   }
 
-  .role-toggle {
-    margin-top: 30px;
-
-    mat-button-toggle {
-      font-size: 15px;
-    }
-  }
-
-  .login-card {
+  .register-card {
     border-radius: 18px;
     padding: 22px;
-  }
-
-  .form-options {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
-  }
-}
-
-@media (max-width: 420px) {
-  .role-toggle {
-    mat-icon {
-      display: none;
-    }
   }
 }

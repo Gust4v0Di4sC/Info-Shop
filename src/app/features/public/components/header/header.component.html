@@ -5,7 +5,7 @@
 
   <div class="main-header">
     <div class="brand">
-      <img src="/Logo1.svg" alt="InfoShop Logo" class="logo-image">
+      <img src="/Logo3.svg" alt="InfoShop Logo" class="logo-image">
     </div>
 
     <nav class="navigation" aria-label="Navegacao principal">
@@ -26,10 +26,10 @@
       </label>
 
       <div class="user-actions">
-        <button class="icon-btn" (click)="goToHome()" type="button" aria-label="Entrar">
+        <button class="icon-btn" (click)="goToProfile()" type="button" aria-label="Perfil">
           <i class="far fa-user"></i>
         </button>
-        <button class="icon-btn cart-btn" type="button" aria-label="Carrinho">
+        <button class="icon-btn cart-btn" (click)="goToCart()" type="button" aria-label="Carrinho">
           <i class="fas fa-shopping-bag cart-top-icon"></i>
           @if (cartCount > 0) {
             <span class="cart-badge">{{ cartCount }}</span>

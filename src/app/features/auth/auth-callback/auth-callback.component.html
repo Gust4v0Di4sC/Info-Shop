@@ -1,1 +1,12 @@
-<p>auth-callback works!</p>
+<main class="callback-page">
+  <section class="callback-card">
+    @if (errorMessage) {
+      <h1>Login nao concluido</h1>
+      <p>{{ errorMessage }}</p>
+      <a routerLink="/home">Voltar para login</a>
+    } @else {
+      <h1>Processando login</h1>
+      <p>Aguarde enquanto validamos sua sessao.</p>
+    }
+  </section>
+</main>

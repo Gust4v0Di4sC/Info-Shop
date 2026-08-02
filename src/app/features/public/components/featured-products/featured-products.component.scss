@@ -59,6 +59,17 @@ h1 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.products-state {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #667085;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+  padding: 22px;
+}
+
 .product-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -76,7 +87,9 @@ h1 {
 .product-media {
   aspect-ratio: 4 / 3;
   background: #eef2f7;
+  display: block;
   position: relative;
+  text-decoration: none;
 
   img {
     display: block;
@@ -109,6 +122,20 @@ h2 {
   font-weight: 850;
   line-height: 1.35;
   margin: 0 0 6px;
+}
+
+.product-title {
+  color: #202833;
+  display: block;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.35;
+  margin: 0 0 6px;
+  text-decoration: none;
+
+  &:hover {
+    color: #0f62cf;
+  }
 }
 
 .product-description,

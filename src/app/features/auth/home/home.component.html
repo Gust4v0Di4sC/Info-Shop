@@ -1,10 +1,10 @@
 <div class="login-page">
   <header class="login-header">
     <button class="logo-button" type="button" (click)="goToHome()" aria-label="Voltar para a loja">
-      <img src="/Logo1.svg" alt="InfoShop Logo">
+      <img src="/Logo3.svg" alt="InfoShop Logo">
     </button>
 
-    <button mat-button class="back-link" type="button" (click)="goToHome()">
+    <button mat-stroked-button class="store-button" type="button" (click)="goToHome()">
       <mat-icon>arrow_back</mat-icon>
       Voltar a loja
     </button>
@@ -68,9 +68,7 @@
           </mat-form-field>
 
           <div class="form-options">
-            <mat-checkbox [checked]="rememberMe" (change)="rememberMe = $event.checked">
-              Manter conectado
-            </mat-checkbox>
+            <span class="session-note">Sessao encerrada ao fechar o navegador.</span>
             <button class="text-link" type="button">Esqueci minha senha</button>
           </div>
 
@@ -83,17 +81,21 @@
           </button>
         </form>
 
-        <div class="create-account">
-          Ainda nao tem conta?
-          <button class="text-link" type="button">Criar conta gratis</button>
-        </div>
+        @if (!isAdminView) {
+          <div class="create-account">
+            Ainda nao tem conta?
+            <button class="text-link" type="button" (click)="goToRegister()">Criar conta gratis</button>
+          </div>
 
-        <div class="social-login">
-          <button mat-stroked-button class="social-btn google-btn" type="button" (click)="loginWithGoogle()">
-            <i class="fa-brands fa-google"></i>
-            Entrar com Google
-          </button>
-        </div>
+          <div class="social-login">
+            <button mat-stroked-button class="social-btn google-btn" type="button" (click)="loginWithGoogle()">
+              <i class="fa-brands fa-google"></i>
+              Entrar com Google
+            </button>
+          </div>
+        } @else {
+          <p class="admin-access-note">Acesso administrativo permitido apenas para usuarios autorizados.</p>
+        }
       </mat-card-content>
     </mat-card>
 

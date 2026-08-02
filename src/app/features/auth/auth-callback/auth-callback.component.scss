@@ -1,0 +1,47 @@
+.callback-page {
+  align-items: center;
+  background: #f3f6f9;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.callback-card {
+  background: #ffffff;
+  border: 1px solid #dbe2ec;
+  border-radius: 16px;
+  box-shadow: 0 24px 55px rgba(15, 23, 42, 0.12);
+  max-width: 420px;
+  padding: 28px;
+  text-align: center;
+  width: 100%;
+}
+
+h1 {
+  color: #111827;
+  font-size: 26px;
+  font-weight: 850;
+  margin: 0;
+}
+
+p {
+  color: #5d6675;
+  font-size: 16px;
+  line-height: 1.45;
+  margin: 14px 0 0;
+}
+
+a {
+  align-items: center;
+  background: #0f62cf;
+  border-radius: 8px;
+  color: #ffffff;
+  display: inline-flex;
+  font-weight: 850;
+  height: 42px;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 0 18px;
+  text-decoration: none;
+}

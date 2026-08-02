@@ -9,6 +9,57 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admins: {
+        Row: {
+          id: string;
+          user_id: string;
+          role: string;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          role?: string;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          role?: string;
+          active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      cart_items: {
+        Row: {
+          id: string;
+          user_id: string;
+          product_id: string;
+          quantity: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          product_id: string;
+          quantity?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          product_id?: string;
+          quantity?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       clients: {
         Row: {
           id: string;
@@ -19,6 +70,8 @@ export type Database = {
           cnpj: string | null;
           imageUrl: string | null;
           phone: number | null;
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -29,6 +82,8 @@ export type Database = {
           cnpj?: string | null;
           imageUrl?: string | null;
           phone?: number | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -39,6 +94,8 @@ export type Database = {
           cnpj?: string | null;
           imageUrl?: string | null;
           phone?: number | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -53,6 +110,8 @@ export type Database = {
           product: string;
           imageProd: string | null;
           imageClient: string | null;
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -64,6 +123,8 @@ export type Database = {
           product: string;
           imageProd?: string | null;
           imageClient?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -75,6 +136,8 @@ export type Database = {
           product?: string;
           imageProd?: string | null;
           imageClient?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -87,6 +150,8 @@ export type Database = {
           cost: number;
           description: string;
           imageUrl: string | null;
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -96,6 +161,8 @@ export type Database = {
           cost: number;
           description: string;
           imageUrl?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -105,6 +172,44 @@ export type Database = {
           cost?: number;
           description?: string;
           imageUrl?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      users: {
+        Row: {
+          id: string;
+          email: string;
+          full_name: string | null;
+          phone: string | null;
+          document: string | null;
+          address: string | null;
+          avatar_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          email: string;
+          full_name?: string | null;
+          phone?: string | null;
+          document?: string | null;
+          address?: string | null;
+          avatar_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          full_name?: string | null;
+          phone?: string | null;
+          document?: string | null;
+          address?: string | null;
+          avatar_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };

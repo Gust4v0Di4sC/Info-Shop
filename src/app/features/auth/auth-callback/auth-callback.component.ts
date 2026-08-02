@@ -1,26 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { supabase } from '@app/core/supabase/supabase.client';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '@app/core/auth/auth.service';
 
 @Component({
   selector: 'app-auth-callback',
-  template: '<p>🔐 Processando login...</p>'
+  standalone: true,
+  imports: [RouterLink],
+  templateUrl: './auth-callback.component.html',
+  styleUrl: './auth-callback.component.scss',
 })
 export class AuthCallbackComponent implements OnInit {
-  constructor(private router: Router) {}
+  errorMessage = '';
 
-  async ngOnInit() {
-    // Pega a sessão atual (o Supabase processa automaticamente o hash da URL)
-    const { data, error } = await supabase.auth.getSession();
+  constructor(private authService: AuthService) {}
 
-    if (error) {
-      console.error('❌ Erro ao obter sessão:', error);
-      return;
+  async ngOnInit(): Promise<void> {
+    try {
+      await this.authService.handleAuthCallback();
+    } catch (error: any) {
+      this.errorMessage = error?.message || 'Nao foi possivel concluir o login.';
     }
-
-    console.log('✅ Sessão recebida:', data.session);
-
-    // Redireciona para sua home ou dashboard
-    this.router.navigate(['/dash']);
   }
 }

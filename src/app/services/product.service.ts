@@ -37,6 +37,18 @@ export class ProductService {
     );
   }
 
+  getFeaturedProducts(limit = 4): Observable<Product[]> {
+    return from(
+      supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(limit)
+    ).pipe(
+      map(getSupabaseList)
+    );
+  }
+
   /**
    * Busca um produto por ID
    */

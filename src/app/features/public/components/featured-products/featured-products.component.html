@@ -11,31 +11,37 @@
       </button>
     </div>
 
-    <div class="products-grid">
-      @for (product of products; track product.name) {
+    @if (isLoading) {
+      <p class="products-state">Carregando produtos...</p>
+    } @else if (errorMessage) {
+      <p class="products-state">{{ errorMessage }}</p>
+    } @else if (products.length === 0) {
+      <p class="products-state">Nenhum produto cadastrado ainda.</p>
+    } @else {
+      <div class="products-grid">
+      @for (product of products; track product.id) {
         <article class="product-card">
-          <div class="product-media">
-            @if (product.badge) {
-              <span class="product-badge">{{ product.badge }}</span>
-            }
-            <img [src]="product.image" alt="{{ product.name }}">
-          </div>
+          <a class="product-media" [routerLink]="['/produto', product.id]">
+            <span class="product-badge">Destaque</span>
+            <img [src]="product.imageUrl || '/product1.png'" alt="{{ product.name }}">
+          </a>
 
           <div class="product-info">
-            <h2>{{ product.name }}</h2>
-            <p class="product-description">{{ product.description }}</p>
+            <a class="product-title" [routerLink]="['/produto', product.id]">{{ product.name }}</a>
+            <p class="product-description">{{ product.model || product.description }}</p>
             <p class="product-rating">
               <i class="fa fa-star"></i>
-              {{ product.rating }}
+              Produto selecionado
             </p>
-            <strong class="product-price">{{ product.price }}</strong>
-            <p class="installments">{{ product.installments }}</p>
-            <button (click)="addToCart($event)" class="product-cart" type="button">
+            <strong class="product-price">{{ product.price | brlCurrency }}</strong>
+            <p class="installments">Em ate 12x sem juros</p>
+            <button (click)="addToCart($event, product)" class="product-cart" type="button">
               Adicionar ao carrinho
             </button>
           </div>
         </article>
       }
-    </div>
+      </div>
+    }
   </div>
 </section>

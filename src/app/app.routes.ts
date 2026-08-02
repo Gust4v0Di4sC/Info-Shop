@@ -1,12 +1,11 @@
 import { Routes } from '@angular/router';
-import { AuthGuard, GuestGuard } from '@app/core/auth/auth.guard';
+import { AdminGuard, AuthGuard, GuestGuard } from '@app/core/auth/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
     loadComponent: () => import('@app/features/public/landing-page/landing-page.component'),
-    canActivate: [GuestGuard],
   },
   {
     path: 'home',
@@ -15,12 +14,49 @@ export const routes: Routes = [
     canActivate: [GuestGuard],
   },
   {
+    path: 'registro',
+    loadComponent: () => import('@app/features/auth/register/register.component').then(
+      m => m.RegisterComponent,
+    ),
+    data: { animation: 'register' },
+    canActivate: [GuestGuard],
+  },
+  {
+    path: 'auth/callback',
+    loadComponent: () => import('@app/features/auth/auth-callback/auth-callback.component').then(
+      m => m.AuthCallbackComponent,
+    ),
+    data: { animation: 'auth-callback' },
+  },
+  {
+    path: 'produto/:id',
+    loadComponent: () => import('@app/features/public/product-detail/product-detail.component').then(
+      m => m.ProductDetailComponent,
+    ),
+    data: { animation: 'product-detail' },
+  },
+  {
+    path: 'carrinho',
+    loadComponent: () => import('@app/features/public/cart-page/cart-page.component').then(
+      m => m.CartPageComponent,
+    ),
+    data: { animation: 'cart' },
+  },
+  {
+    path: 'perfil',
+    loadComponent: () => import('@app/features/public/customer-profile/customer-profile.component').then(
+      m => m.CustomerProfileComponent,
+    ),
+    data: { animation: 'profile' },
+    canActivate: [AuthGuard],
+  },
+  {
     path: '',
     loadComponent: () =>
       import('@app/features/admin/admin-shell/admin-shell.component').then(
         m => m.AdminShellComponent,
       ),
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, AdminGuard],
     children: [
       {
         path: 'dash',
