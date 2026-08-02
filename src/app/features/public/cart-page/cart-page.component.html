@@ -1,0 +1,88 @@
+<app-header></app-header>
+
+<main class="cart-page">
+  <section class="cart-shell">
+    <div class="cart-head">
+      <div>
+        <p class="eyebrow">Carrinho</p>
+        <h1>Sua compra</h1>
+      </div>
+      <a routerLink="/" class="secondary-action">
+        <i class="fas fa-arrow-left"></i>
+        Continuar comprando
+      </a>
+    </div>
+
+    @if (isLoading) {
+      <div class="page-state">Carregando carrinho...</div>
+    } @else if (errorMessage) {
+      <div class="page-state error-state">
+        <p>{{ errorMessage }}</p>
+        <a routerLink="/home" class="primary-link">Entrar na conta</a>
+      </div>
+    } @else if (items.length === 0) {
+      <div class="page-state">
+        <p>Seu carrinho esta vazio.</p>
+        <a routerLink="/" class="primary-link">Ver produtos</a>
+      </div>
+    } @else {
+      <div class="cart-content">
+        <div class="items-list">
+          @for (item of items; track item.id) {
+            <article class="cart-item">
+              <a [routerLink]="['/produto', item.product_id]" class="item-media">
+                <img [src]="item.product?.imageUrl || '/product1.png'" [alt]="item.product?.name || 'Produto'">
+              </a>
+
+              <div class="item-info">
+                <a [routerLink]="['/produto', item.product_id]" class="item-title">
+                  {{ item.product?.name || 'Produto indisponivel' }}
+                </a>
+                <p>{{ item.product?.model || item.product?.description || 'Detalhes indisponiveis' }}</p>
+                <strong>{{ item.product?.price | brlCurrency }}</strong>
+              </div>
+
+              <div class="quantity-control">
+                <button type="button" (click)="changeQuantity(item, item.quantity - 1)" aria-label="Diminuir quantidade">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <span>{{ item.quantity }}</span>
+                <button type="button" (click)="changeQuantity(item, item.quantity + 1)" aria-label="Aumentar quantidade">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+
+              <button class="remove-btn" type="button" (click)="removeItem(item)" aria-label="Remover item">
+                <i class="fas fa-trash"></i>
+              </button>
+            </article>
+          }
+        </div>
+
+        <aside class="summary">
+          <h2>Resumo</h2>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <strong>{{ subtotal | brlCurrency }}</strong>
+          </div>
+          <div class="summary-row">
+            <span>Frete</span>
+            <strong>Calcular no atendimento</strong>
+          </div>
+          <button class="checkout-btn" type="button">
+            Solicitar fechamento
+          </button>
+          <button class="clear-btn" type="button" (click)="clearCart()">
+            Limpar carrinho
+          </button>
+
+          @if (feedbackMessage) {
+            <p class="feedback">{{ feedbackMessage }}</p>
+          }
+        </aside>
+      </div>
+    }
+  </section>
+</main>
+
+<app-footer></app-footer>

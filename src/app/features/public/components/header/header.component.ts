@@ -18,9 +18,18 @@ export class HeaderComponent implements OnInit {
     this.cartService.cartCount$.subscribe(count => {
       this.cartCount = count;
     });
+    this.cartService.refreshCartCount().subscribe();
   }
   
   goToHome() {
     this.router.navigate(['/home']); // rota configurada no app-routing.module.ts
+  }
+
+  goToProfile() {
+    this.router.navigate(['/perfil']);
+  }
+
+  goToCart() {
+    this.router.navigate(['/carrinho']);
   }
 }

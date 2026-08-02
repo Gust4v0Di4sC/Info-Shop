@@ -1,0 +1,55 @@
+<app-header></app-header>
+
+<main class="product-page">
+  @if (isLoading) {
+    <section class="page-state">Carregando produto...</section>
+  } @else if (errorMessage && !product) {
+    <section class="page-state error-state">
+      <p>{{ errorMessage }}</p>
+      <a routerLink="/" class="secondary-action">Voltar para a loja</a>
+    </section>
+  } @else if (product) {
+    <section class="product-detail">
+      <div class="product-gallery">
+        <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name">
+      </div>
+
+      <div class="product-summary">
+        <p class="eyebrow">Produto InfoShop</p>
+        <h1>{{ product.name }}</h1>
+        <p class="model">{{ product.model || 'Modelo sob consulta' }}</p>
+        <p class="description">{{ product.description }}</p>
+
+        <div class="price-row">
+          <strong>{{ product.price | brlCurrency }}</strong>
+          <span>12x sem juros</span>
+        </div>
+
+        <div class="quantity-row" aria-label="Quantidade">
+          <button type="button" (click)="decreaseQuantity()" aria-label="Diminuir quantidade">
+            <i class="fas fa-minus"></i>
+          </button>
+          <span>{{ quantity }}</span>
+          <button type="button" (click)="increaseQuantity()" aria-label="Aumentar quantidade">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+
+        <button class="primary-action" type="button" (click)="addToCart()">
+          <i class="fas fa-shopping-bag"></i>
+          Adicionar ao carrinho
+        </button>
+
+        @if (feedbackMessage) {
+          <p class="feedback">{{ feedbackMessage }}</p>
+        }
+
+        @if (errorMessage) {
+          <p class="feedback error-text">{{ errorMessage }}</p>
+        }
+      </div>
+    </section>
+  }
+</main>
+
+<app-footer></app-footer>
