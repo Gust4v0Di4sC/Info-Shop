@@ -11,11 +11,20 @@ import { AuthService } from '@app/core/auth/auth.service';
 })
 export class AuthCallbackComponent implements OnInit {
   errorMessage = '';
+  actionTitle = 'Processando login';
+  actionDescription = 'Aguarde enquanto validamos sua sessao.';
 
   constructor(private authService: AuthService) {}
 
   async ngOnInit(): Promise<void> {
     try {
+      const type = new URL(window.location.href).searchParams.get('type');
+
+      if (type === 'recovery') {
+        this.actionTitle = 'Validando recuperacao';
+        this.actionDescription = 'Aguarde enquanto preparamos a redefinicao de senha.';
+      }
+
       await this.authService.handleAuthCallback();
     } catch (error: any) {
       this.errorMessage = error?.message || 'Nao foi possivel concluir o login.';

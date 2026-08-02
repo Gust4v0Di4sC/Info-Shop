@@ -45,6 +45,10 @@ export default class HomeComponent implements OnInit {
     this.router.navigate(['/registro']);
   }
 
+  goToPasswordRecovery(): void {
+    this.router.navigate(['/recuperar-senha']);
+  }
+
   async loginWithGoogle() {
     if (this.isAdminView) {
       return;

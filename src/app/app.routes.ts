@@ -22,6 +22,22 @@ export const routes: Routes = [
     canActivate: [GuestGuard],
   },
   {
+    path: 'recuperar-senha',
+    loadComponent: () => import('@app/features/auth/password-recovery/password-recovery.component').then(
+      m => m.PasswordRecoveryComponent,
+    ),
+    data: { animation: 'password-recovery' },
+    canActivate: [GuestGuard],
+  },
+  {
+    path: 'nova-senha',
+    loadComponent: () => import('@app/features/auth/new-password/new-password.component').then(
+      m => m.NewPasswordComponent,
+    ),
+    data: { animation: 'new-password' },
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'auth/callback',
     loadComponent: () => import('@app/features/auth/auth-callback/auth-callback.component').then(
       m => m.AuthCallbackComponent,

@@ -5,8 +5,8 @@
       <p>{{ errorMessage }}</p>
       <a routerLink="/home">Voltar para login</a>
     } @else {
-      <h1>Processando login</h1>
-      <p>Aguarde enquanto validamos sua sessao.</p>
+      <h1>{{ actionTitle }}</h1>
+      <p>{{ actionDescription }}</p>
     }
   </section>
 </main>
