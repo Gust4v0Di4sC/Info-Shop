@@ -40,10 +40,12 @@ export class FeaturedProductsComponent implements OnInit {
   addToCart(event: MouseEvent, product: Product) {
     event.preventDefault();
     event.stopPropagation();
-    this.animateToCart(event);
     this.cartService.addProduct(product.id).subscribe({
+      next: () => {
+        this.animateToCart(event);
+      },
       error: () => {
-        this.cartService.incrementCart();
+        this.errorMessage = 'Entre na sua conta para adicionar produtos ao carrinho.';
       },
     });
   }

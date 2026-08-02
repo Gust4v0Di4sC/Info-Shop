@@ -19,7 +19,7 @@ export class CartServiceService {
     return from(this.loadCartItems());
   }
 
-  addProduct(productId: string, quantity = 1): Observable<void> {
+  addProduct(productId: string | number, quantity = 1): Observable<void> {
     return from(this.addProductToCart(productId, quantity));
   }
 
@@ -104,23 +104,38 @@ export class CartServiceService {
       .in('id', productIds);
 
     const products = getSupabaseList(productsResult);
-    const productsById = new Map(products.map(product => [product.id, product]));
+    const productsById = new Map(products.map(product => [String(product.id), product]));
 
     this.cartCount.next(items.reduce((sum, item) => sum + item.quantity, 0));
 
     return items.map(item => ({
       ...item,
-      product: productsById.get(item.product_id) || null,
+      product: productsById.get(String(item.product_id)) || null,
     }));
   }
 
-  private async addProductToCart(productId: string, quantity: number): Promise<void> {
+  private async addProductToCart(productId: string | number, quantity: number): Promise<void> {
     const userId = await this.getUserId();
+    const normalizedProductId = String(productId);
+    const productResult = await supabase
+      .from('products')
+      .select('id')
+      .eq('id', normalizedProductId)
+      .maybeSingle();
+
+    if (productResult.error) {
+      throw productResult.error;
+    }
+
+    if (!productResult.data) {
+      throw new Error('Produto nao encontrado para adicionar ao carrinho.');
+    }
+
     const existingResult = await supabase
       .from('cart_items')
       .select('*')
       .eq('user_id', userId)
-      .eq('product_id', String(productId))
+      .eq('product_id', normalizedProductId)
       .maybeSingle();
 
     if (existingResult.error) {
@@ -137,7 +152,7 @@ export class CartServiceService {
     } else {
       const insertResult = await supabase
         .from('cart_items')
-        .insert({ user_id: userId, product_id: String(productId), quantity });
+        .insert({ user_id: userId, product_id: normalizedProductId, quantity });
 
       throwSupabaseError(insertResult);
     }
