@@ -7,10 +7,16 @@
         <p class="eyebrow">Minha conta</p>
         <h1>Perfil do cliente</h1>
       </div>
-      <a routerLink="/carrinho" class="secondary-action">
-        <i class="fas fa-shopping-bag"></i>
-        Ver carrinho
-      </a>
+      <div class="head-actions">
+        <a routerLink="/carrinho" class="secondary-action">
+          <i class="fas fa-shopping-bag"></i>
+          Ver carrinho
+        </a>
+        <button class="logout-action" type="button" (click)="logout()" [disabled]="isLoggingOut">
+          <i class="fas fa-right-from-bracket"></i>
+          {{ isLoggingOut ? 'Saindo...' : 'Sair' }}
+        </button>
+      </div>
     </div>
 
     @if (isLoading) {

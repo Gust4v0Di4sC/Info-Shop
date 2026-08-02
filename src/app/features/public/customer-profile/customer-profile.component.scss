@@ -18,6 +18,14 @@
   margin-bottom: 28px;
 }
 
+.head-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
 .eyebrow {
   color: #0f62cf;
   font-size: 12px;
@@ -144,6 +152,7 @@ textarea {
 
 .primary-action,
 .secondary-action,
+.logout-action,
 .primary-link {
   align-items: center;
   border-radius: 8px;
@@ -177,6 +186,21 @@ textarea {
   gap: 10px;
   height: 42px;
   padding: 0 16px;
+}
+
+.logout-action {
+  background: #fff7f6;
+  border: 1px solid #f3c4bd;
+  color: #b42318;
+  cursor: pointer;
+  gap: 10px;
+  height: 42px;
+  padding: 0 16px;
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
 }
 
 .primary-link {
@@ -215,6 +239,10 @@ textarea {
   .profile-head {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .head-actions {
+    justify-content: flex-start;
   }
 
   .profile-form {

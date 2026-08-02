@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '@app/core/auth/auth.service';
 import { HeaderComponent } from '@app/features/public/components/header/header.component';
 import { FooterComponent } from '@app/features/public/components/footer/footer.component';
 import { CustomerProfileService } from '@app/services/customer-profile.service';
@@ -15,12 +16,14 @@ export class CustomerProfileComponent implements OnInit {
   profileForm: FormGroup;
   isLoading = true;
   isSaving = false;
+  isLoggingOut = false;
   isAdmin = false;
   errorMessage = '';
   feedbackMessage = '';
 
   constructor(
     private fb: FormBuilder,
+    private authService: AuthService,
     private customerProfileService: CustomerProfileService,
   ) {
     this.profileForm = this.fb.group({
@@ -79,6 +82,16 @@ export class CustomerProfileComponent implements OnInit {
         this.isSaving = false;
       },
     });
+  }
+
+  async logout(): Promise<void> {
+    if (this.isLoggingOut) {
+      return;
+    }
+
+    this.isLoggingOut = true;
+    await this.authService.logout();
+    this.isLoggingOut = false;
   }
 
   private loadAdminStatus(): void {
