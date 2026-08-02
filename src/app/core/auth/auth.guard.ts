@@ -1,58 +1,80 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
-import { AuthService } from './auth.service';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { supabase } from '@app/core/supabase/supabase.client';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private router: Router) {}
 
   canActivate(): Observable<boolean> {
-    console.log('🛡️ AuthGuard.canActivate chamado para:', window.location.href);
-    
-    return this.authService.currentUser$.pipe(
-      take(1),
-      map(user => {
-        if (user) {
-          console.log('✅ AuthGuard: Usuário autenticado:', user.email);
+    return from(supabase.auth.getUser()).pipe(
+      map(({ data, error }) => {
+        if (!error && data.user) {
           return true;
-        } else {
-          console.log('❌ AuthGuard: Usuário não autenticado, redirecionando para /home');
-          this.router.navigate(['/home']);
-          return false;
         }
-      })
+
+        this.router.navigate(['/home']);
+        return false;
+      }),
     );
   }
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GuestGuard implements CanActivate {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private router: Router) {}
 
-  canActivate(): Observable<boolean> {
-    return this.authService.currentUser$.pipe(
-      take(1),
-      map(user => {
-        if (!user) {
-          return true;
-        } else {
-          console.log('Usuário já autenticado, redirecionando para dashboard');
-          this.router.navigate(['/dash']);
-          return false;
-        }
-      })
-    );
+  async canActivate(): Promise<boolean> {
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data.user) {
+      return true;
+    }
+
+    const adminResult = await supabase
+      .from('admins')
+      .select('id')
+      .eq('user_id', data.user.id)
+      .eq('active', true)
+      .maybeSingle();
+
+    await this.router.navigate([adminResult.data ? '/dash' : '/perfil']);
+    return false;
+  }
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AdminGuard implements CanActivate {
+  constructor(private router: Router) {}
+
+  async canActivate(): Promise<boolean> {
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data.user) {
+      await this.router.navigate(['/home']);
+      return false;
+    }
+
+    const adminResult = await supabase
+      .from('admins')
+      .select('id')
+      .eq('user_id', data.user.id)
+      .eq('active', true)
+      .maybeSingle();
+
+    if (adminResult.error || !adminResult.data) {
+      await this.router.navigate(['/perfil']);
+      return false;
+    }
+
+    return true;
   }
 }

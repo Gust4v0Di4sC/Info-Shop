@@ -1,0 +1,115 @@
+<div class="register-page">
+  <header class="register-header">
+    <button class="logo-button" type="button" (click)="goToStore()" aria-label="Voltar para a loja">
+      <img src="/Logo1.svg" alt="InfoShop Logo">
+    </button>
+
+    <button mat-button class="back-link" type="button" (click)="goToLogin()">
+      <mat-icon>arrow_back</mat-icon>
+      Ja tenho conta
+    </button>
+  </header>
+
+  <main class="register-main">
+    <section class="register-intro">
+      <h1>Criar conta InfoShop</h1>
+      <p>Cadastre-se para salvar seu perfil, montar carrinho e acompanhar seus pedidos.</p>
+    </section>
+
+    <mat-card class="register-card">
+      <mat-card-content>
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+          <mat-form-field appearance="outline" class="full-width register-field">
+            <mat-label>Nome completo</mat-label>
+            <mat-icon matPrefix>person_outline</mat-icon>
+            <input matInput formControlName="fullName" type="text" placeholder="Seu nome">
+            @if (registerForm.get('fullName')?.hasError('required')) {
+              <mat-error>Nome e obrigatorio</mat-error>
+            }
+            @if (registerForm.get('fullName')?.hasError('minlength')) {
+              <mat-error>Informe pelo menos 3 caracteres</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width register-field">
+            <mat-label>E-mail</mat-label>
+            <mat-icon matPrefix>mail_outline</mat-icon>
+            <input matInput formControlName="email" type="email" placeholder="voce@email.com">
+            @if (registerForm.get('email')?.hasError('required')) {
+              <mat-error>Email e obrigatorio</mat-error>
+            }
+            @if (registerForm.get('email')?.hasError('email')) {
+              <mat-error>Email invalido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width register-field">
+            <mat-label>Senha</mat-label>
+            <mat-icon matPrefix>lock_outline</mat-icon>
+            <input
+              matInput
+              formControlName="password"
+              [type]="hidePassword ? 'password' : 'text'"
+              placeholder="Minimo de 6 caracteres">
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="hidePassword = !hidePassword"
+              type="button"
+              aria-label="Alternar visibilidade da senha">
+              <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+            @if (registerForm.get('password')?.hasError('required')) {
+              <mat-error>Senha e obrigatoria</mat-error>
+            }
+            @if (registerForm.get('password')?.hasError('minlength')) {
+              <mat-error>Use pelo menos 6 caracteres</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width register-field">
+            <mat-label>Confirmar senha</mat-label>
+            <mat-icon matPrefix>lock_reset</mat-icon>
+            <input
+              matInput
+              formControlName="confirmPassword"
+              [type]="hideConfirmPassword ? 'password' : 'text'"
+              placeholder="Repita sua senha">
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="hideConfirmPassword = !hideConfirmPassword"
+              type="button"
+              aria-label="Alternar visibilidade da confirmacao">
+              <mat-icon>{{ hideConfirmPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+            @if (registerForm.get('confirmPassword')?.hasError('required')) {
+              <mat-error>Confirme sua senha</mat-error>
+            }
+          </mat-form-field>
+
+          @if (registerForm.get('confirmPassword')?.touched && !passwordsMatch) {
+            <p class="form-error">As senhas nao conferem.</p>
+          }
+
+          <button
+            mat-flat-button
+            class="full-width register-button"
+            type="submit"
+            [disabled]="registerForm.invalid || !passwordsMatch || isLoading">
+            {{ isLoading ? 'Criando conta...' : 'Criar conta' }}
+          </button>
+        </form>
+
+        <div class="login-account">
+          Ja tem conta?
+          <button class="text-link" type="button" (click)="goToLogin()">Entrar</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <p class="terms">
+      Ao criar sua conta, voce concorda com os termos de uso e a politica de privacidade da InfoShop.
+    </p>
+  </main>
+</div>

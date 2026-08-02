@@ -37,6 +37,10 @@ export default class HomeComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  goToRegister() {
+    this.router.navigate(['/registro']);
+  }
+
   async loginWithGoogle() {
     this.isLoading = true;
     try {
@@ -60,7 +64,7 @@ export default class HomeComponent implements OnInit {
       this.authService.login(email, password).subscribe({
         next: success => {
           if (success) {
-            this.router.navigate(['/dash']);
+            this.authService.redirectAfterSignIn();
           } else {
             this.snackBar.open('Email ou senha invalidos', 'Fechar', {
               duration: 3000,
