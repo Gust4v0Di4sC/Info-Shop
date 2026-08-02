@@ -4,6 +4,7 @@ import { Database } from './database.types';
 
 const supabaseUrl = environment.supabaseUrl || 'http://localhost:54321';
 const supabaseAnonKey = environment.supabaseAnonKey || 'local-development-key';
+const browserSessionStorage = typeof window !== 'undefined' ? window.sessionStorage : undefined;
 
 export const supabase: SupabaseClient<Database> = createClient<Database>(
   supabaseUrl,
@@ -14,6 +15,7 @@ export const supabase: SupabaseClient<Database> = createClient<Database>(
       autoRefreshToken: true,
       detectSessionInUrl: false,
       flowType: 'pkce',
+      ...(browserSessionStorage ? { storage: browserSessionStorage } : {}),
     },
   },
 );
