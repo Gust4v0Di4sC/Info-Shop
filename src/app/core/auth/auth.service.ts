@@ -216,14 +216,26 @@ export class AuthService {
       return;
     }
 
-    const { data } = await supabase
+    const isAdmin = await this.isUserAdmin(currentUserId);
+
+    await this.router.navigate([isAdmin ? '/dash' : '/perfil']);
+  }
+
+  async isUserAdmin(userId?: string): Promise<boolean> {
+    const currentUserId = userId || (await supabase.auth.getUser()).data.user?.id;
+
+    if (!currentUserId) {
+      return false;
+    }
+
+    const { data, error } = await supabase
       .from('admins')
       .select('id')
       .eq('user_id', currentUserId)
       .eq('active', true)
       .maybeSingle();
 
-    await this.router.navigate([data ? '/dash' : '/perfil']);
+    return !error && Boolean(data);
   }
 
   private async finishSignIn(user: SupabaseUser): Promise<void> {

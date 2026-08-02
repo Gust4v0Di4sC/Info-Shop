@@ -29,10 +29,14 @@
   }
 }
 
-.back-link {
+.store-button {
+  border-color: #cbd5e1;
+  border-radius: 12px;
   color: #111827;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 850;
+  height: 46px;
+  padding: 0 18px;
 
   mat-icon {
     margin-right: 6px;
@@ -147,8 +151,8 @@
   margin: 4px 0 22px;
 }
 
-mat-checkbox {
-  color: #111827;
+.session-note {
+  color: #5d6675;
   font-size: 16px;
   font-weight: 500;
 }
@@ -189,6 +193,19 @@ mat-checkbox {
   margin-top: 18px;
 }
 
+.admin-access-note {
+  background: #f8fafc;
+  border: 1px solid #dbe2ec;
+  border-radius: 12px;
+  color: #475467;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.45;
+  margin: 24px 0 0;
+  padding: 14px 16px;
+  text-align: center;
+}
+
 .social-btn {
   border-radius: 12px;
   font-weight: 850;
@@ -215,7 +232,7 @@ mat-checkbox {
     padding: 0 22px;
   }
 
-  .back-link {
+  .store-button {
     font-size: 15px;
   }
 
