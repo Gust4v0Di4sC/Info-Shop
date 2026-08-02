@@ -48,6 +48,7 @@ export const routes: Routes = [
       m => m.CustomerProfileComponent,
     ),
     data: { animation: 'profile' },
+    canActivate: [AuthGuard],
   },
   {
     path: '',
