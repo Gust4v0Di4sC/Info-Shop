@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { User as SupabaseUser } from '@supabase/supabase-js';
+import { EmailOtpType, User as SupabaseUser } from '@supabase/supabase-js';
 import { BehaviorSubject, catchError, from, map, of } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 
@@ -16,7 +16,7 @@ export class AuthService {
   }
 
   private async initializeAuth(): Promise<void> {
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         this.currentUserSubject.next(session.user);
 
@@ -25,17 +25,19 @@ export class AuthService {
           currentUrl === '/' ||
           currentUrl === '/home' ||
           currentUrl.includes('login') ||
-          currentUrl.includes('registro') ||
-          currentUrl.includes('auth/callback')
+          currentUrl.includes('registro')
         ) {
-          await this.ensurePublicUser(session.user);
-          await this.redirectAfterSignIn(session.user.id);
+          setTimeout(() => {
+            void this.finishSignIn(session.user);
+          });
         }
       }
 
       if (event === 'SIGNED_OUT') {
         this.currentUserSubject.next(null);
-        await this.router.navigate(['/home']);
+        setTimeout(() => {
+          void this.router.navigate(['/home']);
+        });
       }
     });
 
@@ -54,7 +56,7 @@ export class AuthService {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: this.getAuthCallbackUrl(),
         queryParams: {
           access_type: 'offline',
           prompt: 'select_account',
@@ -73,7 +75,7 @@ export class AuthService {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: this.getAuthCallbackUrl(),
           data: {
             full_name: fullName,
             name: fullName,
@@ -91,6 +93,26 @@ export class AuthService {
           session: data.session,
           needsEmailConfirmation: Boolean(data.user && !data.session),
         };
+      }),
+    );
+  }
+
+  resendConfirmation(email: string) {
+    return from(
+      supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: this.getAuthCallbackUrl(),
+        },
+      }),
+    ).pipe(
+      map(({ error }) => {
+        if (error) {
+          throw error;
+        }
+
+        return true;
       }),
     );
   }
@@ -131,12 +153,44 @@ export class AuthService {
 
   async handleAuthCallback(): Promise<void> {
     const url = new URL(window.location.href);
+    const callbackError = url.searchParams.get('error_description') ||
+      url.searchParams.get('error');
     const code = url.searchParams.get('code');
+    const tokenHash = url.searchParams.get('token_hash');
+    const type = url.searchParams.get('type') as EmailOtpType | null;
 
-    if (code) {
+    if (callbackError) {
+      throw new Error(callbackError);
+    }
+
+    if (tokenHash && type) {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: tokenHash,
+        type,
+      });
+
+      if (error) {
+        throw error;
+      }
+    } else if (code) {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
       if (error) {
         throw error;
+      }
+    } else {
+      const hashParams = new URLSearchParams(url.hash.replace(/^#/, ''));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
+
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (error) {
+          throw error;
+        }
       }
     }
 
@@ -151,8 +205,7 @@ export class AuthService {
     }
 
     this.currentUserSubject.next(data.session.user);
-    await this.ensurePublicUser(data.session.user);
-    await this.redirectAfterSignIn(data.session.user.id);
+    await this.finishSignIn(data.session.user);
   }
 
   async redirectAfterSignIn(userId?: string): Promise<void> {
@@ -171,6 +224,11 @@ export class AuthService {
       .maybeSingle();
 
     await this.router.navigate([data ? '/dash' : '/perfil']);
+  }
+
+  private async finishSignIn(user: SupabaseUser): Promise<void> {
+    await this.ensurePublicUser(user);
+    await this.redirectAfterSignIn(user.id);
   }
 
   private async ensurePublicUser(user: SupabaseUser): Promise<void> {
@@ -197,5 +255,9 @@ export class AuthService {
   private getMetadataValue(metadata: Record<string, unknown>, key: string): string | null {
     const value = metadata[key];
     return typeof value === 'string' && value.trim() ? value : null;
+  }
+
+  private getAuthCallbackUrl(): string {
+    return `${window.location.origin}/auth/callback`;
   }
 }

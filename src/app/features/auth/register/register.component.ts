@@ -16,6 +16,8 @@ export class RegisterComponent {
   hidePassword = true;
   hideConfirmPassword = true;
   isLoading = false;
+  isResendingConfirmation = false;
+  pendingConfirmationEmail = '';
 
   constructor(
     private fb: FormBuilder,
@@ -51,12 +53,12 @@ export class RegisterComponent {
     this.authService.register(email, password, fullName).subscribe({
       next: result => {
         if (result.needsEmailConfirmation) {
+          this.pendingConfirmationEmail = email;
           this.snackBar.open('Confira seu email para confirmar a conta.', 'Fechar', {
             duration: 6000,
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
           });
-          this.router.navigate(['/home']);
           return;
         }
 
@@ -72,6 +74,39 @@ export class RegisterComponent {
       },
       complete: () => {
         this.isLoading = false;
+      },
+    });
+  }
+
+  resendConfirmation(): void {
+    if (!this.pendingConfirmationEmail || this.isResendingConfirmation) {
+      return;
+    }
+
+    this.isResendingConfirmation = true;
+
+    this.authService.resendConfirmation(this.pendingConfirmationEmail).subscribe({
+      next: () => {
+        this.snackBar.open('Email de confirmacao reenviado.', 'Fechar', {
+          duration: 6000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
+      },
+      error: error => {
+        this.isResendingConfirmation = false;
+        this.snackBar.open(
+          error?.message || 'Nao foi possivel reenviar a confirmacao.',
+          'Fechar',
+          {
+            duration: 6000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+          },
+        );
+      },
+      complete: () => {
+        this.isResendingConfirmation = false;
       },
     });
   }

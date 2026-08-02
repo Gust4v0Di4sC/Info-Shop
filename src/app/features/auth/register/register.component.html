@@ -105,6 +105,23 @@
           Ja tem conta?
           <button class="text-link" type="button" (click)="goToLogin()">Entrar</button>
         </div>
+
+        @if (pendingConfirmationEmail) {
+          <div class="confirmation-panel">
+            <mat-icon>mark_email_unread</mat-icon>
+            <div>
+              <strong>Confirmacao enviada</strong>
+              <p>Enviamos o link para {{ pendingConfirmationEmail }}. Confira tambem spam ou lixo eletronico.</p>
+              <button
+                mat-button
+                type="button"
+                (click)="resendConfirmation()"
+                [disabled]="isResendingConfirmation">
+                {{ isResendingConfirmation ? 'Reenviando...' : 'Reenviar email' }}
+              </button>
+            </div>
+          </div>
+        }
       </mat-card-content>
     </mat-card>
 

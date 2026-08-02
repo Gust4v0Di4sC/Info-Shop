@@ -147,6 +147,46 @@
   margin: -6px 0 16px;
 }
 
+.confirmation-panel {
+  align-items: flex-start;
+  background: #eef6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  color: #17324d;
+  display: flex;
+  gap: 14px;
+  margin-top: 22px;
+  padding: 16px;
+
+  mat-icon {
+    color: #0f62cf;
+    flex: 0 0 auto;
+    margin-top: 2px;
+  }
+
+  strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 850;
+    line-height: 1.3;
+  }
+
+  p {
+    color: #3f5871;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.45;
+    margin: 5px 0 10px;
+    overflow-wrap: anywhere;
+  }
+
+  button {
+    color: #0f62cf;
+    font-weight: 850;
+    padding-inline: 0;
+  }
+}
+
 .terms {
   color: #5d6675;
   font-size: 16px;
