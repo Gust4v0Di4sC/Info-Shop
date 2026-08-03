@@ -68,11 +68,14 @@ export default class ProdutosComponent implements OnInit {
 
   openProductForm(product?: Product): void {
     const dialogRef = this.dialog.open(ProdutoFormComponent, {
-      width: '500px',
+      width: '760px',
+      maxWidth: '96vw',
+      maxHeight: '92vh',
+      autoFocus: false,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: product ? { product } : {},
-      panelClass: 'custom-modal',
+      panelClass: 'admin-form-dialog',
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -84,13 +87,16 @@ export default class ProdutosComponent implements OnInit {
 
   openEditForm(produto: Product): void {
     const dialogRef = this.dialog.open(ProdutoFormComponent, {
-      width: '500px',
+      width: '760px',
+      maxWidth: '96vw',
+      maxHeight: '92vh',
+      autoFocus: false,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: {
         product: produto,
       },
-      panelClass: 'custom-modal',
+      panelClass: 'admin-form-dialog',
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -98,6 +104,18 @@ export default class ProdutosComponent implements OnInit {
         this.loadProducts();
       }
     });
+  }
+
+  stockStatus(product: Product): string {
+    if (product.stock_quantity === 0) {
+      return 'Sem estoque';
+    }
+
+    if (product.stock_quantity <= product.stock_minimum) {
+      return 'Estoque baixo';
+    }
+
+    return 'Em estoque';
   }
 
   deleteProduct(id: string): void {

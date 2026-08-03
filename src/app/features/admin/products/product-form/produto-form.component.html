@@ -1,111 +1,111 @@
-<div class="form-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>{{ isEditMode ? 'edit' : 'add_circle'}}</mat-icon>
-        {{ isEditMode ? 'Editar Produto' : 'Novo Produto' }}
-      </mat-card-title>
-    </mat-card-header>
+<form class="admin-form" [formGroup]="productForm" (ngSubmit)="onSubmit()">
+  <header class="dialog-header">
+    <div class="title-icon">
+      <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+    </div>
+    <div>
+      <p class="eyebrow">Catalogo</p>
+      <h2>{{ isEditMode ? 'Editar produto' : 'Novo produto' }}</h2>
+      <span>{{ isEditMode ? 'Atualize dados, preco e estoque.' : 'Cadastre um item para venda na loja.' }}</span>
+    </div>
+  </header>
 
-    <mat-card-content>
-      <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-        <div class="image-upload-container">
-          <div class="image-upload"
-            [class.has-image]="imagePreview"
-            (click)="fileInput.click()">
-            <input #fileInput
-              type="file"
-              accept="image/*"
-              (change)="onFileSelected($event)"
-              style="display: none">
-            @if (!imagePreview) {
-              <mat-icon>upload</mat-icon>
-              <span>Upload da imagem</span>
-            }
-            @if (imagePreview) {
-              <img [src]="imagePreview" alt="Preview">
-            }
-          </div>
-        </div>
+  <mat-dialog-content class="dialog-content">
+    <section class="media-section" aria-label="Imagem do produto">
+      <button
+        class="image-upload"
+        type="button"
+        [class.has-image]="imagePreview"
+        (click)="fileInput.click()">
+        <input
+          #fileInput
+          type="file"
+          accept="image/*"
+          (change)="onFileSelected($event)">
+        @if (imagePreview) {
+          <img [src]="imagePreview" alt="Previa do produto">
+        } @else {
+          <mat-icon>add_photo_alternate</mat-icon>
+          <span>Adicionar imagem</span>
+        }
+      </button>
 
-        <div class="form-fields">
-          <mat-form-field appearance="outline">
-            <mat-label>Nome</mat-label>
-            <input matInput formControlName="name" placeholder="Nome do produto">
-            @if (productForm.get('name')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('name')}}
-              </mat-error>
-            }
-            <button type="button" mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+      <div class="media-copy">
+        <strong>Imagem do produto</strong>
+        <span>Use uma foto clara para melhorar a leitura no catalogo.</span>
+      </div>
+    </section>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Modelo</mat-label>
-            <input matInput formControlName="model" placeholder="Modelo">
-            @if (productForm.get('model')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('model')}}
-              </mat-error>
-            }
-            <button type="button" mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="wide">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="name" placeholder="Nome do produto">
+        @if (productForm.get('name')?.invalid) {
+          <mat-error>{{ getErrorMessage('name') }}</mat-error>
+        }
+      </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Preço</mat-label>
-            <input matInput type="number" formControlName="price" placeholder="Preço">
-            @if (productForm.get('price')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('price')}}
-              </mat-error>
-            }
-            <button type="button" mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Modelo</mat-label>
+        <input matInput formControlName="model" placeholder="Modelo">
+        @if (productForm.get('model')?.invalid) {
+          <mat-error>{{ getErrorMessage('model') }}</mat-error>
+        }
+      </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Custo</mat-label>
-            <input matInput type="number" formControlName="cost" placeholder="Custo">
-            @if (productForm.get('cost')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('cost')}}
-              </mat-error>
-            }
-            <button type="button" mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Preco</mat-label>
+        <input matInput type="number" formControlName="price" placeholder="0,00">
+        @if (productForm.get('price')?.invalid) {
+          <mat-error>{{ getErrorMessage('price') }}</mat-error>
+        }
+      </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Descrição</mat-label>
-            <input matInput formControlName="description" placeholder="Descrição">
-            @if (productForm.get('description')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('description')}}
-              </mat-error>
-            }
-            <button type="button" mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-        </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Custo</mat-label>
+        <input matInput type="number" formControlName="cost" placeholder="0,00">
+        @if (productForm.get('cost')?.invalid) {
+          <mat-error>{{ getErrorMessage('cost') }}</mat-error>
+        }
+      </mat-form-field>
 
-        <div class="form-actions">
-          <button class="edit-button" mat-raised-button color="primary" type="submit">
-            <mat-icon>add</mat-icon>
-            {{ isEditMode ? 'Editar Produto' : 'Inserir Produto' }}
-          </button>
-          <button class="cancel-button" mat-raised-button type="button" (click)="onCancel()">
-            <mat-icon>close</mat-icon>
-            Cancelar
-          </button>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</div>
+      <mat-form-field appearance="outline">
+        <mat-label>Estoque inicial</mat-label>
+        <input matInput type="number" formControlName="stock_quantity" placeholder="Quantidade">
+        @if (productForm.get('stock_quantity')?.invalid) {
+          <mat-error>{{ getErrorMessage('stock_quantity') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Estoque minimo</mat-label>
+        <input matInput type="number" formControlName="stock_minimum" placeholder="Minimo">
+        @if (productForm.get('stock_minimum')?.invalid) {
+          <mat-error>{{ getErrorMessage('stock_minimum') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="wide">
+        <mat-label>Descricao</mat-label>
+        <textarea matInput formControlName="description" placeholder="Resumo para exibicao no catalogo" rows="3"></textarea>
+        @if (productForm.get('description')?.invalid) {
+          <mat-error>{{ getErrorMessage('description') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="featured-option">
+      <mat-checkbox formControlName="is_featured">Exibir como destaque na landing page</mat-checkbox>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button class="secondary-action" mat-stroked-button type="button" (click)="onCancel()">
+      Cancelar
+    </button>
+    <button class="primary-action" mat-flat-button type="submit">
+      <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+      {{ isEditMode ? 'Salvar produto' : 'Inserir produto' }}
+    </button>
+  </mat-dialog-actions>
+</form>

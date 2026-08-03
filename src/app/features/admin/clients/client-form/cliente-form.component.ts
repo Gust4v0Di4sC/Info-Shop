@@ -141,7 +141,7 @@ export class ClienteFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.clientForm.valid) {
-      console.log('Formulário válido:', this.clientForm.value);
+      console.log('Formulario valido:', this.clientForm.value);
   
       if (this.selectedFile) {
         // Caso um arquivo tenha sido selecionado
@@ -170,11 +170,11 @@ export class ClienteFormComponent implements OnInit {
         this.saveClient(this.clientForm.get('imageUrl')?.value || null);
       }
     } else {
-      console.error('Formulário inválido:', this.clientForm.value);
+      console.error('Formulario invalido:', this.clientForm.value);
   
       // Marca os campos como "tocados" para exibir mensagens de erro no template
       this.markFormGroupTouched(this.clientForm);
-      this.showSnackbar('Formulário inválido. Preencha todos os campos obrigatórios.');
+      this.showSnackbar('Formulario invalido. Preencha todos os campos obrigatorios.');
     }
   } 
 
@@ -197,10 +197,10 @@ export class ClienteFormComponent implements OnInit {
       this.clientForm.get(controlName);
 
     if (control?.hasError('required')) {
-      return 'Campo obrigatório';
+      return 'Campo obrigatorio';
     }
     if (control?.hasError('email')) {
-      return 'Email inválido';
+      return 'Email invalido';
     }
     return '';
   }

@@ -1,42 +1,70 @@
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Catalogo</p>
+      <h1>Produtos</h1>
+      <span>Cadastre produtos que aparecem na landing e no fluxo de compra do cliente.</span>
+    </div>
 
-<div class="container">
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput placeholder="Buscar produto" [formControl]="searchControl" type="text">
+      </mat-form-field>
 
-  <mat-toolbar color="secondary" class="toolbar">
-    <mat-form-field appearance="outline" class="search-field">
-      <input  matInput
-        placeholder="Buscar Produto"
-        [formControl]="searchControl"
-        type="text">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
+      <button mat-flat-button class="primary-action" type="button" (click)="openProductForm()">
+        <mat-icon>add</mat-icon>
+        Novo produto
+      </button>
+    </div>
+  </header>
 
-    <button mat-raised-button color="accent" class="new-product-btn" (click)="openProductForm()">
-      <mat-icon>add</mat-icon>
-      Novo Produto
-    </button>
-  </mat-toolbar>
+  @if (isLoading) {
+    <div class="state-card">Carregando produtos...</div>
+  } @else if (filteredProducts.length === 0) {
+    <div class="state-card">Nenhum produto encontrado.</div>
+  } @else {
+    <div class="products-grid">
+      @for (product of filteredProducts; track product.id) {
+        <article class="product-card">
+          <button class="product-media" type="button" (click)="openEditForm(product)">
+            <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name | displayText: 'Produto'">
+            <span class="status-pill">{{ stockStatus(product) }}</span>
+          </button>
 
-  <div class="products-grid product-list">
-    @for (product of filteredProducts; track product.id) {
-      <mat-card class="product-card" >
-        <mat-card-header >
-          <mat-card-title>{{ product.name | displayText: 'Produto sem nome' }}</mat-card-title>
-          <mat-card-subtitle>{{ product.model | displayText: 'Modelo não informado' }}</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content (click)="openEditForm(product)">
-          <div class="product-image" >
-            @if (product.imageUrl) {
-              <img loading="lazy" mat-card-image [src]="product.imageUrl" [alt]="product.name | displayText: 'Produto'">
-            }
+          <div class="product-info">
+            <div class="product-head">
+              <div>
+                <h2>{{ product.name | displayText: 'Produto sem nome' }}</h2>
+                <p>{{ product.model | displayText: 'Modelo nao informado' }}</p>
+              </div>
+              <strong>{{ product.price | brlCurrency }}</strong>
+            </div>
+
+            <p class="description">{{ product.description | displayText: 'Descricao nao informada' }}</p>
+
+            <div class="meta-row">
+              <span>{{ product.stock_quantity }} un.</span>
+              @if (product.is_featured) {
+                <span>Destaque</span>
+              }
+              @if (product.is_offer) {
+                <span>Oferta</span>
+              }
+            </div>
+
+            <div class="card-actions">
+              <button mat-stroked-button type="button" (click)="openEditForm(product)">
+                <mat-icon>edit</mat-icon>
+                Editar
+              </button>
+              <button mat-icon-button class="danger-action" type="button" (click)="product.id ? deleteProduct(product.id) : null" aria-label="Excluir produto">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </div>
-          <p class="description">{{ product.description | displayText: 'Descrição não informada' }}</p>
-          <p>{{ product.price | brlCurrency }}</p>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-flat-button color="warn" class="exclude-button" (click)="product.id ? deleteProduct(product.id) : null">Excluir</button>
-        </mat-card-actions>
-      </mat-card>
-    }
-
-  </div>
-</div>
+        </article>
+      }
+    </div>
+  }
+</section>

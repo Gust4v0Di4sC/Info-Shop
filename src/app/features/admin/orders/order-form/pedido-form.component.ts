@@ -107,7 +107,7 @@ export class PedidoFormComponent implements OnInit {
     const selectedProduct = this.products.find(product => product.id === this.orderForm.value.productId);
   
     if (!selectedClient || !selectedProduct) {
-      this.showSnackbar('Erro: Cliente ou Produto inválido.');
+      this.showSnackbar('Erro: Cliente ou Produto invalido.');
       return;
     }
   
@@ -121,7 +121,10 @@ export class PedidoFormComponent implements OnInit {
       productId: selectedProduct.id, // Agora salvamos o productId corretamente
       product: selectedProduct.name,
       imageProd: selectedProduct.imageUrl,
-      imageClient: selectedClient.imageUrl // Ainda salvamos o nome para exibição
+      imageClient: selectedClient.imageUrl,
+      quantity: 1,
+      total_amount: Number(selectedProduct.price || 0),
+      status: 'open',
     };
   
     if (this.isEditMode && this.orderId) {
@@ -155,12 +158,12 @@ export class PedidoFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.orderForm.valid) {
-      console.log('Formulário válido:', this.orderForm.value);
+      console.log('Formulario valido:', this.orderForm.value);
       this.saveOrder();
     } else {
-      console.error('Formulário inválido:', this.orderForm.value);
+      console.error('Formulario invalido:', this.orderForm.value);
       this.markFormGroupTouched(this.orderForm);
-      this.showSnackbar('Formulário inválido. Preencha todos os campos obrigatórios.');
+      this.showSnackbar('Formulario invalido. Preencha todos os campos obrigatorios.');
     }
   }
 
@@ -180,7 +183,7 @@ export class PedidoFormComponent implements OnInit {
   getErrorMessage(controlName: string): string {
     const control = this.orderForm.get(controlName);
     if (control?.hasError('required')) {
-      return 'Campo obrigatório';
+      return 'Campo obrigatorio';
     }
     return '';
   }
