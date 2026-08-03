@@ -39,7 +39,7 @@
                   {{ item.product?.name || 'Produto indisponivel' }}
                 </a>
                 <p>{{ item.product?.model || item.product?.description || 'Detalhes indisponiveis' }}</p>
-                <strong>{{ item.product?.price | brlCurrency }}</strong>
+                <strong>{{ itemPrice(item) | brlCurrency }}</strong>
               </div>
 
               <div class="quantity-control">
@@ -69,8 +69,8 @@
             <span>Frete</span>
             <strong>Calcular no atendimento</strong>
           </div>
-          <button class="checkout-btn" type="button">
-            Solicitar fechamento
+          <button class="checkout-btn" type="button" (click)="checkout()" [disabled]="isCheckingOut">
+            {{ isCheckingOut ? 'Solicitando...' : 'Solicitar fechamento' }}
           </button>
           <button class="clear-btn" type="button" (click)="clearCart()">
             Limpar carrinho

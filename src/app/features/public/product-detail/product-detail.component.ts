@@ -71,4 +71,8 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
+  displayPrice(): number {
+    return this.product?.offer_price || this.product?.price || 0;
+  }
+
 }

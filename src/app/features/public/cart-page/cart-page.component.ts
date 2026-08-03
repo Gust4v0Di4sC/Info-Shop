@@ -17,6 +17,7 @@ export class CartPageComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
   feedbackMessage = '';
+  isCheckingOut = false;
 
   constructor(private cartService: CartServiceService) {}
 
@@ -26,8 +27,12 @@ export class CartPageComponent implements OnInit {
 
   get subtotal(): number {
     return this.items.reduce((sum, item) => {
-      return sum + ((item.product?.price || 0) * item.quantity);
+      return sum + (this.itemPrice(item) * item.quantity);
     }, 0);
+  }
+
+  itemPrice(item: CartItemWithProduct): number {
+    return item.product?.offer_price || item.product?.price || 0;
   }
 
   loadCart(): void {
@@ -72,6 +77,23 @@ export class CartPageComponent implements OnInit {
       },
       error: error => {
         this.errorMessage = error?.message || 'Nao foi possivel limpar o carrinho.';
+      },
+    });
+  }
+
+  checkout(): void {
+    this.isCheckingOut = true;
+    this.errorMessage = '';
+
+    this.cartService.checkoutCart().subscribe({
+      next: () => {
+        this.items = [];
+        this.feedbackMessage = 'Pedido solicitado. A equipe vai acompanhar a entrega pelo painel administrativo.';
+        this.isCheckingOut = false;
+      },
+      error: error => {
+        this.errorMessage = error?.message || 'Nao foi possivel solicitar o fechamento.';
+        this.isCheckingOut = false;
       },
     });
   }

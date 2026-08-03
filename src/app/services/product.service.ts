@@ -42,10 +42,31 @@ export class ProductService {
       supabase
         .from('products')
         .select('*')
+        .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(limit)
     ).pipe(
       map(getSupabaseList)
+    );
+  }
+
+  getOfferProduct(): Observable<Product | null> {
+    return from(
+      supabase
+        .from('products')
+        .select('*')
+        .eq('is_offer', true)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    ).pipe(
+      map(({ data, error }) => {
+        if (error) {
+          throw error;
+        }
+
+        return data;
+      }),
     );
   }
 
