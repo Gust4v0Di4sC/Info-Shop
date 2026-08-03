@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { EmailOtpType, User as SupabaseUser } from '@supabase/supabase-js';
 import { BehaviorSubject, catchError, from, map, of } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
+import { Admin, ADMIN_DEFAULT_ROUTE, AdminRole, normalizeAdminRole } from '@app/models/admin.model';
 
 @Injectable({
   providedIn: 'root',
@@ -250,26 +251,35 @@ export class AuthService {
       return;
     }
 
-    const isAdmin = await this.isUserAdmin(currentUserId);
+    const adminRole = await this.getAdminRole(currentUserId);
 
-    await this.router.navigate([isAdmin ? '/dash' : '/perfil']);
+    await this.router.navigate([adminRole ? ADMIN_DEFAULT_ROUTE[adminRole] : '/perfil']);
   }
 
   async isUserAdmin(userId?: string): Promise<boolean> {
+    return Boolean(await this.getAdminProfile(userId));
+  }
+
+  async getAdminRole(userId?: string): Promise<AdminRole | null> {
+    const admin = await this.getAdminProfile(userId);
+    return admin ? normalizeAdminRole(admin.role) : null;
+  }
+
+  async getAdminProfile(userId?: string): Promise<Admin | null> {
     const currentUserId = userId || (await supabase.auth.getUser()).data.user?.id;
 
     if (!currentUserId) {
-      return false;
+      return null;
     }
 
     const { data, error } = await supabase
       .from('admins')
-      .select('id')
+      .select('*')
       .eq('user_id', currentUserId)
       .eq('active', true)
       .maybeSingle();
 
-    return !error && Boolean(data);
+    return error ? null : data;
   }
 
   private async finishSignIn(user: SupabaseUser): Promise<void> {

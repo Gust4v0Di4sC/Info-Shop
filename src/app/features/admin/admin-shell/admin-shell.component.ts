@@ -1,7 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
+import { ADMIN_ROLE_ACCESS, ADMIN_ROLE_LABELS, AdminRole } from '@app/models/admin.model';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
+
+interface AdminNavItem {
+  label: string;
+  icon: string;
+  route: string;
+}
 
 @Component({
   selector: 'app-admin-shell',
@@ -9,12 +16,13 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
   templateUrl: './admin-shell.component.html',
   styleUrls: ['./admin-shell.component.scss'],
 })
-export class AdminShellComponent {
+export class AdminShellComponent implements OnInit {
   private authService = inject(AuthService);
 
   isExpanded = false;
+  adminRole: AdminRole | null = null;
 
-  navItems = [
+  navItems: AdminNavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/dash' },
     { label: 'Produtos', icon: 'storefront', route: '/products' },
     { label: 'Pedidos', icon: 'receipt_long', route: '/orders' },
@@ -23,6 +31,23 @@ export class AdminShellComponent {
     { label: 'Ofertas', icon: 'sell', route: '/offers' },
     { label: 'Clientes', icon: 'people', route: '/clients' },
   ];
+
+  async ngOnInit(): Promise<void> {
+    this.adminRole = await this.authService.getAdminRole();
+  }
+
+  visibleNavItems(): AdminNavItem[] {
+    if (!this.adminRole) {
+      return [];
+    }
+
+    const allowedRoutes = ADMIN_ROLE_ACCESS[this.adminRole];
+    return this.navItems.filter(item => allowedRoutes.includes(item.route));
+  }
+
+  roleLabel(): string {
+    return this.adminRole ? ADMIN_ROLE_LABELS[this.adminRole] : 'Administrador';
+  }
 
   prepareRoute(outlet: RouterOutlet) {
     return outlet?.activatedRouteData?.['animation'] ?? 'default';

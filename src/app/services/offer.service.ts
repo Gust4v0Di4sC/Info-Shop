@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { from, map, Observable } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
-import { Product, ProductUpdate } from '@app/models/product.model';
+import { Product } from '@app/models/product.model';
 import { getSupabaseData, getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
 
 export interface OfferSettings {
@@ -37,24 +37,19 @@ export class OfferService {
   clearOffer(): Observable<void> {
     return from(
       supabase
-        .from('products')
-        .update({ is_offer: false })
-        .eq('is_offer', true)
+        .rpc('clear_active_offer')
     ).pipe(
       map(throwSupabaseError),
     );
   }
 
   updateFeatured(productId: string, isFeatured: boolean): Observable<Product> {
-    const update: ProductUpdate = { is_featured: isFeatured };
-
     return from(
       supabase
-        .from('products')
-        .update(update)
-        .eq('id', productId)
-        .select()
-        .single()
+        .rpc('set_product_featured', {
+          product_id: productId,
+          featured: isFeatured,
+        })
     ).pipe(
       map(getSupabaseData),
     );
@@ -77,27 +72,13 @@ export class OfferService {
   }
 
   private async saveActiveOffer(productId: string, settings: OfferSettings): Promise<Product> {
-    const clearResult = await supabase
-      .from('products')
-      .update({ is_offer: false })
-      .eq('is_offer', true);
-
-    throwSupabaseError(clearResult);
-
-    const update: ProductUpdate = {
-      is_offer: true,
-      is_featured: true,
-      offer_price: settings.offer_price,
-      offer_badge: settings.offer_badge,
-      offer_ends_at: settings.offer_ends_at,
-      offer_sold_percent: settings.offer_sold_percent,
-    };
-
     return getSupabaseData(await supabase
-      .from('products')
-      .update(update)
-      .eq('id', productId)
-      .select()
-      .single());
+      .rpc('set_active_offer', {
+        product_id: productId,
+        offer_price_value: settings.offer_price,
+        offer_badge_value: settings.offer_badge,
+        offer_ends_at_value: settings.offer_ends_at,
+        offer_sold_percent_value: settings.offer_sold_percent,
+      }));
   }
 }
