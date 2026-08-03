@@ -35,7 +35,10 @@ export class ProdutoFormComponent implements OnInit {
       price: ['', [Validators.required, Validators.min(0)]],
       cost: ['', [Validators.required, Validators.min(0)]],
       description: ['', [Validators.required]],
-      imageUrl: [null]
+      imageUrl: [null],
+      stock_quantity: [0, [Validators.required, Validators.min(0)]],
+      stock_minimum: [0, [Validators.required, Validators.min(0)]],
+      is_featured: [false],
     });
 
     if (data?.product) {
@@ -76,7 +79,10 @@ export class ProdutoFormComponent implements OnInit {
       price: product.price,
       cost: product.cost,
       description: product.description,
-      imageUrl:  product.imageUrl // Compatibilidade com db.json
+      imageUrl: product.imageUrl,
+      stock_quantity: product.stock_quantity || 0,
+      stock_minimum: product.stock_minimum || 0,
+      is_featured: Boolean(product.is_featured),
     });
   
     if (product.imageUrl) {
@@ -109,7 +115,10 @@ export class ProdutoFormComponent implements OnInit {
       price: Number(this.productForm.value.price),
       cost: Number(this.productForm.value.cost),
       description: this.productForm.value.description,
-      imageUrl: imageUrl || this.productForm.value.imageUrl 
+      imageUrl: imageUrl || this.productForm.value.imageUrl,
+      stock_quantity: Number(this.productForm.value.stock_quantity) || 0,
+      stock_minimum: Number(this.productForm.value.stock_minimum) || 0,
+      is_featured: Boolean(this.productForm.value.is_featured),
     };
   
     if (this.isEditMode && this.productId) {
@@ -145,7 +154,7 @@ export class ProdutoFormComponent implements OnInit {
   onSubmit(): void {
     
     if (this.productForm.valid) {
-      console.log('Formulário válido:', this.productForm.value);
+      console.log('Formulario valido:', this.productForm.value);
   
       if (this.selectedFile) {
         // Caso um arquivo tenha sido selecionado
@@ -174,11 +183,11 @@ export class ProdutoFormComponent implements OnInit {
         this.saveProduct(this.productForm.get('imageUrl')?.value || null);
       }
     } else {
-      console.error('Formulário inválido:', this.productForm.value);
+      console.error('Formulario invalido:', this.productForm.value);
   
       // Marca os campos como "tocados" para exibir mensagens de erro no template
       this.markFormGroupTouched(this.productForm);
-      this.showSnackbar('Formulário inválido. Preencha todos os campos obrigatórios.');
+      this.showSnackbar('Formulario invalido. Preencha todos os campos obrigatorios.');
     }
   }
 
@@ -199,10 +208,10 @@ export class ProdutoFormComponent implements OnInit {
   getErrorMessage(controlName: string): string {
     const control = this.productForm.get(controlName);
     if (control?.hasError('required')) {
-      return 'Campo obrigatório';
+      return 'Campo obrigatorio';
     }
     if (control?.hasError('min')) {
-      return 'Valor deve ser maior que 0';
+      return 'Valor nao pode ser negativo';
     }
     return '';
   }

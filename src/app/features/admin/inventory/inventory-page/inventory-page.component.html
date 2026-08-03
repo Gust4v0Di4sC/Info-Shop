@@ -1,0 +1,72 @@
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Estoque</p>
+      <h1>Controle de produtos</h1>
+      <span>Atualize unidades disponiveis, reservas e minimo operacional.</span>
+    </div>
+
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [formControl]="searchControl" placeholder="Buscar produto">
+    </mat-form-field>
+  </header>
+
+  @if (isLoading) {
+    <div class="state-card">Carregando estoque...</div>
+  } @else if (errorMessage) {
+    <div class="state-card error-state">{{ errorMessage }}</div>
+  } @else {
+    <div class="inventory-list">
+      @for (product of filteredProducts; track product.id) {
+        <article class="inventory-row">
+          <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name">
+
+          <div class="product-info">
+            <strong>{{ product.name }}</strong>
+            <span>{{ product.model || product.description }}</span>
+            <p [class.warning]="product.stock_quantity <= product.stock_minimum">
+              {{ stockStatus(product) }} - {{ availableStock(product) }} disponiveis
+            </p>
+          </div>
+
+          <div class="stock-fields">
+            <label>
+              Total
+              <input
+                type="number"
+                min="0"
+                [value]="product.stock_quantity"
+                (change)="updateStock(product, 'stock_quantity', $any($event.target).value)">
+            </label>
+            <label>
+              Reservado
+              <input
+                type="number"
+                min="0"
+                [value]="product.stock_reserved"
+                (change)="updateStock(product, 'stock_reserved', $any($event.target).value)">
+            </label>
+            <label>
+              Minimo
+              <input
+                type="number"
+                min="0"
+                [value]="product.stock_minimum"
+                (change)="updateStock(product, 'stock_minimum', $any($event.target).value)">
+            </label>
+          </div>
+
+          <div class="quick-actions">
+            <button mat-icon-button type="button" (click)="adjustStock(product, -1)" aria-label="Reduzir estoque">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <button mat-icon-button type="button" (click)="adjustStock(product, 1)" aria-label="Adicionar estoque">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

@@ -1,221 +1,178 @@
-
-@use '@angular/material' as mat;
-
-:root{
-  --mat-sys-surface: transparent;
+.admin-page {
+  display: grid;
+  gap: 24px;
 }
 
-.pedidos-container {
-    padding: 24px;
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+.page-header {
+  align-items: end;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
 
- 
-
-  .pedidos-title {
-    text-align: center;
-    font-weight: 400;
-    color: #010304;
-    font-size: 57px;
-    position: relative;
+  h1 {
+    color: #202833;
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1.15;
     margin: 0;
   }
 
-  h1::after {
-    content: "";
+  span {
+    color: #667085;
     display: block;
-    width: 233px;
-    height: 5px; /* Espessura da linha */
-    background-color: #1f5a92; /* Cor do sublinhado */
-    text-align: center;
-    position: absolute;
-    bottom: -5px; /* Ajuste a distância do texto */
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 2px; /* Deixa a linha arredondada */
+    font-size: 14px;
+    font-weight: 650;
+    margin-top: 10px;
+  }
+}
+
+.eyebrow {
+  color: #0f62cf;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.primary-action {
+  background: #0f62cf;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 850;
+  height: 44px;
+}
+
+.state-card,
+.order-card {
+  background: #ffffff;
+  border: 1px solid #dfe5ed;
+  border-radius: 8px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+}
+
+.state-card {
+  color: #667085;
+  font-weight: 800;
+  padding: 24px;
+}
+
+.orders-list {
+  display: grid;
+  gap: 14px;
+}
+
+.order-card {
+  align-items: center;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 86px 1fr 260px 180px;
+  padding: 14px;
+
+  img {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    object-fit: cover;
+    width: 100%;
+  }
+}
+
+.order-info {
+  min-width: 0;
+
+  h2 {
+    color: #202833;
+    font-size: 17px;
+    font-weight: 900;
+    margin: 10px 0 4px;
   }
 
-  .pedidos-card {
-    background-color: #90CAF9;
-    border-radius: 16px;
-    padding: 20px;
+  p,
+  small {
+    color: #667085;
+    display: block;
+    font-size: 13px;
+    font-weight: 750;
+    margin: 0;
   }
+}
 
-  .pedidos-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+.status-pill {
+  background: #eef6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  color: #0f62cf;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 7px 10px;
+}
 
-  .pedido-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
-    background: transparent;
+.order-metrics {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  div {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
     padding: 12px;
   }
-  
-  
-  .cliente-info {
-    background: #ffffff;
-    padding: 8px 16px;
+
+  span {
+    color: #667085;
+    display: block;
+    font-size: 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  strong {
+    color: #202833;
+    display: block;
+    font-size: 17px;
+    font-weight: 950;
+    margin-top: 5px;
+  }
+}
+
+.card-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: end;
+
+  button[mat-stroked-button] {
     border-radius: 8px;
-    min-width: 120px;
+    color: #0f62cf;
+    font-weight: 850;
   }
-
-  .produto-info {
-    background: #1976D2;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 8px;
-    flex-grow: 1;
-  }
-
-  .mat-mdc-dialog-surface{
-    background-color: transparent;
-  }
-  
-
-  .acoes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 42px;
-    margin-left: auto; /* Empurra os botões para a direita */
-  }
-
-  .edit-button, .delete-button {
-    background: #FFFFFF;
-    transition: background-color 0.3s;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 12px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .novo-pedido-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-  }
-
-  .novo-pedido-button {
-    color: white;
-    border-radius: 16px;
-    padding-top: 32px;
-    padding-bottom: 32px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: opacity 0.3s ease-in-out;
-  }
-  .name{
-    padding: 10px;
-    width: 130px;
-  }
-  .content{
-    padding: 10px;
-    
-  }
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
-
-  .image-container {
-    margin-top: 20px;
-    width: 100%;
-    height: 200px; /* Define uma altura fixa (ou use min-height e max-height) */
-  }
-
-  /* Imagem flutuante */
-  .floating-image {
-    position: absolute;
-    width: 150px;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-    transition: opacity 0.2s ease-in-out;
-    pointer-events: none; // Impede que a imagem interfira nos eventos do mouse
-    z-index: 1000;
-  }
-
-
-.content {
-  @include mat.chips-overrides((
-    elevated-container-color:#206097,
-    label-text-color: #FFFF,
-    container-shape-radius: 18px,
-  ));
 }
 
-.name {
-  @include mat.chips-overrides((
-    elevated-container-color:#FFFF,
-    container-shape-radius: 18px,
-  ));
+.danger-action {
+  background: #fff1f3;
+  color: #b42318;
 }
 
-.action-button:hover{
-  background-color: #206097;
-  color: #FFFFFF;
-}
-
-.novo-pedido-button:hover{
-  background-color: #1976D2;
-  color: #FFFFFF;
-}
-
-@media (max-width: 767px) {
-  .pedidos-container{
-    width: 80%;
+@media (max-width: 1080px) {
+  .order-card {
+    grid-template-columns: 76px 1fr;
   }
-  .acoes{
+
+  .order-metrics,
+  .card-actions {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 760px) {
+  .page-header {
+    align-items: stretch;
     flex-direction: column;
-    gap: 8px;
-    margin-left: 0;
-    margin-right: 30px;
   }
-  .name{
-    padding: 8px;
-  }
-  .content{
-    padding: 8px;
-  }
-  .action-button{
-    padding: 8px;
-    height: 40px;
-  }
-  
-}
 
-.novo-pedido-button{
-  @include mat.button-overrides((
-   protected-container-shape: 32px,
-   protected-container-color: #206097,
-   protected-horizontal-padding: 45px,
-   protected-label-text-color: #FFFFFF,
-   protected-hover-state-layer-opacity: 0.4,
-  ));
+  .order-metrics {
+    grid-template-columns: 1fr;
+  }
 }
-
-.action-button{
-  @include mat.button-overrides((
-    filled-container-shape: 16px,
-    filled-horizontal-padding: 32px,
-    filled-container-height: 56px,
-    filled-container-color: #FFFFFF,
-    filled-label-text-color: #206097,
-    filled-hover-state-layer-opacity: 0.04,
-  ));
-}
-

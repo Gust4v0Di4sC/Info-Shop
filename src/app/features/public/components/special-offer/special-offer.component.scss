@@ -112,13 +112,18 @@ p {
   margin-top: 26px;
 }
 
-button {
+button,
+.buy-now {
+  align-items: center;
   border-radius: 8px;
   cursor: pointer;
+  display: inline-flex;
   font-size: 15px;
   font-weight: 850;
   height: 48px;
+  justify-content: center;
   padding: 0 24px;
+  text-decoration: none;
 }
 
 .buy-now {

@@ -1,0 +1,108 @@
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Ofertas</p>
+      <h1>Produto em oferta na landing</h1>
+      <span>Escolha um produto cadastrado e ajuste como ele aparece na faixa promocional publica.</span>
+    </div>
+  </header>
+
+  @if (isLoading) {
+    <div class="state-card">Carregando produtos...</div>
+  } @else if (errorMessage) {
+    <div class="state-card error-state">{{ errorMessage }}</div>
+  } @else {
+    <div class="offer-layout">
+      <mat-card class="offer-form-card">
+        <mat-card-content>
+          <form [formGroup]="offerForm" (ngSubmit)="saveOffer()" class="offer-form">
+            <mat-form-field appearance="outline">
+              <mat-label>Produto da oferta</mat-label>
+              <mat-select formControlName="productId">
+                @for (product of products; track product.id) {
+                  <mat-option [value]="product.id">{{ product.name }}</mat-option>
+                }
+              </mat-select>
+              @if (offerForm.get('productId')?.hasError('required')) {
+                <mat-error>Escolha um produto</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Preco promocional</mat-label>
+              <input matInput type="number" formControlName="offerPrice" placeholder="Opcional">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Selo da oferta</mat-label>
+              <input matInput formControlName="offerBadge">
+            </mat-form-field>
+
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Fim da oferta</mat-label>
+                <input matInput type="datetime-local" formControlName="offerEndsAt">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Estoque vendido (%)</mat-label>
+                <input matInput type="number" min="0" max="100" formControlName="offerSoldPercent">
+              </mat-form-field>
+            </div>
+
+            <div class="actions">
+              <button mat-flat-button class="primary-action" type="submit" [disabled]="isSaving">
+                <mat-icon>save</mat-icon>
+                {{ isSaving ? 'Salvando...' : 'Publicar oferta' }}
+              </button>
+              <button mat-stroked-button class="secondary-action" type="button" (click)="clearOffer()">
+                Remover oferta
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <article class="landing-preview">
+        @if (selectedProduct(); as product) {
+          <div class="preview-copy">
+            <span>{{ offerForm.value.offerBadge }}</span>
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.description }}</p>
+            <strong>{{ (offerForm.value.offerPrice || product.price) | brlCurrency }}</strong>
+            <small>{{ offerForm.value.offerSoldPercent }}% do estoque promocional vendido</small>
+          </div>
+          <img [src]="product.imageUrl || '/productCTA.png'" [alt]="product.name">
+        } @else {
+          <p class="empty-note">Selecione um produto para visualizar a faixa promocional.</p>
+        }
+      </article>
+    </div>
+
+    <section class="featured-panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Destaques</p>
+          <h2>Produtos exibidos na landing</h2>
+        </div>
+      </div>
+
+      <div class="featured-grid">
+        @for (product of products; track product.id) {
+          <article class="featured-card">
+            <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name">
+            <div>
+              <strong>{{ product.name }}</strong>
+              <span>{{ product.price | brlCurrency }}</span>
+            </div>
+            <mat-checkbox
+              [checked]="product.is_featured"
+              (change)="toggleFeatured(product, $event.checked)">
+              Destaque
+            </mat-checkbox>
+          </article>
+        }
+      </div>
+    </section>
+  }
+</section>

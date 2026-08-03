@@ -1,49 +1,56 @@
-<div class="pedidos-container">
-  <h1 class="pedidos-title">Pedidos</h1>
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Pedidos</p>
+      <h1>Pedidos da loja</h1>
+      <span>Acompanhe compras solicitadas no carrinho e pedidos criados manualmente.</span>
+    </div>
 
-  <mat-card class="main-card pedidos-card">
-
-    <mat-card-content  >
-      <div class="pedidos-list">
-        @for (order of filteredOrders; track order.id) {
-          <mat-card  class="pedido-item card-bg">
-            <mat-card-content class="pedido-content">
-              <mat-chip-listbox class="cliente-chip">
-                <mat-chip   class="name"  (mouseenter)="order.imageClient ? onMouseEnter(order.imageClient, $event) : null"
-                (mouseleave)="onMouseLeave()">{{ order.name | displayText: 'Cliente não informado' }}</mat-chip>
-                <mat-chip class="content" (mouseenter)="order.imageProd ? onMouseEnter(order.imageProd, $event) : null"
-                (mouseleave)="onMouseLeave()">{{ order.product | displayText: 'Produto não informado' }}</mat-chip>
-              </mat-chip-listbox>
-            </mat-card-content>
-            <div class="acoes">
-              <button class="action-button" mat-flat-button color="primary" (click)="openEditForm(order)">
-                <mat-icon>edit</mat-icon>
-                Editar
-              </button>
-              <button class="action-button" mat-flat-button color="warn" (click)="order.id ? deleteOrder(order.id) : null">
-                <mat-icon>delete</mat-icon>
-                Excluir
-              </button>
-            </div>
-          </mat-card>
-        }
-        <div class="image-container">
-          @if (hoveredImage) {
-            <img [src]="hoveredImage" class="floating-image"
-              [style.left.px]="hoveredImageX"
-              [style.top.px]="hoveredImageY"/>
-          }
-        </div>
-      </div>
-
-    </mat-card-content>
-  </mat-card>
-
-  <div class="novo-pedido-container">
-    <button mat-raised-button color="primary" class="novo-pedido-button" (click)="openOrderForm()">
+    <button mat-flat-button class="primary-action" type="button" (click)="openOrderForm()">
       <mat-icon>add</mat-icon>
-      Novo Pedido
+      Novo pedido
     </button>
-  </div>
+  </header>
 
-</div>
+  @if (isLoading) {
+    <div class="state-card">Carregando pedidos...</div>
+  } @else if (filteredOrders.length === 0) {
+    <div class="state-card">Nenhum pedido cadastrado.</div>
+  } @else {
+    <div class="orders-list">
+      @for (order of filteredOrders; track order.id) {
+        <article class="order-card">
+          <img [src]="order.imageProd || '/product1.png'" [alt]="order.product | displayText: 'Produto'">
+
+          <div class="order-info">
+            <span class="status-pill">{{ statusLabel(order.status) }}</span>
+            <h2>{{ order.product | displayText: 'Produto nao informado' }}</h2>
+            <p>{{ order.name | displayText: 'Cliente nao informado' }}</p>
+            <small>{{ order.address | displayText: 'Endereco nao informado' }}</small>
+          </div>
+
+          <div class="order-metrics">
+            <div>
+              <span>Quantidade</span>
+              <strong>{{ order.quantity }}</strong>
+            </div>
+            <div>
+              <span>Total</span>
+              <strong>{{ order.total_amount | brlCurrency }}</strong>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button mat-stroked-button type="button" (click)="openEditForm(order)">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+            <button mat-icon-button class="danger-action" type="button" (click)="order.id ? deleteOrder(order.id) : null" aria-label="Excluir pedido">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

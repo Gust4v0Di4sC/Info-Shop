@@ -1,0 +1,152 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Product } from '@app/models/product.model';
+import { OfferService } from '@app/services/offer.service';
+import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
+import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
+
+@Component({
+  selector: 'app-offer-management',
+  imports: [SharedMaterialModule, ReactiveFormsModule, BrlCurrencyPipe],
+  templateUrl: './offer-management.component.html',
+  styleUrl: './offer-management.component.scss'
+})
+export class OfferManagementComponent implements OnInit {
+  products: Product[] = [];
+  activeOffer: Product | null = null;
+  offerForm: FormGroup;
+  isLoading = true;
+  isSaving = false;
+  errorMessage = '';
+
+  constructor(
+    private fb: FormBuilder,
+    private offerService: OfferService,
+    private snackBar: MatSnackBar,
+  ) {
+    this.offerForm = this.fb.group({
+      productId: ['', [Validators.required]],
+      offerPrice: [null, [Validators.min(0)]],
+      offerBadge: ['Oferta por tempo limitado', [Validators.required]],
+      offerEndsAt: [''],
+      offerSoldPercent: [72, [Validators.min(0), Validators.max(100)]],
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.offerService.getProducts().subscribe({
+      next: products => {
+        this.products = products;
+        this.offerService.getActiveOffer().subscribe({
+          next: offer => {
+            this.activeOffer = offer;
+            this.patchOffer(offer);
+            this.isLoading = false;
+          },
+          error: error => {
+            this.errorMessage = error?.message || 'Nao foi possivel carregar a oferta.';
+            this.isLoading = false;
+          },
+        });
+      },
+      error: error => {
+        this.errorMessage = error?.message || 'Nao foi possivel carregar produtos.';
+        this.isLoading = false;
+      },
+    });
+  }
+
+  saveOffer(): void {
+    if (this.offerForm.invalid) {
+      this.offerForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSaving = true;
+    const value = this.offerForm.value;
+
+    this.offerService.setActiveOffer(value.productId, {
+      offer_price: value.offerPrice === null || value.offerPrice === '' ? null : Number(value.offerPrice),
+      offer_badge: value.offerBadge,
+      offer_ends_at: value.offerEndsAt ? new Date(value.offerEndsAt).toISOString() : null,
+      offer_sold_percent: Number(value.offerSoldPercent) || 0,
+    }).subscribe({
+      next: product => {
+        this.activeOffer = product;
+        this.products = this.products.map(item => ({
+          ...item,
+          is_offer: item.id === product.id,
+          is_featured: item.id === product.id ? true : item.is_featured,
+        }));
+        this.showSnackbar('Oferta atualizada na landing page.');
+        this.isSaving = false;
+      },
+      error: error => {
+        this.showSnackbar(error?.message || 'Nao foi possivel salvar a oferta.');
+        this.isSaving = false;
+      },
+    });
+  }
+
+  clearOffer(): void {
+    this.offerService.clearOffer().subscribe({
+      next: () => {
+        this.activeOffer = null;
+        this.products = this.products.map(product => ({ ...product, is_offer: false }));
+        this.offerForm.patchValue({ productId: '' });
+        this.showSnackbar('Oferta removida da landing page.');
+      },
+      error: error => {
+        this.showSnackbar(error?.message || 'Nao foi possivel remover a oferta.');
+      },
+    });
+  }
+
+  toggleFeatured(product: Product, checked: boolean): void {
+    this.offerService.updateFeatured(product.id, checked).subscribe({
+      next: updated => {
+        this.products = this.products.map(item => item.id === updated.id ? updated : item);
+        this.showSnackbar('Destaque atualizado.');
+      },
+      error: error => {
+        this.showSnackbar(error?.message || 'Nao foi possivel atualizar o destaque.');
+      },
+    });
+  }
+
+  selectedProduct(): Product | null {
+    const productId = this.offerForm.value.productId;
+    return this.products.find(product => product.id === productId) || null;
+  }
+
+  private patchOffer(offer: Product | null): void {
+    if (!offer) {
+      return;
+    }
+
+    this.offerForm.patchValue({
+      productId: offer.id,
+      offerPrice: offer.offer_price,
+      offerBadge: offer.offer_badge,
+      offerEndsAt: offer.offer_ends_at ? offer.offer_ends_at.slice(0, 16) : '',
+      offerSoldPercent: offer.offer_sold_percent,
+    });
+  }
+
+  private showSnackbar(message: string): void {
+    this.snackBar.open(message, 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+    });
+  }
+
+}

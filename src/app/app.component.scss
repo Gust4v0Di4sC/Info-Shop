@@ -1,78 +1,67 @@
-body{
-  background-color: #F9FAFB;
+body {
+  background-color: #f9fafb;
   font-family: "Roboto Flex", sans-serif;
 }
 
-h1{
-  font-weight: 700;
+h1 {
   font-size: 32px;
+  font-weight: 700;
 }
 
-p{
-  font-weight: lighter;
+p {
   color: #3a3a3a;
+  font-weight: lighter;
 }
 
 :host {
   display: block;
-  overflow: hidden; /* Garante que os componentes não fiquem visíveis fora do contêiner */
+  height: 100%;
+  overflow: hidden;
   position: relative;
   width: 100%;
-  height: 100%;
 }
 
-.route-animation-enter {
-  animation: slideIn 0.5s ease-out forwards;
+.page-container,
+.route-frame {
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
 }
 
-.route-animation-leave {
-  animation: slideOut 0.5s ease-out forwards;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideOut {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-100%);
-  }
-}
-
+.route-fade-enter,
+.route-animation-enter,
 .fade-in-enter {
-  animation: fadeIn 0.4s ease-in-out forwards;
+  animation: routeFadeIn 180ms ease-out forwards;
+  display: block;
+  position: relative;
+  z-index: 1;
 }
 
+.route-fade-leave,
+.route-animation-leave,
 .fade-in-leave {
-  animation: fadeOut 0.4s ease-in-out forwards;
+  animation: routeFadeOut 120ms ease-in forwards;
+  pointer-events: none;
+  position: relative;
+  z-index: 0;
 }
 
-@keyframes fadeIn {
+@keyframes routeFadeIn {
   from {
     opacity: 0;
-    transform: translateY(30px);
   }
+
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-@keyframes fadeOut {
+@keyframes routeFadeOut {
   from {
     opacity: 1;
-    transform: translateY(0);
   }
+
   to {
     opacity: 0;
-    transform: translateY(-30px);
   }
 }

@@ -1,170 +1,206 @@
 @use '@angular/material' as mat;
 
-
-mat-card{
-  width: 500px;
-  
-}
-mat-card img {
-  width: 100%; /* Força a imagem a ocupar 100% da largura do card */
-  height: 100px; /* Define uma altura fixa (ou use min-height e max-height) */
-  object-fit: cover; /* Garante que a imagem seja cortada para caber na área definida */
-  border-radius: 8px; /* Adiciona bordas arredondadas (opcional) */
-  display: block; /* Remove qualquer margem ou padding automático */
+.admin-page {
+  display: grid;
+  gap: 24px;
 }
 
-mat-card-content{
+.page-header {
+  align-items: end;
   display: flex;
-  gap: 140px;
+  gap: 20px;
+  justify-content: space-between;
+
+  h1 {
+    color: #202833;
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  span {
+    color: #667085;
+    display: block;
+    font-size: 14px;
+    font-weight: 650;
+    margin-top: 10px;
+  }
 }
 
+.eyebrow {
+  color: #0f62cf;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
 
+.header-actions {
+  align-items: start;
+  display: flex;
+  gap: 12px;
+}
 
+.search-field {
+  @include mat.form-field-overrides((
+    outlined-container-shape: 8px,
+    outlined-outline-color: #d9e1eb,
+    outlined-focus-outline-color: #0f62cf,
+  ));
 
-.client-container {
-    height: 100vh;
-    background-color: #f5f5f5;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    padding: 20px;
-    overflow: auto;
-  }
-  
-  .search-toolbar {
-    background: transparent;
-    display: flex;
-    justify-content: center;
-    padding: 16px;
-    margin-bottom: 32px;
-    
-    .search-field {
-      width: 400px;
-      height: 56px;
-     background-color: #FFFFFF;
-      border-radius: 26px;
-      border: none;
+  align-self: start;
+  min-width: 320px;
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background: #ffffff;
+      border-radius: 8px;
+      height: 44px;
+      overflow: hidden;
+    }
+
+    .mat-mdc-form-field-flex {
+      align-items: center;
+      height: 44px;
+    }
+
+    .mat-mdc-form-field-infix {
+      min-height: 44px;
+      padding-bottom: 10px;
+      padding-top: 10px;
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      align-items: center;
+      display: flex;
+      padding-inline: 12px 4px;
     }
   }
-  
-  .clients-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    place-items: center;
+}
+
+.primary-action {
+  background: #0f62cf;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 850;
+  height: 44px;
+}
+
+.state-card,
+.client-card {
+  background: #ffffff;
+  border: 1px solid #dfe5ed;
+  border-radius: 8px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+}
+
+.state-card {
+  color: #667085;
+  font-weight: 800;
+  padding: 24px;
+}
+
+.clients-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.client-card {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.client-media {
+  align-items: center;
+  aspect-ratio: 16 / 8;
+  background: #eef6ff;
+  border: 0;
+  border-radius: 8px;
+  color: #0f62cf;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+
+  img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
   }
-  
-  .client-card {
-    margin-bottom: 16px;
-    padding: 16px;
-    display: grid;
-    justify-content: space-between;
-    gap: 24px;
-    align-items: center;
-    background-color: white;
+
+  mat-icon {
+    font-size: 42px;
+    height: 42px;
+    width: 42px;
+  }
+}
+
+.client-info {
+  h2 {
+    color: #202833;
+    font-size: 17px;
+    font-weight: 900;
+    margin: 0;
+  }
+
+  p {
+    color: #667085;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 8px 0 0;
+  }
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+
+  span {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    color: #4f5967;
+    font-size: 12px;
+    font-weight: 850;
+    padding: 6px 9px;
+  }
+}
+
+.card-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+
+  button[mat-stroked-button] {
     border-radius: 8px;
-    
-    &:hover {
-      background-color: #fafafa;
-    }
+    color: #0f62cf;
+    font-weight: 850;
   }
-  
-  .client-info {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  
-  .client-avatar {
-    .avatar-icon {
-      width: 40px;
-      height: 40px;
-      font-size: 40px;
-      color: #1976d2;
-    }
-  }
-  
-  .client-details {
-    h3 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 500;
-    }
-    
-    p {
-      margin: 4px 0 0;
-      color: #666;
-      font-size: 14px;
-    }
-  }
-  
-  
-  .remove-client-button {
-    display: flex;
-    flex-wrap: wrap;
+}
+
+.danger-action {
+  background: #fff1f3;
+  color: #b42318;
+}
+
+@media (max-width: 820px) {
+  .page-header,
+  .header-actions {
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .add-client-button {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    height: 45px;
-    margin-top: 32px;
-   
-    
-    .mat-icon {
-      margin-right: 8px;
-    }
-  }
-  .remove-client-button{
-    place-content: center;
-    text-align: center;
-    margin: 0 auto;
-  }
-
-  @media (max-width: 767px) {
-    .search-toolbar{
-      width: 250px;
-    }
-
-    
-
-    .clients-list{
-      flex-direction: column;
-    }
-
-    mat-card{
-      width: 250px;
-      
-    }
-
-    mat-card-content{
-      gap: 40px;
-    }
-  }
-
-  .add-client-button{
-    @include mat.button-overrides((
-     protected-container-shape: 16px,
-     protected-container-color: #206097,
-     protected-horizontal-padding: 51px,
-     protected-label-text-color: #FFFFFF,
-     protected-hover-state-layer-opacity: 0.4,
-    ));
-  }
-
-  .remove-client-button{
-    @include mat.button-overrides((
-      filled-container-color: #206097,
-    )); 
-  }
-  
   .search-field {
-    @include mat.form-field-overrides((
-      outlined-container-shape: 26px,
-      outlined-input-text-placeholder-color: #206097,
-      outlined-focus-outline-color: #206097,
-    ));
+    min-width: 0;
+    width: 100%;
   }
+}

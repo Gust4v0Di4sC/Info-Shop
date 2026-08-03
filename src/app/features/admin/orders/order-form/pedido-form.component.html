@@ -1,87 +1,71 @@
-<div class="form-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>description</mat-icon>
-        {{ isEditMode ? 'Editar Pedido' : 'Novo Pedido' }}
-      </mat-card-title>
-    </mat-card-header>
+<form class="admin-form" [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+  <header class="dialog-header">
+    <div class="title-icon">
+      <mat-icon>{{ isEditMode ? 'edit_note' : 'receipt_long' }}</mat-icon>
+    </div>
+    <div>
+      <p class="eyebrow">Pedidos</p>
+      <h2>{{ isEditMode ? 'Editar pedido' : 'Novo pedido' }}</h2>
+      <span>Selecione cliente e produto; os dados de entrega sao preenchidos automaticamente.</span>
+    </div>
+  </header>
 
-    <mat-card-content>
-      <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
-        <div class="form-fields">
-          <mat-form-field appearance="outline">
-            <mat-label >Nome</mat-label>
-            <mat-select formControlName="clientId" (selectionChange)="onClientChange($event.value)">
-              @for (client of clients; track client) {
-                <mat-option [value]="client.id">{{client.name}}</mat-option>
-              }
-            </mat-select>
-            @if (orderForm.get('name')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('name')}}
-              </mat-error>
-            }
-            <button mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+  <mat-dialog-content class="dialog-content">
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="wide">
+        <mat-label>Cliente</mat-label>
+        <mat-select formControlName="clientId" (selectionChange)="onClientChange($event.value)">
+          @for (client of clients; track client.id) {
+            <mat-option [value]="client.id">{{ client.name }}</mat-option>
+          }
+        </mat-select>
+        @if (orderForm.get('clientId')?.invalid) {
+          <mat-error>{{ getErrorMessage('clientId') }}</mat-error>
+        }
+      </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>ID do Usuário</mat-label>
-            <input matInput formControlName="userId" placeholder="ID do usuário"  />
-            @if (orderForm.get('userId')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('userId')}}
-              </mat-error>
-            }
-            <button mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>ID do usuario</mat-label>
+        <input matInput formControlName="userId" placeholder="Gerado pelo cliente">
+        @if (orderForm.get('userId')?.invalid) {
+          <mat-error>{{ getErrorMessage('userId') }}</mat-error>
+        }
+      </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Endereço</mat-label>
-            <input matInput formControlName="address" placeholder="Endereço">
-            @if (orderForm.get('address')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('address')}}
-              </mat-error>
-            }
-            <button mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Produto</mat-label>
+        <mat-select formControlName="productId">
+          @for (product of products; track product.id) {
+            <mat-option [value]="product.id">{{ product.name }}</mat-option>
+          }
+        </mat-select>
+        @if (orderForm.get('productId')?.invalid) {
+          <mat-error>{{ getErrorMessage('productId') }}</mat-error>
+        }
+      </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Produto</mat-label>
-            <mat-select formControlName="productId">
-              @for (product of products; track product) {
-                <mat-option [value]="product.id">{{product.name}}</mat-option>
-              }
-            </mat-select>
-            @if (orderForm.get('product')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('product')}}
-              </mat-error>
-            }
-            <button mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-        </div>
+      <mat-form-field appearance="outline" class="wide">
+        <mat-label>Endereco de entrega</mat-label>
+        <textarea matInput formControlName="address" placeholder="Endereco do cliente" rows="3"></textarea>
+        @if (orderForm.get('address')?.invalid) {
+          <mat-error>{{ getErrorMessage('address') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
 
-        <div class="form-actions">
-          <button class="edit-button" mat-raised-button color="primary" type="submit">
-            <mat-icon>add</mat-icon>
-            {{ isEditMode ? 'Atualizar Pedido' : 'Criar Pedido' }}
-          </button>
-          <button class="cancel-button" mat-raised-button type="button" (click)="onCancel()">
-            <mat-icon>close</mat-icon>
-            Cancelar
-          </button>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</div>
+    <div class="helper-panel">
+      <mat-icon>info</mat-icon>
+      <span>Para alterar endereco ou dados do cliente, atualize o cadastro na base de clientes.</span>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button class="secondary-action" mat-stroked-button type="button" (click)="onCancel()">
+      Cancelar
+    </button>
+    <button class="primary-action" mat-flat-button type="submit">
+      <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+      {{ isEditMode ? 'Salvar pedido' : 'Criar pedido' }}
+    </button>
+  </mat-dialog-actions>
+</form>

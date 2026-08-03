@@ -1,41 +1,60 @@
-<div class="client-container">
-  <mat-toolbar class="search-toolbar">
-    <mat-form-field appearance="outline" class="search-field">
-      <input  matInput [formControl]="searchControl" placeholder="Buscar Cliente" type="text">
-      <mat-icon matPrefix>search</mat-icon>
-    </mat-form-field>
-  </mat-toolbar>
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Clientes</p>
+      <h1>Base de clientes</h1>
+      <span>Perfis cadastrados manualmente para pedidos e atendimento.</span>
+    </div>
 
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [formControl]="searchControl" placeholder="Buscar cliente" type="text">
+      </mat-form-field>
 
-  @for (client of filteredClients; track client.id) {
-    <mat-card class="client-card" >
-      <mat-card-content class="clients-list">
-        <div class="client-info"(click)="openEditForm(client)">
-          <div class="client-avatar">
-            <div class="client-image">
-              @if (client.imageUrl) {
-                <img loading="lazy" mat-card-image [src]="client.imageUrl" [alt]="client.name | displayText: 'Cliente'">
-              }
+      <button mat-flat-button class="primary-action" type="button" (click)="openClientForm()">
+        <mat-icon>add</mat-icon>
+        Novo cliente
+      </button>
+    </div>
+  </header>
+
+  @if (isLoading) {
+    <div class="state-card">Carregando clientes...</div>
+  } @else if (filteredClients.length === 0) {
+    <div class="state-card">Nenhum cliente encontrado.</div>
+  } @else {
+    <div class="clients-grid">
+      @for (client of filteredClients; track client.id) {
+        <article class="client-card">
+          <button class="client-media" type="button" (click)="openEditForm(client)">
+            @if (client.imageUrl) {
+              <img loading="lazy" [src]="client.imageUrl" [alt]="client.name | displayText: 'Cliente'">
+            } @else {
+              <mat-icon>person</mat-icon>
+            }
+          </button>
+
+          <div class="client-info">
+            <h2>{{ client.name | displayText: 'Cliente sem nome' }}</h2>
+            <p>{{ client.address | displayText: 'Endereco nao informado' }}</p>
+            <div class="meta-row">
+              <span>{{ client.cpf | cpfCnpj: 'CPF nao informado' }}</span>
+              <span>{{ client.phone | phoneBr: 'Telefone nao informado' }}</span>
             </div>
           </div>
-          <div class="client-details">
-            <h3>{{ client.name | displayText: 'Cliente sem nome' }}</h3>
-            <p>{{ client.address | displayText: 'Endereço não informado' }}</p>
-            <p>{{ client.cpf | cpfCnpj: 'CPF não informado' }}</p>
-            <p>{{ client.phone | phoneBr: 'Telefone não informado' }}</p>
+
+          <div class="card-actions">
+            <button mat-stroked-button type="button" (click)="openEditForm(client)">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+            <button mat-icon-button class="danger-action" type="button" (click)="client.id ? deleteClient(client.id) : null" aria-label="Excluir cliente">
+              <mat-icon>delete</mat-icon>
+            </button>
           </div>
-        </div>
-        <mat-card-actions class="remove-client-button">
-          <button mat-flat-button (click)="client.id ? deleteClient(client.id) : null"> <mat-icon>cancel</mat-icon>
-        </button>
-      </mat-card-actions>
-    </mat-card-content>
-  </mat-card>
-}
-
-
-<button mat-raised-button color="primary" class="add-client-button" (click)="openClientForm()">
-  <mat-icon>add</mat-icon>
-  Novo Cliente
-</button>
-</div>
+        </article>
+      }
+    </div>
+  }
+</section>

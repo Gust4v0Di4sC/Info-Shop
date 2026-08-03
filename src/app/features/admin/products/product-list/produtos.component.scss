@@ -1,160 +1,236 @@
 @use '@angular/material' as mat;
 
-// Customize the entire app. Change :root to your selector if you want to scope the styles.
-
-mat-icon{
-  color: #206097;
-}
-
-mat-card {
-  display: flex;
-  flex-direction: column; /* Organiza os elementos verticalmente */
-  justify-content: space-between; /* Distribui o conteúdo uniformemente */
-  height: 450px; /* Define uma altura fixa para os cards */
-  overflow: hidden; /* Garante que nada ultrapasse os limites do card */
-}
-
-mat-card img {
-  width: 100%; /* Força a imagem a ocupar 100% da largura do card */
-  height: 200px; /* Define uma altura fixa (ou use min-height e max-height) */
-  object-fit: cover; /* Garante que a imagem seja cortada para caber na área definida */
-  border-radius: 8px; /* Adiciona bordas arredondadas (opcional) */
-  display: block; /* Remove qualquer margem ou padding automático */
-}
-
-mat-card-actions {
+.admin-page {
   display: grid;
-  align-items: stretch;
-  gap: 18px;
-  padding: 8px 16px;
+  gap: 24px;
 }
 
-mat-toolbar{
-  background-color: #EBEBEB;
-}
-
-
-.product-list {
+.page-header {
+  align-items: end;
   display: flex;
-  flex-wrap: wrap; /* Permite quebrar para novas linhas */
-  justify-content: center; /* Centraliza os cards */
-  gap: 16px; /* Espaçamento entre os cards */
- 
+  gap: 20px;
+  justify-content: space-between;
+
+  h1 {
+    color: #202833;
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  span {
+    color: #667085;
+    display: block;
+    font-size: 14px;
+    font-weight: 650;
+    margin-top: 10px;
+  }
+}
+
+.eyebrow {
+  color: #0f62cf;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.header-actions {
+  align-items: start;
+  display: flex;
+  gap: 12px;
+}
+
+.search-field {
+  @include mat.form-field-overrides((
+    outlined-container-shape: 8px,
+    outlined-outline-color: #d9e1eb,
+    outlined-focus-outline-color: #0f62cf,
+  ));
+
+  align-self: start;
+  min-width: 320px;
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background: #ffffff;
+      border-radius: 8px;
+      height: 44px;
+      overflow: hidden;
+    }
+
+    .mat-mdc-form-field-flex {
+      align-items: center;
+      height: 44px;
+    }
+
+    .mat-mdc-form-field-infix {
+      min-height: 44px;
+      padding-bottom: 10px;
+      padding-top: 10px;
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      align-items: center;
+      display: flex;
+      padding-inline: 12px 4px;
+    }
+  }
+}
+
+.primary-action {
+  background: #0f62cf;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 850;
+  height: 44px;
+}
+
+.state-card,
+.product-card {
+  background: #ffffff;
+  border: 1px solid #dfe5ed;
+  border-radius: 8px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+}
+
+.state-card {
+  color: #667085;
+  font-weight: 800;
+  padding: 24px;
+}
+
+.products-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 .product-card {
-  flex: 1 1 calc(33.333% - 16px); /* Tamanho fixo para 3 cards por linha */
-  max-width: 400px; /* Limita a largura máxima de cada card */
-  box-sizing: border-box;
+  overflow: hidden;
 }
 
+.product-media {
+  aspect-ratio: 4 / 3;
+  background: #eef2f7;
+  border: 0;
+  cursor: pointer;
+  display: block;
+  padding: 0;
+  position: relative;
+  width: 100%;
 
-.container {
-    padding: 20px;
-    background-color: #EBEBEB;
+  img {
     height: 100%;
-    margin-left: 64px;
-    overflow: auto;
+    object-fit: cover;
+    width: 100%;
   }
-  
-  .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 16px;
-    margin-bottom: 20px;
-    border-radius: 8px; 
+}
+
+.status-pill {
+  background: #0f62cf;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  left: 12px;
+  padding: 7px 10px;
+  position: absolute;
+  top: 12px;
+}
+
+.product-info {
+  padding: 16px;
+}
+
+.product-head {
+  align-items: start;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+
+  h2 {
+    color: #202833;
+    font-size: 16px;
+    font-weight: 900;
+    line-height: 1.35;
+    margin: 0;
   }
-  
+
+  p {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 5px 0 0;
+  }
+
+  strong {
+    color: #202833;
+    font-size: 16px;
+    font-weight: 950;
+    white-space: nowrap;
+  }
+}
+
+.description {
+  color: #4f5967;
+  display: -webkit-box;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.45;
+  margin: 14px 0 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+
+  span {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    color: #4f5967;
+    font-size: 12px;
+    font-weight: 850;
+    padding: 6px 9px;
+  }
+}
+
+.card-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-top: 18px;
+
+  button[mat-stroked-button] {
+    border-radius: 8px;
+    color: #0f62cf;
+    font-weight: 850;
+  }
+}
+
+.danger-action {
+  background: #fff1f3;
+  color: #b42318;
+}
+
+@media (max-width: 820px) {
+  .page-header,
+  .header-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .search-field {
-    width: 400px;
-    height: 56px;
-    background-color: #FFFFFF;
-    border-radius: 26px;
-    border: none;
+    min-width: 0;
+    width: 100%;
   }
-
-  .products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  .product-card {
-    position: relative;
-    
-    .more-options {
-      position: absolute;
-      right: 8px;
-      top: 8px;
-    }
-  }
-  
-  .product-image {
-    height: 200px;
-    background-color: #eee;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 16px 0;
-  }
-  
-  
-  .description {
-    font-weight: bold;
-    margin: 8px 0;
-  }
-  
-  .details {
-    color: #666;
-  }
-
-  .new-product-btn{
-    height: 56px;
-  }
-
-  .new-product-btn mat-icon{
-    color: #ffffff;
-  }
-
-  @media (max-width: 767px) {
-    .search-field{
-      margin-right: 16px;
-    }
-    
-    .new-product-btn{
-      width: 50px;
-    }
-  }
-
-
-  .new-product-btn{
-    @include mat.button-overrides((
-     protected-container-shape: 16px,
-     protected-container-color: #206097,
-     protected-horizontal-padding: 51px,
-     protected-label-text-color: #FFFFFF,
-     protected-hover-state-layer-opacity: 0.4,
-    ));
-  }
-
-  .add-button{
-    @include mat.button-overrides((
-      outlined-label-text-color: #206097,
-    ));
-  }
-
-  .exclude-button{
-    @include mat.button-overrides((
-      filled-container-color: #206097,
-    )); 
-  }
-
-  .search-field {
-    @include mat.form-field-overrides((
-      outlined-container-shape: 26px,
-      outlined-input-text-placeholder-color: #206097,
-      outlined-focus-outline-color: #206097,
-    ));
-  }
+}

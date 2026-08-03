@@ -22,6 +22,22 @@ export const routes: Routes = [
     canActivate: [GuestGuard],
   },
   {
+    path: 'recuperar-senha',
+    loadComponent: () => import('@app/features/auth/password-recovery/password-recovery.component').then(
+      m => m.PasswordRecoveryComponent,
+    ),
+    data: { animation: 'password-recovery' },
+    canActivate: [GuestGuard],
+  },
+  {
+    path: 'nova-senha',
+    loadComponent: () => import('@app/features/auth/new-password/new-password.component').then(
+      m => m.NewPasswordComponent,
+    ),
+    data: { animation: 'new-password' },
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'auth/callback',
     loadComponent: () => import('@app/features/auth/auth-callback/auth-callback.component').then(
       m => m.AuthCallbackComponent,
@@ -60,13 +76,41 @@ export const routes: Routes = [
     children: [
       {
         path: 'dash',
-        loadComponent: () => import('@app/features/admin/orders/order-list/pedidos.component'),
+        loadComponent: () => import('@app/features/admin/dashboard/admin-dashboard/admin-dashboard.component').then(
+          m => m.AdminDashboardComponent,
+        ),
         data: { animation: 'dashboard' },
       },
       {
         path: 'products',
         loadComponent: () => import('@app/features/admin/products/product-list/produtos.component'),
         data: { animation: 'products' },
+      },
+      {
+        path: 'orders',
+        loadComponent: () => import('@app/features/admin/orders/order-list/pedidos.component'),
+        data: { animation: 'orders' },
+      },
+      {
+        path: 'stock',
+        loadComponent: () => import('@app/features/admin/inventory/inventory-page/inventory-page.component').then(
+          m => m.InventoryPageComponent,
+        ),
+        data: { animation: 'stock' },
+      },
+      {
+        path: 'deliveries',
+        loadComponent: () => import('@app/features/admin/deliveries/deliveries-page/deliveries-page.component').then(
+          m => m.DeliveriesPageComponent,
+        ),
+        data: { animation: 'deliveries' },
+      },
+      {
+        path: 'offers',
+        loadComponent: () => import('@app/features/admin/offers/offer-management/offer-management.component').then(
+          m => m.OfferManagementComponent,
+        ),
+        data: { animation: 'offers' },
       },
       {
         path: 'clients',

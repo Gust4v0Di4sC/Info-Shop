@@ -52,9 +52,14 @@ export default class ClientesComponent implements OnInit {
 
   openClientForm(client?: Client): void {
     const dialogRef = this.dialog.open(ClienteFormComponent, {
-      width: '500px',
+      width: '720px',
+      maxWidth: '96vw',
+      maxHeight: '92vh',
+      autoFocus: false,
+      enterAnimationDuration: '400ms',
+      exitAnimationDuration: '300ms',
       data: client ? { client } : {},
-      panelClass: 'custom-modal',
+      panelClass: 'admin-form-dialog',
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -66,13 +71,16 @@ export default class ClientesComponent implements OnInit {
 
   openEditForm(client: Client): void {
     const dialogRef = this.dialog.open(ClienteFormComponent, {
-      width: '500px',
+      width: '720px',
+      maxWidth: '96vw',
+      maxHeight: '92vh',
+      autoFocus: false,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: {
         client: client,
       },
-      panelClass: 'custom-modal',
+      panelClass: 'admin-form-dialog',
     });
 
     dialogRef.afterClosed().subscribe(result => {

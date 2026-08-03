@@ -35,6 +35,10 @@ export class CartServiceService {
     return from(this.clearUserCart());
   }
 
+  checkoutCart(): Observable<void> {
+    return from(this.createOrdersFromCart());
+  }
+
   incrementCart() {
     this.cartCount.next(this.cartCount.value + 1);
   }
@@ -199,5 +203,62 @@ export class CartServiceService {
 
     throwSupabaseError(result);
     this.cartCount.next(0);
+  }
+
+  private async createOrdersFromCart(): Promise<void> {
+    const userId = await this.getUserId();
+    const items = await this.loadCartItems();
+
+    if (items.length === 0) {
+      throw new Error('Carrinho vazio.');
+    }
+
+    const profileResult = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (profileResult.error) {
+      throw profileResult.error;
+    }
+
+    const customerName = profileResult.data.full_name || profileResult.data.email;
+    const address = profileResult.data.address || 'Endereco a confirmar';
+
+    const orders = items
+      .filter(item => item.product)
+      .map(item => ({
+        name: customerName,
+        userId: userId,
+        address,
+        productId: item.product_id,
+        product: item.product?.name || '',
+        imageProd: item.product?.imageUrl || null,
+        quantity: item.quantity,
+        total_amount: Number(item.product?.offer_price || item.product?.price || 0) * item.quantity,
+        status: 'open',
+      }));
+
+    if (orders.length === 0) {
+      throw new Error('Nenhum produto valido no carrinho.');
+    }
+
+    const orderResult = await supabase.from('orders').insert(orders);
+    throwSupabaseError(orderResult);
+
+    await Promise.all(items.map(async item => {
+      if (!item.product) {
+        return;
+      }
+
+      const nextStock = Math.max(0, item.product.stock_quantity - item.quantity);
+      await supabase
+        .from('products')
+        .update({ stock_quantity: nextStock })
+        .eq('id', item.product_id);
+    }));
+
+    await this.clearUserCart();
   }
 }

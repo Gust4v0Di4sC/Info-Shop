@@ -21,7 +21,7 @@
         <p class="description">{{ product.description }}</p>
 
         <div class="price-row">
-          <strong>{{ product.price | brlCurrency }}</strong>
+          <strong>{{ displayPrice() | brlCurrency }}</strong>
           <span>12x sem juros</span>
         </div>
 

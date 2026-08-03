@@ -6,11 +6,12 @@ import { Order } from '@app/models/order.model';
 import { OrderService } from '@app/services/order.service';
 import { ConfirmDialogComponent } from '@app/shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
+import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { DisplayTextPipe } from '@app/shared/pipes/display-text.pipe';
 
 @Component({
   selector: 'app-pedidos',
-  imports: [SharedMaterialModule, DisplayTextPipe],
+  imports: [SharedMaterialModule, DisplayTextPipe, BrlCurrencyPipe],
   templateUrl: './pedidos.component.html',
   styleUrl: './pedidos.component.scss',
 })
@@ -64,11 +65,14 @@ export default class PedidosComponent implements OnInit {
 
   openOrderForm(order?: Order): void {
     const dialogRef = this.dialog.open(PedidoFormComponent, {
-      width: '500px',
+      width: '720px',
+      maxWidth: '96vw',
+      maxHeight: '92vh',
+      autoFocus: false,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: order ? { order } : {},
-      panelClass: 'custom-modal',
+      panelClass: 'admin-form-dialog',
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -80,13 +84,16 @@ export default class PedidosComponent implements OnInit {
 
   openEditForm(order: Order): void {
     const dialogRef = this.dialog.open(PedidoFormComponent, {
-      width: '500px',
+      width: '720px',
+      maxWidth: '96vw',
+      maxHeight: '92vh',
+      autoFocus: false,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: {
         order: order,
       },
-      panelClass: 'custom-modal',
+      panelClass: 'admin-form-dialog',
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -94,6 +101,19 @@ export default class PedidosComponent implements OnInit {
         this.loadOrders();
       }
     });
+  }
+
+  statusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      open: 'Aberto',
+      confirmed: 'Confirmado',
+      preparing: 'Em preparo',
+      shipped: 'Enviado',
+      delivered: 'Entregue',
+      canceled: 'Cancelado',
+    };
+
+    return labels[status] || status;
   }
 
   deleteOrder(id: string): void {

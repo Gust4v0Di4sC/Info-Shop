@@ -1,10 +1,9 @@
 
 <div class="page-container">
-  <div>
+  <div class="route-frame">
     <router-outlet #outlet="outlet"
-    [animate.enter]="getAnimationClass(outlet, 'enter')"
-    [animate.leave]="getAnimationClass(outlet, 'leave')"
-  ></router-outlet> 
+      [animate.enter]="getAnimationClass(outlet, 'enter')"
+      [animate.leave]="getAnimationClass(outlet, 'leave')">
+    </router-outlet>
+  </div>
 </div>
-</div>
-

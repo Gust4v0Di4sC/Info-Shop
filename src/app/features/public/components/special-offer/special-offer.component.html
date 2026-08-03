@@ -1,34 +1,37 @@
-<section id="ofertas" class="offer-section">
-  <div class="offer-container">
-    <div class="offer-copy">
-      <span class="offer-badge">Oferta por tempo limitado</span>
-      <h1>UltraBook Pro M2 com 24% de desconto</h1>
-      <p>
-        Processador de ultima geracao, 16GB de RAM e 512GB de SSD. Ideal para
-        trabalho, estudo e edicao com garantia estendida inclusa.
-      </p>
+@if (!isLoading && product) {
+  <section id="ofertas" class="offer-section">
+    <div class="offer-container">
+      <div class="offer-copy">
+        <span class="offer-badge">{{ product.offer_badge }}</span>
+        <h1>{{ product.name }}</h1>
+        <p>{{ product.description }}</p>
 
-      <div class="progress-bar" aria-label="Estoque promocional vendido">
-        <div class="progress-fill"></div>
+        <div class="progress-bar" aria-label="Estoque promocional vendido">
+          <div class="progress-fill" [style.width.%]="product.offer_sold_percent"></div>
+        </div>
+        <span class="stock-note">{{ product.offer_sold_percent }}% do estoque promocional ja foi vendido</span>
+
+        <div class="price-section">
+          <strong class="price">{{ offerPrice() | brlCurrency }}</strong>
+          @if (product.offer_price) {
+            <span class="old-price">{{ product.price | brlCurrency }}</span>
+          }
+          @if (savings() > 0) {
+            <span class="discount-badge">Economize {{ savings() | brlCurrency }}</span>
+          }
+        </div>
+
+        <strong class="countdown-label">Termina em {{ countdown }}</strong>
+
+        <div class="buttons">
+          <a class="buy-now" [routerLink]="['/produto', product.id]">Comprar agora</a>
+          <button class="add-to-cart" type="button" (click)="addToCart()">Adicionar ao carrinho</button>
+        </div>
       </div>
-      <span class="stock-note">72% do estoque promocional ja foi vendido</span>
 
-      <div class="price-section">
-        <strong class="price">R$ 1.890,00</strong>
-        <span class="old-price">R$ 2.490,00</span>
-        <span class="discount-badge">Economize R$ 600</span>
-      </div>
-
-      <strong class="countdown-label">Termina em {{ countdown }}</strong>
-
-      <div class="buttons">
-        <button class="buy-now" type="button">Comprar agora</button>
-        <button class="add-to-cart" type="button">Adicionar ao carrinho</button>
+      <div class="offer-media">
+        <img [src]="product.imageUrl || '/productCTA.png'" [alt]="product.name">
       </div>
     </div>
-
-    <div class="offer-media">
-      <img src="/productCTA.png" alt="UltraBook Pro M2 em destaque">
-    </div>
-  </div>
-</section>
+  </section>
+}

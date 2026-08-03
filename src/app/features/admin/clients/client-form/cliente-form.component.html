@@ -1,110 +1,91 @@
-<div class="form-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>{{ isEditMode ? 'edit' : 'person'}}</mat-icon>
-        {{ isEditMode ? 'Editar Cliente' : 'Novo Cliente' }}
-      </mat-card-title>
-    </mat-card-header>
+<form class="admin-form" [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+  <header class="dialog-header">
+    <div class="title-icon">
+      <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+    </div>
+    <div>
+      <p class="eyebrow">Clientes</p>
+      <h2>{{ isEditMode ? 'Editar cliente' : 'Novo cliente' }}</h2>
+      <span>{{ isEditMode ? 'Atualize o perfil de atendimento.' : 'Cadastre dados para pedidos manuais.' }}</span>
+    </div>
+  </header>
 
-    <mat-card-content>
-      <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
-        <div class="image-upload-container">
-          <div class="image-upload"
-            [class.has-image]="imagePreview"
-            (click)="fileInput.click()">
-            <input #fileInput type="file"
-              accept="image/*"
-              (change)="onFileSelected($event)"
-              style="display: none">
-            @if (!imagePreview) {
-              <mat-icon>upload</mat-icon>
-              <span>Upload da imagem</span>
-            }
-            @if (imagePreview) {
-              <img [src]="imagePreview" alt="Preview">
-            }
-          </div>
-        </div>
+  <mat-dialog-content class="dialog-content">
+    <section class="media-section" aria-label="Imagem do cliente">
+      <button
+        class="image-upload"
+        type="button"
+        [class.has-image]="imagePreview"
+        (click)="fileInput.click()">
+        <input
+          #fileInput
+          type="file"
+          accept="image/*"
+          (change)="onFileSelected($event)">
+        @if (imagePreview) {
+          <img [src]="imagePreview" alt="Previa do cliente">
+        } @else {
+          <mat-icon>account_circle</mat-icon>
+          <span>Adicionar foto</span>
+        }
+      </button>
 
-        <div class="form-fields">
-          <mat-form-field appearance="outline">
-            <mat-label>Nome</mat-label>
-            <input matInput formControlName="name" placeholder="Nome completo">
-            @if (clientForm.get('name')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('name')}}
-              </mat-error>
-            }
-            <button mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+      <div class="media-copy">
+        <strong>Foto do cliente</strong>
+        <span>Opcional, mas ajuda na identificacao rapida.</span>
+      </div>
+    </section>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Idade</mat-label>
-            <input matInput formControlName="age" placeholder="Idade">
-            @if (clientForm.get('age')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('age')}}
-              </mat-error>
-            }
-            <button mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="wide">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="name" placeholder="Nome completo">
+        @if (clientForm.get('name')?.invalid) {
+          <mat-error>{{ getErrorMessage('name') }}</mat-error>
+        }
+      </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Cpf</mat-label>
-            <input matInput formControlName="cpf" placeholder="CPF">
-            @if (clientForm.get('cpf')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('cpf')}}
-              </mat-error>
-            }
-            <button mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Idade</mat-label>
+        <input matInput type="number" formControlName="age" placeholder="Idade">
+        @if (clientForm.get('age')?.invalid) {
+          <mat-error>{{ getErrorMessage('age') }}</mat-error>
+        }
+      </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Endereço</mat-label>
-            <input matInput formControlName="address" placeholder="Endereço">
-            @if (clientForm.get('address')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('address')}}
-              </mat-error>
-            }
-            <button mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>CPF</mat-label>
+        <input matInput formControlName="cpf" placeholder="000.000.000-00">
+        @if (clientForm.get('cpf')?.invalid) {
+          <mat-error>{{ getErrorMessage('cpf') }}</mat-error>
+        }
+      </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Telefone</mat-label>
-            <input matInput formControlName="phone" placeholder="Telefone">
-            @if (clientForm.get('phone')?.invalid) {
-              <mat-error>
-                {{getErrorMessage('phone')}}
-              </mat-error>
-            }
-            <button mat-icon-button matSuffix>
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-        </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Telefone</mat-label>
+        <input matInput formControlName="phone" placeholder="(00) 00000-0000">
+        @if (clientForm.get('phone')?.invalid) {
+          <mat-error>{{ getErrorMessage('phone') }}</mat-error>
+        }
+      </mat-form-field>
 
-        <div class="form-actions">
-          <button class="edit-button" mat-raised-button color="primary" type="submit">
-            <mat-icon>add</mat-icon>
-            {{ isEditMode ? 'Editar Cliente' : 'Inserir Cliente' }}
-          </button>
-          <button class="cancel-button" mat-raised-button type="button" (click)="onCancel()">
-            <mat-icon>close</mat-icon>
-            Cancelar
-          </button>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</div>
+      <mat-form-field appearance="outline" class="wide">
+        <mat-label>Endereco</mat-label>
+        <input matInput formControlName="address" placeholder="Rua, numero, bairro e cidade">
+        @if (clientForm.get('address')?.invalid) {
+          <mat-error>{{ getErrorMessage('address') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button class="secondary-action" mat-stroked-button type="button" (click)="onCancel()">
+      Cancelar
+    </button>
+    <button class="primary-action" mat-flat-button type="submit">
+      <mat-icon>{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+      {{ isEditMode ? 'Salvar cliente' : 'Inserir cliente' }}
+    </button>
+  </mat-dialog-actions>
+</form>

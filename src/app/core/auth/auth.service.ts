@@ -117,6 +117,34 @@ export class AuthService {
     );
   }
 
+  requestPasswordReset(email: string) {
+    return from(
+      supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: this.getAuthCallbackUrl(),
+      }),
+    ).pipe(
+      map(({ error }) => {
+        if (error) {
+          throw error;
+        }
+
+        return true;
+      }),
+    );
+  }
+
+  updatePassword(password: string) {
+    return from(supabase.auth.updateUser({ password })).pipe(
+      map(({ error }) => {
+        if (error) {
+          throw error;
+        }
+
+        return true;
+      }),
+    );
+  }
+
   login(email: string, password: string) {
     return from(supabase.auth.signInWithPassword({ email, password })).pipe(
       map(({ data, error }) => {
@@ -205,6 +233,12 @@ export class AuthService {
     }
 
     this.currentUserSubject.next(data.session.user);
+
+    if (type === 'recovery') {
+      await this.router.navigate(['/nova-senha']);
+      return;
+    }
+
     await this.finishSignIn(data.session.user);
   }
 

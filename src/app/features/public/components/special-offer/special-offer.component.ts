@@ -1,18 +1,48 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Product } from '@app/models/product.model';
+import { CartServiceService } from '@app/services/cart-service.service';
+import { ProductService } from '@app/services/product.service';
+import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 
 @Component({
   selector: 'app-special-offer',
+  imports: [BrlCurrencyPipe, RouterLink],
   templateUrl: './special-offer.component.html',
   styleUrls: ['./special-offer.component.scss']
 })
 export class SpecialOfferComponent implements OnInit, OnDestroy {
   countdown: string = '';
+  product: Product | null = null;
+  isLoading = true;
+  errorMessage = '';
   private intervalId: any;
 
+  constructor(
+    private productService: ProductService,
+    private cartService: CartServiceService,
+  ) {}
+
   ngOnInit(): void {
-    const targetTime = new Date().getTime() + 1000 * 60 * 50; // 50 minutos
-    this.updateCountdown(targetTime);
-    this.intervalId = setInterval(() => this.updateCountdown(targetTime), 1000);
+    this.productService.getOfferProduct().subscribe({
+      next: product => {
+        this.product = product;
+        this.isLoading = false;
+
+        if (product) {
+          const targetTime = product.offer_ends_at
+            ? new Date(product.offer_ends_at).getTime()
+            : new Date().getTime() + 1000 * 60 * 50;
+
+          this.updateCountdown(targetTime);
+          this.intervalId = setInterval(() => this.updateCountdown(targetTime), 1000);
+        }
+      },
+      error: () => {
+        this.errorMessage = 'Nao foi possivel carregar a oferta.';
+        this.isLoading = false;
+      },
+    });
   }
 
   updateCountdown(target: number) {
@@ -37,5 +67,25 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearInterval(this.intervalId);
+  }
+
+  addToCart(): void {
+    if (!this.product) {
+      return;
+    }
+
+    this.cartService.addProduct(this.product.id).subscribe();
+  }
+
+  offerPrice(): number {
+    return this.product?.offer_price || this.product?.price || 0;
+  }
+
+  savings(): number {
+    if (!this.product?.offer_price) {
+      return 0;
+    }
+
+    return Math.max(0, this.product.price - this.product.offer_price);
   }
 }
