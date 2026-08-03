@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { supabase } from '@app/core/supabase/supabase.client';
+import { AuthService } from '@app/core/auth/auth.service';
+import { ADMIN_DEFAULT_ROUTE, AdminRole } from '@app/models/admin.model';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +30,10 @@ export class AuthGuard implements CanActivate {
   providedIn: 'root',
 })
 export class GuestGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   async canActivate(): Promise<boolean> {
     const { data, error } = await supabase.auth.getUser();
@@ -37,14 +42,9 @@ export class GuestGuard implements CanActivate {
       return true;
     }
 
-    const adminResult = await supabase
-      .from('admins')
-      .select('id')
-      .eq('user_id', data.user.id)
-      .eq('active', true)
-      .maybeSingle();
+    const adminRole = await this.authService.getAdminRole(data.user.id);
 
-    await this.router.navigate([adminResult.data ? '/dash' : '/perfil']);
+    await this.router.navigate([adminRole ? ADMIN_DEFAULT_ROUTE[adminRole] : '/perfil']);
     return false;
   }
 }
@@ -53,9 +53,12 @@ export class GuestGuard implements CanActivate {
   providedIn: 'root',
 })
 export class AdminGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
-  async canActivate(): Promise<boolean> {
+  async canActivate(route: ActivatedRouteSnapshot): Promise<boolean> {
     const { data, error } = await supabase.auth.getUser();
 
     if (error || !data.user) {
@@ -63,15 +66,17 @@ export class AdminGuard implements CanActivate {
       return false;
     }
 
-    const adminResult = await supabase
-      .from('admins')
-      .select('id')
-      .eq('user_id', data.user.id)
-      .eq('active', true)
-      .maybeSingle();
+    const adminRole = await this.authService.getAdminRole(data.user.id);
 
-    if (adminResult.error || !adminResult.data) {
+    if (!adminRole) {
       await this.router.navigate(['/perfil']);
+      return false;
+    }
+
+    const allowedRoles = route.data['allowedRoles'] as AdminRole[] | undefined;
+
+    if (allowedRoles?.length && !allowedRoles.includes(adminRole)) {
+      await this.router.navigate([ADMIN_DEFAULT_ROUTE[adminRole]]);
       return false;
     }
 

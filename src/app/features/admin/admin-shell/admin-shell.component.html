@@ -15,7 +15,7 @@
       </button>
 
       <mat-nav-list class="nav-list">
-        @for (item of navItems; track item.route) {
+        @for (item of visibleNavItems(); track item.route) {
           <a
             mat-list-item
             class="nav-link"
@@ -31,6 +31,10 @@
       </mat-nav-list>
 
       <div class="sidebar-footer">
+        <div class="role-chip">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>{{ roleLabel() }}</span>
+        </div>
         <button class="logout-button" type="button" mat-stroked-button (click)="logout()">
           <mat-icon>logout</mat-icon>
           <span>Sair</span>

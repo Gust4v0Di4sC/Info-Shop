@@ -79,43 +79,50 @@ export const routes: Routes = [
         loadComponent: () => import('@app/features/admin/dashboard/admin-dashboard/admin-dashboard.component').then(
           m => m.AdminDashboardComponent,
         ),
-        data: { animation: 'dashboard' },
+        canActivate: [AdminGuard],
+        data: { animation: 'dashboard', allowedRoles: ['gerente'] },
       },
       {
         path: 'products',
         loadComponent: () => import('@app/features/admin/products/product-list/produtos.component'),
-        data: { animation: 'products' },
+        canActivate: [AdminGuard],
+        data: { animation: 'products', allowedRoles: ['gerente', 'estoquista'] },
       },
       {
         path: 'orders',
         loadComponent: () => import('@app/features/admin/orders/order-list/pedidos.component'),
-        data: { animation: 'orders' },
+        canActivate: [AdminGuard],
+        data: { animation: 'orders', allowedRoles: ['gerente', 'vendedor'] },
       },
       {
         path: 'stock',
         loadComponent: () => import('@app/features/admin/inventory/inventory-page/inventory-page.component').then(
           m => m.InventoryPageComponent,
         ),
-        data: { animation: 'stock' },
+        canActivate: [AdminGuard],
+        data: { animation: 'stock', allowedRoles: ['gerente', 'estoquista'] },
       },
       {
         path: 'deliveries',
         loadComponent: () => import('@app/features/admin/deliveries/deliveries-page/deliveries-page.component').then(
           m => m.DeliveriesPageComponent,
         ),
-        data: { animation: 'deliveries' },
+        canActivate: [AdminGuard],
+        data: { animation: 'deliveries', allowedRoles: ['gerente', 'vendedor'] },
       },
       {
         path: 'offers',
         loadComponent: () => import('@app/features/admin/offers/offer-management/offer-management.component').then(
           m => m.OfferManagementComponent,
         ),
-        data: { animation: 'offers' },
+        canActivate: [AdminGuard],
+        data: { animation: 'offers', allowedRoles: ['gerente', 'vendedor'] },
       },
       {
         path: 'clients',
         loadComponent: () => import('@app/features/admin/clients/client-list/clientes.component'),
-        data: { animation: 'clients' },
+        canActivate: [AdminGuard],
+        data: { animation: 'clients', allowedRoles: ['gerente', 'vendedor'] },
       },
     ],
   },

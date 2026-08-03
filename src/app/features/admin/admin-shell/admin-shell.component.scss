@@ -159,6 +159,41 @@
   right: 16px;
 }
 
+.role-chip {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  color: #ffffff;
+  display: flex;
+  font-size: 12px;
+  font-weight: 850;
+  gap: 8px;
+  height: 40px;
+  justify-content: center;
+  margin-bottom: 10px;
+  overflow: hidden;
+  padding: 0;
+
+  mat-icon {
+    flex: 0 0 auto;
+  }
+
+  span {
+    display: none;
+    white-space: nowrap;
+  }
+}
+
+.sidebar-panel.expanded .role-chip {
+  justify-content: flex-start;
+  padding: 0 12px;
+
+  span {
+    display: inline;
+  }
+}
+
 .logout-button {
   @include mat.button-overrides((
     outlined-outline-color: rgba(255, 255, 255, 0.45),

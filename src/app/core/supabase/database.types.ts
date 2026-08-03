@@ -13,21 +13,21 @@ export type Database = {
         Row: {
           id: string;
           user_id: string;
-          role: string;
+          role: 'gerente' | 'vendedor' | 'estoquista';
           active: boolean;
           created_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
-          role?: string;
+          role?: 'gerente' | 'vendedor' | 'estoquista';
           active?: boolean;
           created_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
-          role?: string;
+          role?: 'gerente' | 'vendedor' | 'estoquista';
           active?: boolean;
           created_at?: string;
         };
@@ -302,7 +302,27 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      clear_active_offer: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      set_active_offer: {
+        Args: {
+          product_id: string;
+          offer_price_value: number | null;
+          offer_badge_value: string;
+          offer_ends_at_value: string | null;
+          offer_sold_percent_value: number;
+        };
+        Returns: Database['public']['Tables']['products']['Row'];
+      };
+      set_product_featured: {
+        Args: {
+          product_id: string;
+          featured: boolean;
+        };
+        Returns: Database['public']['Tables']['products']['Row'];
+      };
     };
     Enums: {
       [_ in never]: never;
