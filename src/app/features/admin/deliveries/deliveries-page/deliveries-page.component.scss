@@ -1,0 +1,153 @@
+@use '@angular/material' as mat;
+
+.admin-page {
+  display: grid;
+  gap: 24px;
+}
+
+.page-header {
+  align-items: end;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+
+  h1 {
+    color: #202833;
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  span {
+    color: #667085;
+    display: block;
+    font-size: 14px;
+    font-weight: 650;
+    margin-top: 10px;
+  }
+}
+
+.eyebrow {
+  color: #0f62cf;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.primary-action {
+  background: #0f62cf;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 850;
+  height: 44px;
+}
+
+.state-card,
+.delivery-card {
+  background: #ffffff;
+  border: 1px solid #dfe5ed;
+  border-radius: 8px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+}
+
+.state-card {
+  color: #667085;
+  font-weight: 800;
+  padding: 24px;
+}
+
+.error-state {
+  color: #b42318;
+}
+
+.deliveries-list {
+  display: grid;
+  gap: 16px;
+}
+
+.delivery-card {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(420px, 1.2fr);
+  padding: 18px;
+}
+
+.delivery-main {
+  min-width: 0;
+
+  h2 {
+    color: #202833;
+    font-size: 18px;
+    font-weight: 900;
+    margin: 12px 0 8px;
+  }
+
+  p {
+    color: #4f5967;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  small {
+    color: #667085;
+    display: block;
+    font-size: 12px;
+    font-weight: 750;
+    margin-top: 10px;
+  }
+}
+
+.status-pill {
+  background: #eef6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  color: #0f62cf;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 7px 10px;
+}
+
+.delivery-controls {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+mat-form-field {
+  @include mat.form-field-overrides((
+    outlined-container-shape: 8px,
+    outlined-outline-color: #d9e1eb,
+    outlined-focus-outline-color: #0f62cf,
+  ));
+}
+
+.notes-field {
+  grid-column: 2;
+}
+
+@media (max-width: 1080px) {
+  .delivery-card {
+    grid-template-columns: 1fr;
+  }
+
+  .notes-field {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .delivery-controls {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,47 +1,49 @@
-<mat-sidenav-container class="sidenav-container container">
-    <mat-sidenav #sidenav class="stylenav" mode="side" opened class="custom-sidenav" 
-    [class.open]="isOpen"
-    (mouseleave)="closeMenu()"
-    (mouseenter)="openMenu()"
-     fixedInViewport="true">
-    <div class="logo-nav">
-        <img src="/Logo2.svg" alt="InfoShop Logo" class="logo">
-      </div>
+<mat-sidenav-container class="admin-shell">
+  <mat-sidenav
+    class="admin-sidebar"
+    mode="side"
+    opened
+    fixedInViewport="true">
+    <div
+      class="sidebar-panel"
+      [class.expanded]="isExpanded"
+      (mouseenter)="expandSidebar()"
+      (mouseleave)="collapseSidebar()">
+      <button class="brand" type="button" routerLink="/" aria-label="Voltar para a loja">
+        <img class="brand-icon" src="/icon.svg" alt="InfoShop">
+        <img class="brand-logo" src="/Logo1.svg" alt="InfoShop Logo">
+      </button>
+
       <mat-nav-list class="nav-list">
-        <a mat-list-item routerLink="/dash" routerLinkActive="active">
-          <div class="nav-item-content">
-            <i class="material-icons nav-icon">home</i>
-            <span class="nav-text">Início</span>
-          </div>
-        </a>
-        <a mat-list-item routerLink="/products" routerLinkActive="active">
-          <div class="nav-item-content">
-            <i class="material-icons nav-icon">storefront</i>
-            <span class="nav-text">Produtos</span>
-          </div>
-        </a>
-        <a mat-list-item routerLink="/clients" routerLinkActive="active">
-          <div class="nav-item-content">
-            <i class="material-icons nav-icon">people</i>
-            <span class="nav-text">Clientes</span>
-          </div>
-        </a>
+        @for (item of navItems; track item.route) {
+          <a
+            mat-list-item
+            class="nav-link"
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.route === '/dash' }">
+            <span class="nav-link-content">
+              <mat-icon>{{ item.icon }}</mat-icon>
+              <span class="nav-label">{{ item.label }}</span>
+            </span>
+          </a>
+        }
       </mat-nav-list>
-      
-        
-        <div class="logout-container">
-            <button class="logout-button" mat-icon-button  (click)="logout()">
-              <i class="material-icons">logout</i>
-            </button>
-          </div>
-    </mat-sidenav>
-    <mat-sidenav-content class="content" >
-      <div>
-        <router-outlet
-          #outlet="outlet"
-          [animate.enter]="'nav-animation-enter'"
-        [animate.leave]="'nav-animation-leave'"
-      ></router-outlet>
+
+      <div class="sidebar-footer">
+        <button class="logout-button" type="button" mat-stroked-button (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Sair</span>
+        </button>
       </div>
-    </mat-sidenav-content>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="admin-content">
+    <router-outlet
+      #outlet="outlet"
+      [animate.enter]="'nav-animation-enter'"
+      [animate.leave]="'nav-animation-leave'">
+    </router-outlet>
+  </mat-sidenav-content>
 </mat-sidenav-container>

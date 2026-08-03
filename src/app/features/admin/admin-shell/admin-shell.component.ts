@@ -12,18 +12,28 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
 export class AdminShellComponent {
   private authService = inject(AuthService);
 
-  isOpen = false;
+  isExpanded = false;
+
+  navItems = [
+    { label: 'Dashboard', icon: 'dashboard', route: '/dash' },
+    { label: 'Produtos', icon: 'storefront', route: '/products' },
+    { label: 'Pedidos', icon: 'receipt_long', route: '/orders' },
+    { label: 'Estoque', icon: 'inventory_2', route: '/stock' },
+    { label: 'Entregas', icon: 'local_shipping', route: '/deliveries' },
+    { label: 'Ofertas', icon: 'sell', route: '/offers' },
+    { label: 'Clientes', icon: 'people', route: '/clients' },
+  ];
 
   prepareRoute(outlet: RouterOutlet) {
     return outlet?.activatedRouteData?.['animation'] ?? 'default';
   }
 
-  openMenu() {
-    this.isOpen = true;
+  expandSidebar(): void {
+    this.isExpanded = true;
   }
 
-  closeMenu() {
-    this.isOpen = false;
+  collapseSidebar(): void {
+    this.isExpanded = false;
   }
 
   logout(): void {

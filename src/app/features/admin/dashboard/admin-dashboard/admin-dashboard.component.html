@@ -1,0 +1,141 @@
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Painel administrativo</p>
+      <h1>Overview da loja</h1>
+      <span>Produtos, pedidos, clientes, estoque e entregas em uma unica visao.</span>
+    </div>
+
+    <button mat-flat-button class="primary-action" type="button" (click)="loadOverview()">
+      <mat-icon>refresh</mat-icon>
+      Atualizar
+    </button>
+  </header>
+
+  @if (isLoading) {
+    <div class="state-card">Carregando indicadores...</div>
+  } @else if (errorMessage) {
+    <div class="state-card error-state">{{ errorMessage }}</div>
+  } @else if (overview) {
+    <div class="metrics-grid">
+      <article class="metric-card">
+        <mat-icon>inventory_2</mat-icon>
+        <span>Produtos</span>
+        <strong>{{ overview.totals.products }}</strong>
+      </article>
+      <article class="metric-card">
+        <mat-icon>receipt_long</mat-icon>
+        <span>Pedidos abertos</span>
+        <strong>{{ overview.totals.openOrders }}</strong>
+      </article>
+      <article class="metric-card">
+        <mat-icon>local_shipping</mat-icon>
+        <span>Entregas</span>
+        <strong>{{ overview.totals.deliveries }}</strong>
+      </article>
+      <article class="metric-card">
+        <mat-icon>shopping_cart</mat-icon>
+        <span>Itens em carrinhos</span>
+        <strong>{{ overview.totals.cartItems }}</strong>
+      </article>
+      <article class="metric-card">
+        <mat-icon>people</mat-icon>
+        <span>Usuarios</span>
+        <strong>{{ overview.totals.users }}</strong>
+      </article>
+      <article class="metric-card">
+        <mat-icon>warehouse</mat-icon>
+        <span>Unidades em estoque</span>
+        <strong>{{ overview.totals.inventoryUnits }}</strong>
+      </article>
+    </div>
+
+    <div class="content-grid">
+      <article class="panel offer-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Landing page</p>
+            <h2>Oferta ativa</h2>
+          </div>
+          <a routerLink="/offers">Gerenciar</a>
+        </div>
+
+        @if (overview.activeOffer) {
+          <div class="offer-card">
+            <img [src]="overview.activeOffer.imageUrl || '/productCTA.png'" [alt]="overview.activeOffer.name">
+            <div>
+              <strong>{{ overview.activeOffer.name }}</strong>
+              <span>{{ overview.activeOffer.offer_badge }}</span>
+              <p>
+                {{ (overview.activeOffer.offer_price || overview.activeOffer.price) | brlCurrency }}
+              </p>
+            </div>
+          </div>
+        } @else {
+          <p class="empty-note">Nenhum produto marcado como oferta.</p>
+        }
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Estoque</p>
+            <h2>Alertas</h2>
+          </div>
+          <a routerLink="/stock">Abrir estoque</a>
+        </div>
+
+        @if (overview.lowStockProducts.length) {
+          <div class="compact-list">
+            @for (product of overview.lowStockProducts; track product.id) {
+              <div class="compact-row">
+                <span>{{ product.name }}</span>
+                <strong>{{ product.stock_quantity }} un.</strong>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="empty-note">Nenhum produto abaixo do minimo.</p>
+        }
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Pedidos</p>
+            <h2>Recentes</h2>
+          </div>
+          <a routerLink="/products">Produtos</a>
+        </div>
+
+        <div class="compact-list">
+          @for (order of overview.recentOrders; track order.id) {
+            <div class="compact-row">
+              <span>{{ order.name }} - {{ order.product }}</span>
+              <strong>{{ order.total_amount | brlCurrency }}</strong>
+            </div>
+          }
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Entregas</p>
+            <h2>Fila</h2>
+          </div>
+          <a routerLink="/deliveries">Acompanhar</a>
+        </div>
+
+        <div class="compact-list">
+          @for (delivery of overview.deliveryQueue; track delivery.id) {
+            <div class="compact-row">
+              <span>{{ delivery.customer_name }}</span>
+              <strong>{{ statusLabel(delivery.status) }}</strong>
+            </div>
+          }
+        </div>
+      </article>
+    </div>
+  }
+</section>

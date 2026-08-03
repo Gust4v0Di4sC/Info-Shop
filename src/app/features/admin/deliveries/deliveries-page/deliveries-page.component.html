@@ -1,0 +1,72 @@
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Entregas</p>
+      <h1>Acompanhamento logistico</h1>
+      <span>Pedidos criados por clientes e administradores entram nesta fila automaticamente.</span>
+    </div>
+
+    <button mat-flat-button class="primary-action" type="button" (click)="loadDeliveries()">
+      <mat-icon>refresh</mat-icon>
+      Atualizar
+    </button>
+  </header>
+
+  @if (isLoading) {
+    <div class="state-card">Carregando entregas...</div>
+  } @else if (errorMessage) {
+    <div class="state-card error-state">{{ errorMessage }}</div>
+  } @else if (deliveries.length === 0) {
+    <div class="state-card">Nenhuma entrega criada ainda.</div>
+  } @else {
+    <div class="deliveries-list">
+      @for (delivery of deliveries; track delivery.id) {
+        <article class="delivery-card">
+          <div class="delivery-main">
+            <span class="status-pill">{{ statusLabel(delivery.status) }}</span>
+            <h2>{{ delivery.customer_name || 'Cliente nao informado' }}</h2>
+            <p>{{ delivery.address || 'Endereco a confirmar' }}</p>
+            <small>Pedido {{ delivery.order_id || 'sem vinculo' }}</small>
+          </div>
+
+          <div class="delivery-controls">
+            <mat-form-field appearance="outline">
+              <mat-label>Status</mat-label>
+              <mat-select [value]="delivery.status" (selectionChange)="updateDelivery(delivery, 'status', $event.value)">
+                @for (status of statusOptions; track status.value) {
+                  <mat-option [value]="status.value">{{ status.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Transportadora</mat-label>
+              <input
+                matInput
+                [value]="delivery.carrier || ''"
+                (change)="updateDelivery(delivery, 'carrier', $any($event.target).value)">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Codigo de rastreio</mat-label>
+              <input
+                matInput
+                [value]="delivery.tracking_code || ''"
+                (change)="updateDelivery(delivery, 'tracking_code', $any($event.target).value)">
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="notes-field">
+            <mat-label>Observacoes</mat-label>
+            <textarea
+              matInput
+              rows="2"
+              [value]="delivery.notes || ''"
+              (change)="updateDelivery(delivery, 'notes', $any($event.target).value)">
+            </textarea>
+          </mat-form-field>
+        </article>
+      }
+    </div>
+  }
+</section>
