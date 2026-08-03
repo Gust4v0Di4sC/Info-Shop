@@ -235,7 +235,6 @@ upsert_auth_users as (
     email,
     encrypted_password,
     email_confirmed_at,
-    confirmed_at,
     raw_app_meta_data,
     raw_user_meta_data,
     created_at,
@@ -253,7 +252,6 @@ upsert_auth_users as (
     seed_admins.email,
     crypt(seed_admins.password, gen_salt('bf')),
     now(),
-    now(),
     '{"provider":"email","providers":["email"]}'::jsonb,
     jsonb_build_object('full_name', seed_admins.full_name, 'name', seed_admins.full_name),
     now(),
@@ -267,7 +265,6 @@ upsert_auth_users as (
     set email = excluded.email,
         encrypted_password = excluded.encrypted_password,
         email_confirmed_at = coalesce(auth.users.email_confirmed_at, excluded.email_confirmed_at),
-        confirmed_at = coalesce(auth.users.confirmed_at, excluded.confirmed_at),
         raw_app_meta_data = excluded.raw_app_meta_data,
         raw_user_meta_data = excluded.raw_user_meta_data,
         updated_at = now()
