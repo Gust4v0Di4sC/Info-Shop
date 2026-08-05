@@ -30,6 +30,8 @@
 
   color: white;
   font-size: 18px;
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
 }
 
 
@@ -46,6 +48,32 @@ html {
 body {
   background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
+}
+
+[appGsapPageMotion],
+[appGsapInteractiveMotion] {
+  backface-visibility: hidden;
+}
+
+[appGsapInteractiveMotion] {
+  button,
+  a,
+  .product-card,
+  .client-card,
+  .order-card,
+  .featured-card,
+  .inventory-row,
+  .delivery-card,
+  .category-card,
+  .cart-item {
+    transform-origin: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
 }
 
 

@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { gsap } from 'gsap';
 
 import { CartServiceService } from '@app/services/cart-service.service';
 import { Product } from '@app/models/product.model';
@@ -10,14 +11,14 @@ import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
   selector: 'app-featured-products',
   imports: [BrlCurrencyPipe, RouterLink],
   templateUrl: './featured-products.component.html',
-  styleUrls: ['./featured-products.component.scss']
+  styleUrls: ['./featured-products.component.scss'],
 })
 export class FeaturedProductsComponent implements OnInit {
   products: Product[] = [];
   isLoading = true;
   errorMessage = '';
 
-   @ViewChild('cartIcon', { static: false }) cartIcon!: ElementRef;
+  @ViewChild('cartIcon', { static: false }) cartIcon!: ElementRef;
 
   constructor(
     private cartService: CartServiceService,
@@ -37,7 +38,7 @@ export class FeaturedProductsComponent implements OnInit {
     });
   }
 
-  addToCart(event: MouseEvent, product: Product) {
+  addToCart(event: MouseEvent, product: Product): void {
     event.preventDefault();
     event.stopPropagation();
     this.cartService.addProduct(product.id).subscribe({
@@ -50,14 +51,14 @@ export class FeaturedProductsComponent implements OnInit {
     });
   }
 
-  animateToCart(event: MouseEvent) {
+  animateToCart(event: MouseEvent): void {
     const cartTopElement = document.querySelector('.cart-top-icon');
-    if (!cartTopElement) {
-    console.warn('Topo do carrinho não encontrado!');
-    return;
-  }
 
-    const sourceElement = (event.currentTarget as HTMLElement);
+    if (!cartTopElement) {
+      return;
+    }
+
+    const sourceElement = event.currentTarget as HTMLElement;
     const start = sourceElement.getBoundingClientRect();
     const end = cartTopElement.getBoundingClientRect();
 
@@ -66,27 +67,19 @@ export class FeaturedProductsComponent implements OnInit {
     clone.style.left = `${start.left + start.width / 2}px`;
     clone.style.top = `${start.top + start.height / 2}px`;
 
-
-  const icon = document.createElement('i');
-  icon.className = 'fas fa-shopping-cart';
-  clone.appendChild(icon);
-
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-shopping-cart';
+    clone.appendChild(icon);
     document.body.appendChild(clone);
 
-     const deltaX = end.left - start.left;
-  const deltaY = end.top - start.top;
-
-    const animation = clone.animate([
-    { transform: `translate(0px, 0px)`, opacity: 1 },
-    { transform: `translate(${deltaX}px, ${deltaY}px) scale(0.3)`, opacity: 0.2 }
-  ], {
-    duration: 700,
-    easing: 'ease-in-out'
-  });
-  
-
-    animation.onfinish = () => {
-      clone.remove();
-    };
+    gsap.to(clone, {
+      x: end.left - start.left,
+      y: end.top - start.top,
+      scale: 0.32,
+      autoAlpha: 0,
+      duration: 0.68,
+      ease: 'power3.inOut',
+      onComplete: () => clone.remove(),
+    });
   }
 }

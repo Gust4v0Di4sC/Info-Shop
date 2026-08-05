@@ -2,6 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
 import { ADMIN_ROLE_ACCESS, ADMIN_ROLE_LABELS, AdminRole } from '@app/models/admin.model';
+import { GsapInteractiveMotionDirective } from '@app/shared/directives/gsap-interactive-motion.directive';
+import { GsapPageMotionDirective } from '@app/shared/directives/gsap-page-motion.directive';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 
 interface AdminNavItem {
@@ -12,7 +14,13 @@ interface AdminNavItem {
 
 @Component({
   selector: 'app-admin-shell',
-  imports: [RouterOutlet, RouterModule, SharedMaterialModule],
+  imports: [
+    RouterOutlet,
+    RouterModule,
+    SharedMaterialModule,
+    GsapInteractiveMotionDirective,
+    GsapPageMotionDirective,
+  ],
   templateUrl: './admin-shell.component.html',
   styleUrls: ['./admin-shell.component.scss'],
 })
@@ -47,10 +55,6 @@ export class AdminShellComponent implements OnInit {
 
   roleLabel(): string {
     return this.adminRole ? ADMIN_ROLE_LABELS[this.adminRole] : 'Administrador';
-  }
-
-  prepareRoute(outlet: RouterOutlet) {
-    return outlet?.activatedRouteData?.['animation'] ?? 'default';
   }
 
   expandSidebar(): void {

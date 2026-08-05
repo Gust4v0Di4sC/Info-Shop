@@ -43,11 +43,7 @@
     </div>
   </mat-sidenav>
 
-  <mat-sidenav-content class="admin-content">
-    <router-outlet
-      #outlet="outlet"
-      [animate.enter]="'nav-animation-enter'"
-      [animate.leave]="'nav-animation-leave'">
-    </router-outlet>
+  <mat-sidenav-content class="admin-content" appGsapPageMotion appGsapInteractiveMotion>
+    <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

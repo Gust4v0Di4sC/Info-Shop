@@ -23,45 +23,15 @@ p {
 
 .page-container,
 .route-frame {
+  isolation: isolate;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   position: relative;
 }
 
-.route-fade-enter,
-.route-animation-enter,
-.fade-in-enter {
-  animation: routeFadeIn 180ms ease-out forwards;
+.route-frame > :not(router-outlet) {
   display: block;
+  min-height: 100vh;
   position: relative;
-  z-index: 1;
-}
-
-.route-fade-leave,
-.route-animation-leave,
-.fade-in-leave {
-  animation: routeFadeOut 120ms ease-in forwards;
-  pointer-events: none;
-  position: relative;
-  z-index: 0;
-}
-
-@keyframes routeFadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes routeFadeOut {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
+  transform-origin: center top;
 }
