@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
 import { ADMIN_ROLE_ACCESS, ADMIN_ROLE_LABELS, AdminRole } from '@app/models/admin.model';
+import { AdminThemeService } from '@app/core/theme/admin-theme.service';
 import { GsapInteractiveMotionDirective } from '@app/shared/directives/gsap-interactive-motion.directive';
 import { GsapPageMotionDirective } from '@app/shared/directives/gsap-page-motion.directive';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
@@ -26,6 +27,7 @@ interface AdminNavItem {
 })
 export class AdminShellComponent implements OnInit {
   private authService = inject(AuthService);
+  readonly themeService = inject(AdminThemeService);
 
   isExpanded = false;
   adminRole: AdminRole | null = null;
@@ -38,6 +40,7 @@ export class AdminShellComponent implements OnInit {
     { label: 'Entregas', icon: 'local_shipping', route: '/deliveries' },
     { label: 'Ofertas', icon: 'sell', route: '/offers' },
     { label: 'Clientes', icon: 'people', route: '/clients' },
+    { label: 'Personalizacao', icon: 'palette', route: '/customization' },
   ];
 
   async ngOnInit(): Promise<void> {

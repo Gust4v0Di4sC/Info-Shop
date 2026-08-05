@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { gsap } from 'gsap';
 
 import { supabase } from '@app/core/supabase/supabase.client';
+import { AdminThemeService } from '@app/core/theme/admin-theme.service';
 import { CartServiceService } from '@app/services/cart-service.service';
 
 @Component({
@@ -26,6 +27,7 @@ export class HeaderComponent implements OnInit {
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly ngZone = inject(NgZone);
   private readonly platformId = inject(PLATFORM_ID);
+  readonly themeService = inject(AdminThemeService);
 
   cartCount = 0;
   private hasCartCountSnapshot = false;

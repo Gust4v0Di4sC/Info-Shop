@@ -1,8 +1,8 @@
 @use '@angular/material' as mat;
 
 .admin-shell {
-  background: #f3f6f9;
-  color: #202833;
+  background: var(--background);
+  color: var(--foreground);
   min-height: 100vh;
 }
 
@@ -20,7 +20,7 @@
 }
 
 .sidebar-panel {
-  background: #368ad4;
+  background: var(--primary);
   border-right: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow: 12px 0 26px rgba(15, 23, 42, 0.05);
   height: 100vh;
@@ -230,7 +230,7 @@
 }
 
 .admin-content {
-  background: #f3f6f9;
+  background: var(--background);
   contain: paint;
   isolation: isolate;
   min-height: 100vh;

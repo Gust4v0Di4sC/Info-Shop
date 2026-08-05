@@ -1,0 +1,236 @@
+.personalization-page {
+  display: grid;
+  gap: 24px;
+}
+
+.page-header {
+  align-items: end;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+
+  h1 {
+    color: var(--foreground);
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  span {
+    color: var(--muted-foreground);
+    display: block;
+    font-size: 14px;
+    font-weight: 650;
+    margin-top: 10px;
+  }
+}
+
+.eyebrow {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.primary-action {
+  background: var(--primary);
+  border-radius: 8px;
+  color: #ffffff !important;
+  font-weight: 850;
+  height: 44px;
+
+  mat-icon {
+    color: #ffffff;
+  }
+}
+
+.personalization-grid {
+  align-items: start;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(340px, 0.8fr);
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+  color: var(--card-foreground);
+  padding: 22px;
+}
+
+.panel-head {
+  align-items: start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+
+  h2 {
+    color: var(--foreground);
+    font-size: 20px;
+    font-weight: 900;
+    margin: 0;
+  }
+}
+
+.selected-pill {
+  background: var(--secondary);
+  border-radius: 999px;
+  color: var(--secondary-foreground);
+  font-size: 12px;
+  font-weight: 850;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.theme-options {
+  display: grid;
+  gap: 12px;
+}
+
+.theme-option {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--foreground);
+  cursor: pointer;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 92px;
+  padding: 14px;
+  text-align: left;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+
+  &:hover,
+  &:focus-visible,
+  &.selected {
+    border-color: var(--ring);
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.10);
+  }
+
+  mat-icon {
+    color: var(--primary);
+  }
+}
+
+.theme-swatch {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, 28px);
+  height: 56px;
+  overflow: hidden;
+  width: 56px;
+}
+
+.theme-copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+
+  strong {
+    color: var(--foreground);
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  small {
+    color: var(--muted-foreground);
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.35;
+  }
+}
+
+.logo-preview {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  height: 164px;
+  justify-content: center;
+  margin-bottom: 18px;
+  padding: 20px;
+
+  img {
+    max-height: 96px;
+    max-width: 260px;
+    object-fit: contain;
+    width: auto;
+  }
+}
+
+.url-field {
+  display: grid;
+  gap: 8px;
+
+  span {
+    color: var(--foreground);
+    font-size: 13px;
+    font-weight: 850;
+  }
+
+  input {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--foreground);
+    font: inherit;
+    height: 44px;
+    outline: 0;
+    padding: 0 12px;
+
+    &:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 18%, transparent);
+    }
+  }
+}
+
+.logo-actions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.upload-button {
+  align-items: center;
+  background: var(--primary);
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 850;
+  gap: 8px;
+  height: 42px;
+  padding: 0 16px;
+
+  input {
+    display: none;
+  }
+
+  mat-icon {
+    color: #ffffff;
+  }
+}
+
+@media (max-width: 960px) {
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .personalization-grid {
+    grid-template-columns: 1fr;
+  }
+}

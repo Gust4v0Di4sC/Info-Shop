@@ -50,6 +50,196 @@ body {
   color: var(--mat-sys-on-surface);
 }
 
+.admin-theme {
+  --background: oklch(0.972 0.006 250);
+  --surface: oklch(0.95 0.008 250);
+  --foreground: oklch(0.2 0.03 258);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.03 258);
+  --muted: oklch(0.955 0.006 250);
+  --muted-foreground: oklch(0.44 0.02 258);
+  --primary: oklch(0.45 0.19 262);
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.92 0.035 258);
+  --secondary-foreground: oklch(0.3 0.1 262);
+  --success: oklch(0.48 0.13 155);
+  --border: oklch(0.89 0.01 255);
+  --ring: oklch(0.45 0.19 262);
+}
+
+.admin-theme-corporate {
+  --background: oklch(0.972 0.006 250);
+  --surface: oklch(0.95 0.008 250);
+  --foreground: oklch(0.2 0.03 258);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.03 258);
+  --muted: oklch(0.955 0.006 250);
+  --muted-foreground: oklch(0.44 0.02 258);
+  --primary: oklch(0.45 0.19 262);
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.92 0.035 258);
+  --secondary-foreground: oklch(0.3 0.1 262);
+  --success: oklch(0.48 0.13 155);
+  --border: oklch(0.89 0.01 255);
+  --ring: oklch(0.45 0.19 262);
+}
+
+.admin-theme-graphite {
+  --background: oklch(0.21 0.008 265);
+  --surface: oklch(0.25 0.01 265);
+  --foreground: oklch(0.97 0.003 250);
+  --card: oklch(0.26 0.01 265);
+  --card-foreground: oklch(0.97 0.003 250);
+  --muted: oklch(0.3 0.01 265);
+  --muted-foreground: oklch(0.79 0.012 260);
+  --primary: oklch(0.8 0.15 78);
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.34 0.02 265);
+  --secondary-foreground: oklch(0.95 0.01 260);
+  --success: oklch(0.82 0.15 150);
+  --border: oklch(0.38 0.012 265);
+  --ring: oklch(0.8 0.15 78);
+}
+
+.admin-theme-emerald {
+  --background: oklch(0.97 0.012 160);
+  --surface: oklch(0.95 0.015 160);
+  --foreground: oklch(0.19 0.03 165);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.19 0.03 165);
+  --muted: oklch(0.95 0.012 160);
+  --muted-foreground: oklch(0.42 0.03 165);
+  --primary: oklch(0.44 0.11 160);
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.91 0.05 160);
+  --secondary-foreground: oklch(0.29 0.08 160);
+  --success: oklch(0.45 0.12 155);
+  --border: oklch(0.88 0.02 160);
+  --ring: oklch(0.44 0.11 160);
+}
+
+body.admin-theme {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.admin-theme {
+  .admin-shell,
+  &.admin-shell,
+  .admin-content,
+  .admin-page {
+    background: var(--background) !important;
+    color: var(--foreground);
+  }
+
+  .sidebar-panel {
+    background: var(--primary) !important;
+    border-right-color: color-mix(in oklch, var(--primary-foreground) 26%, transparent) !important;
+  }
+
+  .nav-list .nav-link {
+    background: color-mix(in oklch, var(--primary-foreground) 14%, transparent) !important;
+  }
+
+  .nav-list .nav-link.active,
+  .nav-list .nav-link:hover {
+    background: color-mix(in oklch, var(--primary) 68%, var(--foreground)) !important;
+    box-shadow: 0 10px 24px color-mix(in oklch, var(--foreground) 22%, transparent) !important;
+  }
+
+  .page-header h1,
+  .panel-head h2,
+  .metric-card strong,
+  .product-head h2,
+  .product-head strong,
+  .compact-row strong,
+  .offer-card strong,
+  .offer-card p {
+    color: var(--foreground) !important;
+  }
+
+  .page-header span,
+  .state-card,
+  .empty-note,
+  .metric-card span,
+  .product-head p,
+  .description,
+  .compact-row span,
+  .offer-card span {
+    color: var(--muted-foreground) !important;
+  }
+
+  .eyebrow,
+  .panel-head a,
+  .card-actions button[mat-stroked-button],
+  .metric-card mat-icon {
+    color: var(--primary) !important;
+  }
+
+  .primary-action,
+  .status-pill,
+  .upload-button {
+    background: var(--primary) !important;
+    color: #ffffff !important;
+    --mdc-filled-button-label-text-color: #ffffff;
+    --mat-filled-button-label-text-color: #ffffff;
+    --mdc-filled-button-disabled-label-text-color: rgba(255, 255, 255, 0.72);
+    --mat-filled-button-disabled-label-text-color: rgba(255, 255, 255, 0.72);
+  }
+
+  .primary-action .mdc-button__label,
+  .primary-action mat-icon,
+  .primary-action .mat-icon,
+  .upload-button mat-icon,
+  .upload-button .mat-icon,
+  .status-pill {
+    color: #ffffff !important;
+  }
+
+  button.mat-mdc-unelevated-button,
+  button.mat-mdc-raised-button,
+  button.mat-mdc-fab,
+  button.mat-mdc-mini-fab {
+    color: #ffffff !important;
+    --mdc-filled-button-label-text-color: #ffffff;
+    --mat-filled-button-label-text-color: #ffffff;
+    --mdc-protected-button-label-text-color: #ffffff;
+    --mat-protected-button-label-text-color: #ffffff;
+    --mdc-fab-foreground-color: #ffffff;
+    --mat-fab-foreground-color: #ffffff;
+  }
+
+  button.mat-mdc-unelevated-button .mdc-button__label,
+  button.mat-mdc-raised-button .mdc-button__label,
+  button.mat-mdc-unelevated-button mat-icon,
+  button.mat-mdc-raised-button mat-icon,
+  button.mat-mdc-fab mat-icon,
+  button.mat-mdc-mini-fab mat-icon {
+    color: #ffffff !important;
+  }
+
+  .state-card,
+  .panel,
+  .metric-card,
+  .product-card,
+  .client-card,
+  .order-card,
+  .delivery-card,
+  .featured-card,
+  .summary {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--card-foreground) !important;
+  }
+
+  .compact-row,
+  .meta-row span,
+  .search-field .mat-mdc-text-field-wrapper {
+    background: var(--muted) !important;
+    border-color: var(--border) !important;
+  }
+}
+
 [appGsapPageMotion],
 [appGsapInteractiveMotion] {
   backface-visibility: hidden;

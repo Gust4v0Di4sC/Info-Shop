@@ -16,6 +16,8 @@ export type Database = {
           role: 'gerente' | 'vendedor' | 'estoquista';
           active: boolean;
           created_at: string;
+          theme_id: 'corporate' | 'graphite' | 'emerald';
+          store_logo_url: string | null;
         };
         Insert: {
           id?: string;
@@ -23,6 +25,8 @@ export type Database = {
           role?: 'gerente' | 'vendedor' | 'estoquista';
           active?: boolean;
           created_at?: string;
+          theme_id?: 'corporate' | 'graphite' | 'emerald';
+          store_logo_url?: string | null;
         };
         Update: {
           id?: string;
@@ -30,6 +34,8 @@ export type Database = {
           role?: 'gerente' | 'vendedor' | 'estoquista';
           active?: boolean;
           created_at?: string;
+          theme_id?: 'corporate' | 'graphite' | 'emerald';
+          store_logo_url?: string | null;
         };
         Relationships: [];
       };
@@ -322,6 +328,13 @@ export type Database = {
           featured: boolean;
         };
         Returns: Database['public']['Tables']['products']['Row'];
+      };
+      update_admin_personalization: {
+        Args: {
+          theme_id_value: 'corporate' | 'graphite' | 'emerald';
+          store_logo_url_value: string | null;
+        };
+        Returns: Database['public']['Tables']['admins']['Row'];
       };
     };
     Enums: {

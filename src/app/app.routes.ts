@@ -124,6 +124,17 @@ export const routes: Routes = [
         canActivate: [AdminGuard],
         data: { animation: 'clients', allowedRoles: ['gerente', 'vendedor'] },
       },
+      {
+        path: 'customization',
+        loadComponent: () => import('@app/features/admin/personalization/admin-personalization.component').then(
+          m => m.AdminPersonalizationComponent,
+        ),
+        canActivate: [AdminGuard],
+        data: {
+          animation: 'customization',
+          allowedRoles: ['gerente', 'vendedor', 'estoquista'],
+        },
+      },
     ],
   },
   {

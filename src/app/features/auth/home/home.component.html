@@ -1,7 +1,7 @@
 <div class="login-page">
   <header class="login-header">
     <button class="logo-button" type="button" (click)="goToHome()" aria-label="Voltar para a loja">
-      <img src="/Logo3.svg" alt="InfoShop Logo">
+      <img [src]="themeService.publicLogoUrl()" alt="InfoShop Logo">
     </button>
 
     <button mat-stroked-button class="store-button" type="button" (click)="goToHome()">

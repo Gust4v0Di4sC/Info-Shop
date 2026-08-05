@@ -1,4 +1,8 @@
-<mat-sidenav-container class="admin-shell">
+<mat-sidenav-container
+  class="admin-shell admin-theme"
+  [class.admin-theme-corporate]="themeService.currentThemeId() === 'corporate'"
+  [class.admin-theme-graphite]="themeService.currentThemeId() === 'graphite'"
+  [class.admin-theme-emerald]="themeService.currentThemeId() === 'emerald'">
   <mat-sidenav
     class="admin-sidebar"
     mode="side"
@@ -10,8 +14,8 @@
       (mouseenter)="expandSidebar()"
       (mouseleave)="collapseSidebar()">
       <button class="brand" type="button" routerLink="/" aria-label="Voltar para a loja">
-        <img class="brand-icon" src="/icon.svg" alt="InfoShop">
-        <img class="brand-logo" src="/Logo1.svg" alt="InfoShop Logo">
+        <img class="brand-icon" [src]="themeService.adminIconUrl()" alt="InfoShop">
+        <img class="brand-logo" [src]="themeService.adminLogoUrl()" alt="InfoShop Logo">
       </button>
 
       <mat-nav-list class="nav-list">

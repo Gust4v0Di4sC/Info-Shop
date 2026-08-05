@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
+import { AdminThemeService } from '@app/core/theme/admin-theme.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { firstValueFrom } from 'rxjs';
 
@@ -22,6 +23,7 @@ export default class HomeComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    readonly themeService: AdminThemeService,
     private router: Router,
     private snackBar: MatSnackBar,
   ) {

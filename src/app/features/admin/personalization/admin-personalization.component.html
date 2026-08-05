@@ -1,0 +1,87 @@
+<section class="admin-page personalization-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Personalizacao</p>
+      <h1>Tema e identidade da loja</h1>
+      <span>Escolha o tema do painel e a logo que sera exibida na interface para o seu usuario.</span>
+    </div>
+
+    <button mat-flat-button class="primary-action" type="button" (click)="save()" [disabled]="isSaving || isUploading">
+      <mat-icon>save</mat-icon>
+      {{ isSaving ? 'Salvando...' : 'Salvar alteracoes' }}
+    </button>
+  </header>
+
+  <div class="personalization-grid">
+    <section class="panel theme-panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Cores</p>
+          <h2>Perfil visual</h2>
+        </div>
+        <span class="selected-pill">{{ themeService.currentTheme().label }}</span>
+      </div>
+
+      <div class="theme-options">
+        @for (theme of themes; track theme.id) {
+          <button
+            class="theme-option"
+            type="button"
+            [class.selected]="selectedThemeId === theme.id"
+            (click)="selectTheme(theme.id)"
+            [attr.aria-pressed]="selectedThemeId === theme.id">
+            <span class="theme-swatch" aria-hidden="true">
+              <span [style.background]="theme.palette.background"></span>
+              <span [style.background]="theme.palette.card"></span>
+              <span [style.background]="theme.palette.primary"></span>
+              <span [style.background]="theme.palette.foreground"></span>
+            </span>
+            <span class="theme-copy">
+              <strong>{{ theme.label }}</strong>
+              <small>{{ theme.description }}</small>
+            </span>
+            @if (selectedThemeId === theme.id) {
+              <mat-icon>check_circle</mat-icon>
+            }
+          </button>
+        }
+      </div>
+    </section>
+
+    <section class="panel logo-panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Marca</p>
+          <h2>Logo da loja</h2>
+        </div>
+        <span class="selected-pill">Por usuario</span>
+      </div>
+
+      <div class="logo-preview">
+        <img [src]="logoPreviewUrl()" alt="Previa da logo">
+      </div>
+
+      <label class="url-field">
+        <span>URL da logo</span>
+        <input
+          type="url"
+          [value]="logoUrl"
+          (input)="updateLogoUrl($event)"
+          placeholder="https://.../logo.svg">
+      </label>
+
+      <div class="logo-actions">
+        <label class="upload-button">
+          <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" (change)="onLogoSelected($event)">
+          <mat-icon>upload</mat-icon>
+          {{ isUploading ? 'Enviando...' : 'Enviar arquivo' }}
+        </label>
+
+        <button mat-stroked-button type="button" (click)="clearLogo()">
+          <mat-icon>restart_alt</mat-icon>
+          Usar padrao
+        </button>
+      </div>
+    </section>
+  </div>
+</section>
