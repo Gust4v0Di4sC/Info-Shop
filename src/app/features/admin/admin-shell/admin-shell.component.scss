@@ -159,6 +159,7 @@
   right: 16px;
 }
 
+.store-chip,
 .role-chip {
   align-items: center;
   background: rgba(255, 255, 255, 0.14);
@@ -185,6 +186,37 @@
   }
 }
 
+.store-chip {
+  margin-bottom: 10px;
+}
+
+.store-select {
+  @include mat.form-field-overrides((
+    outlined-label-text-color: rgba(255, 255, 255, 0.82),
+    outlined-input-text-color: #ffffff,
+    outlined-outline-color: rgba(255, 255, 255, 0.36),
+    outlined-hover-outline-color: rgba(255, 255, 255, 0.68),
+    outlined-focus-outline-color: #ffffff,
+  ));
+
+  display: none;
+  margin-bottom: 10px;
+  width: 100%;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  ::ng-deep .mat-mdc-select-arrow {
+    color: #ffffff;
+  }
+}
+
+.sidebar-panel.expanded .store-select {
+  display: block;
+}
+
+.sidebar-panel.expanded .store-chip,
 .sidebar-panel.expanded .role-chip {
   justify-content: flex-start;
   padding: 0 12px;

@@ -13,7 +13,7 @@ export type Database = {
         Row: {
           id: string;
           user_id: string;
-          role: 'gerente' | 'vendedor' | 'estoquista';
+          role: 'gerente' | 'gerente_regional' | 'vendedor' | 'estoquista';
           active: boolean;
           created_at: string;
           theme_id: 'corporate' | 'graphite' | 'emerald';
@@ -24,7 +24,7 @@ export type Database = {
         Insert: {
           id?: string;
           user_id: string;
-          role?: 'gerente' | 'vendedor' | 'estoquista';
+          role?: 'gerente' | 'gerente_regional' | 'vendedor' | 'estoquista';
           active?: boolean;
           created_at?: string;
           theme_id?: 'corporate' | 'graphite' | 'emerald';
@@ -35,13 +35,31 @@ export type Database = {
         Update: {
           id?: string;
           user_id?: string;
-          role?: 'gerente' | 'vendedor' | 'estoquista';
+          role?: 'gerente' | 'gerente_regional' | 'vendedor' | 'estoquista';
           active?: boolean;
           created_at?: string;
           theme_id?: 'corporate' | 'graphite' | 'emerald';
           store_logo_url?: string | null;
           region?: string;
           store_name?: string;
+        };
+        Relationships: [];
+      };
+      admin_store_accesses: {
+        Row: {
+          admin_id: string;
+          store_id: string;
+          created_at: string;
+        };
+        Insert: {
+          admin_id: string;
+          store_id: string;
+          created_at?: string;
+        };
+        Update: {
+          admin_id?: string;
+          store_id?: string;
+          created_at?: string;
         };
         Relationships: [];
       };
@@ -75,6 +93,7 @@ export type Database = {
       clients: {
         Row: {
           id: string;
+          store_id: string;
           name: string;
           age: number;
           address: string;
@@ -87,6 +106,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
+          store_id?: string;
           name: string;
           age: number;
           address: string;
@@ -99,6 +119,7 @@ export type Database = {
         };
         Update: {
           id?: string;
+          store_id?: string;
           name?: string;
           age?: number;
           address?: string;
@@ -114,6 +135,7 @@ export type Database = {
       orders: {
         Row: {
           id: string;
+          store_id: string;
           clientId: string | null;
           name: string;
           userId: string | null;
@@ -130,6 +152,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
+          store_id?: string;
           clientId?: string | null;
           name: string;
           userId?: string | null;
@@ -146,6 +169,7 @@ export type Database = {
         };
         Update: {
           id?: string;
+          store_id?: string;
           clientId?: string | null;
           name?: string;
           userId?: string | null;
@@ -165,6 +189,7 @@ export type Database = {
       deliveries: {
         Row: {
           id: string;
+          store_id: string;
           order_id: string | null;
           user_id: string | null;
           customer_name: string;
@@ -180,6 +205,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
+          store_id?: string;
           order_id?: string | null;
           user_id?: string | null;
           customer_name?: string;
@@ -195,6 +221,7 @@ export type Database = {
         };
         Update: {
           id?: string;
+          store_id?: string;
           order_id?: string | null;
           user_id?: string | null;
           customer_name?: string;
@@ -213,6 +240,7 @@ export type Database = {
       products: {
         Row: {
           id: string;
+          store_id: string;
           name: string;
           model: string | null;
           price: number;
@@ -233,6 +261,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
+          store_id?: string;
           name: string;
           model?: string | null;
           price: number;
@@ -253,6 +282,7 @@ export type Database = {
         };
         Update: {
           id?: string;
+          store_id?: string;
           name?: string;
           model?: string | null;
           price?: number;
@@ -268,6 +298,33 @@ export type Database = {
           offer_badge?: string;
           offer_ends_at?: string | null;
           offer_sold_percent?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      stores: {
+        Row: {
+          id: string;
+          name: string;
+          region: string;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          region: string;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          region?: string;
+          active?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -315,8 +372,38 @@ export type Database = {
     };
     Functions: {
       clear_active_offer: {
-        Args: Record<PropertyKey, never>;
+        Args: {
+          store_id_value: string;
+        };
         Returns: undefined;
+      };
+      current_admin: {
+        Args: Record<PropertyKey, never>;
+        Returns: Database['public']['Tables']['admins']['Row'];
+      };
+      current_admin_role: {
+        Args: Record<PropertyKey, never>;
+        Returns: string;
+      };
+      get_current_admin_stores: {
+        Args: Record<PropertyKey, never>;
+        Returns: Array<{
+          id: string;
+          name: string;
+          region: string;
+        }>;
+      };
+      has_admin_role: {
+        Args: {
+          allowed_roles: string[];
+        };
+        Returns: boolean;
+      };
+      has_store_access: {
+        Args: {
+          store_id_value: string;
+        };
+        Returns: boolean;
       };
       set_active_offer: {
         Args: {
@@ -325,6 +412,7 @@ export type Database = {
           offer_badge_value: string;
           offer_ends_at_value: string | null;
           offer_sold_percent_value: number;
+          store_id_value: string;
         };
         Returns: Database['public']['Tables']['products']['Row'];
       };
@@ -332,6 +420,7 @@ export type Database = {
         Args: {
           product_id: string;
           featured: boolean;
+          store_id_value: string;
         };
         Returns: Database['public']['Tables']['products']['Row'];
       };

@@ -1,33 +1,40 @@
 import { Injectable } from '@angular/core';
-import { from, map, Observable } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { Delivery, DeliveryUpdate } from '@app/models/delivery.model';
 import { getSupabaseData, getSupabaseList } from '@app/core/supabase/supabase-response';
+import { TenantContextService } from '@app/core/tenant/tenant-context.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DeliveryService {
+  constructor(private tenantContext: TenantContextService) {}
+
   getDeliveries(): Observable<Delivery[]> {
-    return from(
-      supabase
-        .from('deliveries')
-        .select('*')
-        .order('created_at', { ascending: false })
-    ).pipe(
+    return this.tenantContext.selectedStoreIdRequired$().pipe(
+      switchMap(storeId => from(
+        supabase
+          .from('deliveries')
+          .select('*')
+          .eq('store_id', storeId)
+          .order('created_at', { ascending: false }),
+      )),
       map(getSupabaseList),
     );
   }
 
   updateDelivery(id: string, delivery: DeliveryUpdate): Observable<Delivery> {
-    return from(
-      supabase
-        .from('deliveries')
-        .update(delivery)
-        .eq('id', id)
-        .select()
-        .single()
-    ).pipe(
+    return from(this.tenantContext.getSelectedStoreId()).pipe(
+      switchMap(storeId => from(
+        supabase
+          .from('deliveries')
+          .update(delivery)
+          .eq('id', id)
+          .eq('store_id', storeId)
+          .select()
+          .single(),
+      )),
       map(getSupabaseData),
     );
   }

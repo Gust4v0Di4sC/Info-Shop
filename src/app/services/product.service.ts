@@ -1,24 +1,31 @@
 import { Injectable } from '@angular/core';
-import { from, map, Observable } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 import { Product } from '@app/models/product.model';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { getSupabaseData, getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
+import { TenantContextService } from '@app/core/tenant/tenant-context.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
+  constructor(private tenantContext: TenantContextService) {}
+
   /**
    * Busca produtos por nome ou modelo usando Supabase
    */
   searchProducts(term: string): Observable<Product[]> {
-    return from(
-      supabase
-        .from('products')
-        .select('*')
-        .or(`name.ilike.%${term}%,model.ilike.%${term}%`)
+    return this.tenantContext.selectedStoreIdRequired$().pipe(
+      switchMap(storeId => from(
+        supabase
+          .from('products')
+          .select('*')
+          .eq('store_id', storeId)
+          .or(`name.ilike.%${term}%,model.ilike.%${term}%`),
+      )),
+      map(getSupabaseList),
     ).pipe(
-      map(getSupabaseList)
+      map(products => products.filter(p => p.name && p.price != null && p.cost != null)),
     );
   }
 
@@ -26,14 +33,16 @@ export class ProductService {
    * Lista todos os produtos
    */
   getProducts(): Observable<Product[]> {
-    return from(
-      supabase
-        .from('products')
-        .select('*')
-    ).pipe(
+    return this.tenantContext.selectedStoreIdRequired$().pipe(
+      switchMap(storeId => from(
+        supabase
+          .from('products')
+          .select('*')
+          .eq('store_id', storeId),
+      )),
       map(result =>
         getSupabaseList(result).filter(p => p.name && p.price != null && p.cost != null)
-      )
+      ),
     );
   }
 
@@ -89,13 +98,17 @@ export class ProductService {
    * Deleta um produto por ID
    */
   deleteProduct(id: string): Observable<void> {
-    return from(
-      supabase
-        .from('products')
-        .delete()
-        .eq('id', id)
+    return this.tenantContext.selectedStoreIdRequired$().pipe(
+      switchMap(storeId => from(
+        supabase
+          .from('products')
+          .delete()
+          .eq('id', id)
+          .eq('store_id', storeId),
+      )),
+      map(throwSupabaseError),
     ).pipe(
-      map(throwSupabaseError)
+      map(() => undefined),
     );
   }
 }

@@ -1,11 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
 import { ADMIN_ROLE_ACCESS, ADMIN_ROLE_LABELS, AdminRole } from '@app/models/admin.model';
+import { AdminStoreContext, TenantContextService } from '@app/core/tenant/tenant-context.service';
 import { AdminThemeService } from '@app/core/theme/admin-theme.service';
 import { GsapInteractiveMotionDirective } from '@app/shared/directives/gsap-interactive-motion.directive';
 import { GsapPageMotionDirective } from '@app/shared/directives/gsap-page-motion.directive';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
+import { Subscription } from 'rxjs';
 
 interface AdminNavItem {
   label: string;
@@ -25,12 +27,16 @@ interface AdminNavItem {
   templateUrl: './admin-shell.component.html',
   styleUrls: ['./admin-shell.component.scss'],
 })
-export class AdminShellComponent implements OnInit {
+export class AdminShellComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
+  private tenantContext = inject(TenantContextService);
   readonly themeService = inject(AdminThemeService);
+  private subscriptions = new Subscription();
 
   isExpanded = false;
   adminRole: AdminRole | null = null;
+  stores: AdminStoreContext[] = [];
+  selectedStoreId: string | null = null;
 
   navItems: AdminNavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/dash' },
@@ -45,7 +51,23 @@ export class AdminShellComponent implements OnInit {
   ];
 
   async ngOnInit(): Promise<void> {
+    this.subscriptions.add(
+      this.tenantContext.stores$.subscribe(stores => {
+        this.stores = stores;
+      }),
+    );
+    this.subscriptions.add(
+      this.tenantContext.selectedStoreId$.subscribe(storeId => {
+        this.selectedStoreId = storeId;
+      }),
+    );
+
+    await this.tenantContext.initialize();
     this.adminRole = await this.authService.getAdminRole();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   visibleNavItems(): AdminNavItem[] {
@@ -61,6 +83,18 @@ export class AdminShellComponent implements OnInit {
     return this.adminRole ? ADMIN_ROLE_LABELS[this.adminRole] : 'Administrador';
   }
 
+  canSwitchStores(): boolean {
+    return this.stores.length > 1;
+  }
+
+  selectedStoreLabel(): string {
+    return this.stores.find(store => store.id === this.selectedStoreId)?.name || 'Loja';
+  }
+
+  selectStore(storeId: string): void {
+    this.tenantContext.selectStore(storeId);
+  }
+
   expandSidebar(): void {
     this.isExpanded = true;
   }
@@ -70,6 +104,7 @@ export class AdminShellComponent implements OnInit {
   }
 
   logout(): void {
+    this.tenantContext.reset();
     this.authService.logout();
   }
 }

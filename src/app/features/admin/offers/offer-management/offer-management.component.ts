@@ -5,6 +5,7 @@ import { Product } from '@app/models/product.model';
 import { OfferService } from '@app/services/offer.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-offer-management',
@@ -42,23 +43,18 @@ export class OfferManagementComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.offerService.getProducts().subscribe({
-      next: products => {
+    combineLatest({
+      products: this.offerService.getProducts(),
+      offer: this.offerService.getActiveOffer(),
+    }).subscribe({
+      next: ({ products, offer }) => {
         this.products = products;
-        this.offerService.getActiveOffer().subscribe({
-          next: offer => {
-            this.activeOffer = offer;
-            this.patchOffer(offer);
-            this.isLoading = false;
-          },
-          error: error => {
-            this.errorMessage = error?.message || 'Nao foi possivel carregar a oferta.';
-            this.isLoading = false;
-          },
-        });
+        this.activeOffer = offer;
+        this.patchOffer(offer);
+        this.isLoading = false;
       },
       error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel carregar produtos.';
+        this.errorMessage = error?.message || 'Nao foi possivel carregar ofertas.';
         this.isLoading = false;
       },
     });
@@ -129,6 +125,13 @@ export class OfferManagementComponent implements OnInit {
 
   private patchOffer(offer: Product | null): void {
     if (!offer) {
+      this.offerForm.patchValue({
+        productId: '',
+        offerPrice: null,
+        offerBadge: 'Oferta por tempo limitado',
+        offerEndsAt: '',
+        offerSoldPercent: 72,
+      });
       return;
     }
 

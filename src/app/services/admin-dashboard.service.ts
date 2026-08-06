@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { from, Observable, switchMap } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { Delivery } from '@app/models/delivery.model';
 import { Order } from '@app/models/order.model';
 import { Product } from '@app/models/product.model';
 import { getSupabaseList } from '@app/core/supabase/supabase-response';
+import { TenantContextService } from '@app/core/tenant/tenant-context.service';
 
 export interface AdminOverview {
   totals: {
@@ -28,11 +29,15 @@ export interface AdminOverview {
   providedIn: 'root'
 })
 export class AdminDashboardService {
+  constructor(private tenantContext: TenantContextService) {}
+
   getOverview(): Observable<AdminOverview> {
-    return from(this.loadOverview());
+    return this.tenantContext.selectedStoreIdRequired$().pipe(
+      switchMap(storeId => from(this.loadOverview(storeId))),
+    );
   }
 
-  private async loadOverview(): Promise<AdminOverview> {
+  private async loadOverview(storeId: string): Promise<AdminOverview> {
     const [
       productsResult,
       clientsCount,
@@ -43,17 +48,18 @@ export class AdminDashboardService {
       cartCount,
       offerResult,
     ] = await Promise.all([
-      supabase.from('products').select('*').order('created_at', { ascending: false }),
-      this.countRows('clients'),
+      supabase.from('products').select('*').eq('store_id', storeId).order('created_at', { ascending: false }),
+      this.countRows('clients', query => query.eq('store_id', storeId)),
       this.countRows('users'),
-      supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(6),
-      this.countRows('orders', query => query.neq('status', 'delivered').neq('status', 'canceled')),
-      supabase.from('deliveries').select('*').order('created_at', { ascending: false }).limit(6),
+      supabase.from('orders').select('*').eq('store_id', storeId).order('created_at', { ascending: false }).limit(6),
+      this.countRows('orders', query => query.eq('store_id', storeId).neq('status', 'delivered').neq('status', 'canceled')),
+      supabase.from('deliveries').select('*').eq('store_id', storeId).order('created_at', { ascending: false }).limit(6),
       this.countRows('cart_items'),
       supabase
         .from('products')
         .select('*')
         .eq('is_offer', true)
+        .eq('store_id', storeId)
         .order('updated_at', { ascending: false })
         .limit(1)
         .maybeSingle(),
@@ -72,9 +78,9 @@ export class AdminDashboardService {
         products: products.length,
         clients: clientsCount,
         users: usersCount,
-        orders: await this.countRows('orders'),
+        orders: await this.countRows('orders', query => query.eq('store_id', storeId)),
         openOrders: openOrdersCount,
-        deliveries: await this.countRows('deliveries'),
+        deliveries: await this.countRows('deliveries', query => query.eq('store_id', storeId)),
         cartItems: cartCount,
         inventoryUnits: products.reduce((sum, product) => sum + product.stock_quantity, 0),
       },

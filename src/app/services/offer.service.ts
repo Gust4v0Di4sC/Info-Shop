@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { from, map, Observable } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { Product } from '@app/models/product.model';
 import { getSupabaseData, getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
+import { TenantContextService } from '@app/core/tenant/tenant-context.service';
 
 export interface OfferSettings {
   offer_price: number | null;
@@ -15,19 +16,25 @@ export interface OfferSettings {
   providedIn: 'root'
 })
 export class OfferService {
+  constructor(private tenantContext: TenantContextService) {}
+
   getProducts(): Observable<Product[]> {
-    return from(
-      supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false })
-    ).pipe(
+    return this.tenantContext.selectedStoreIdRequired$().pipe(
+      switchMap(storeId => from(
+        supabase
+          .from('products')
+          .select('*')
+          .eq('store_id', storeId)
+          .order('created_at', { ascending: false }),
+      )),
       map(getSupabaseList),
     );
   }
 
   getActiveOffer(): Observable<Product | null> {
-    return from(this.loadActiveOffer());
+    return this.tenantContext.selectedStoreIdRequired$().pipe(
+      switchMap(storeId => from(this.loadActiveOffer(storeId))),
+    );
   }
 
   setActiveOffer(productId: string, settings: OfferSettings): Observable<Product> {
@@ -35,31 +42,39 @@ export class OfferService {
   }
 
   clearOffer(): Observable<void> {
-    return from(
-      supabase
-        .rpc('clear_active_offer')
-    ).pipe(
+    return from(this.tenantContext.getSelectedStoreId()).pipe(
+      switchMap(storeId => from(
+        supabase
+          .rpc('clear_active_offer', {
+            store_id_value: storeId,
+          }),
+      )),
       map(throwSupabaseError),
+    ).pipe(
+      map(() => undefined),
     );
   }
 
   updateFeatured(productId: string, isFeatured: boolean): Observable<Product> {
-    return from(
-      supabase
-        .rpc('set_product_featured', {
-          product_id: productId,
-          featured: isFeatured,
-        })
-    ).pipe(
+    return from(this.tenantContext.getSelectedStoreId()).pipe(
+      switchMap(storeId => from(
+        supabase
+          .rpc('set_product_featured', {
+            product_id: productId,
+            featured: isFeatured,
+            store_id_value: storeId,
+          }),
+      )),
       map(getSupabaseData),
     );
   }
 
-  private async loadActiveOffer(): Promise<Product | null> {
+  private async loadActiveOffer(storeId: string): Promise<Product | null> {
     const result = await supabase
       .from('products')
       .select('*')
       .eq('is_offer', true)
+      .eq('store_id', storeId)
       .order('updated_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -72,6 +87,8 @@ export class OfferService {
   }
 
   private async saveActiveOffer(productId: string, settings: OfferSettings): Promise<Product> {
+    const storeId = await this.tenantContext.getSelectedStoreId();
+
     return getSupabaseData(await supabase
       .rpc('set_active_offer', {
         product_id: productId,
@@ -79,6 +96,7 @@ export class OfferService {
         offer_badge_value: settings.offer_badge,
         offer_ends_at_value: settings.offer_ends_at,
         offer_sold_percent_value: settings.offer_sold_percent,
+        store_id_value: storeId,
       }));
   }
 }
