@@ -1,0 +1,111 @@
+<section class="admin-page profile-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Meu perfil</p>
+      <h1>Perfil do administrador</h1>
+      <span>Dados pessoais, regiao operacional e loja vinculada ao seu usuario.</span>
+    </div>
+
+    <button mat-flat-button class="primary-action" type="button" (click)="saveProfile()" [disabled]="isSaving || isLoading">
+      <mat-icon>save</mat-icon>
+      {{ isSaving ? 'Salvando...' : 'Salvar perfil' }}
+    </button>
+  </header>
+
+  @if (isLoading) {
+    <div class="state-card">Carregando perfil administrativo...</div>
+  } @else if (errorMessage && !profileForm.getRawValue().email) {
+    <div class="state-card error-state">{{ errorMessage }}</div>
+  } @else {
+    <form class="profile-grid" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <aside class="profile-card">
+        <div class="avatar">{{ initials() }}</div>
+        <h2>{{ profileForm.value.full_name || 'Administrador InfoShop' }}</h2>
+        <p>{{ profileForm.getRawValue().email }}</p>
+
+        <div class="profile-meta">
+          <span>
+            <mat-icon>admin_panel_settings</mat-icon>
+            {{ roleLabel() }}
+          </span>
+          <span>
+            <mat-icon>storefront</mat-icon>
+            {{ profileForm.value.store_name || 'Loja nao informada' }}
+          </span>
+          <span>
+            <mat-icon>map</mat-icon>
+            {{ profileForm.value.region || 'Regiao nao informada' }}
+          </span>
+        </div>
+      </aside>
+
+      <section class="form-panel">
+        <div class="section-title">
+          <p class="eyebrow">Dados pessoais</p>
+          <h2>Informacoes do usuario</h2>
+        </div>
+
+        <div class="field-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Email</mat-label>
+            <mat-icon matPrefix>mail_outline</mat-icon>
+            <input matInput formControlName="email" type="email">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Nome completo</mat-label>
+            <mat-icon matPrefix>person_outline</mat-icon>
+            <input matInput formControlName="full_name" type="text">
+          </mat-form-field>
+        </div>
+
+        <div class="field-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Telefone</mat-label>
+            <mat-icon matPrefix>call</mat-icon>
+            <input matInput formControlName="phone" type="tel">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Documento</mat-label>
+            <mat-icon matPrefix>badge</mat-icon>
+            <input matInput formControlName="document" type="text">
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Endereco</mat-label>
+          <mat-icon matPrefix>home_pin</mat-icon>
+          <textarea matInput formControlName="address" rows="3"></textarea>
+        </mat-form-field>
+
+        <div class="section-title operational-title">
+          <p class="eyebrow">Operacao</p>
+          <h2>Localidade administrativa</h2>
+        </div>
+
+        <div class="field-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Regiao</mat-label>
+            <mat-icon matPrefix>map</mat-icon>
+            <input matInput formControlName="region" type="text" placeholder="Ex.: Sul, SP Interior, Nordeste">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Loja</mat-label>
+            <mat-icon matPrefix>storefront</mat-icon>
+            <input matInput formControlName="store_name" type="text" placeholder="Ex.: InfoShop Centro">
+          </mat-form-field>
+        </div>
+
+        @if (profileForm.touched && profileForm.invalid) {
+          <p class="error-text">Preencha nome, regiao e loja para salvar.</p>
+        }
+
+        @if (errorMessage) {
+          <p class="error-text">{{ errorMessage }}</p>
+        }
+      </section>
+    </form>
+  }
+</section>

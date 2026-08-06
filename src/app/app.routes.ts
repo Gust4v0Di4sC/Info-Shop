@@ -135,6 +135,17 @@ export const routes: Routes = [
           allowedRoles: ['gerente', 'vendedor', 'estoquista'],
         },
       },
+      {
+        path: 'admin-profile',
+        loadComponent: () => import('@app/features/admin/profile/admin-profile.component').then(
+          m => m.AdminProfileComponent,
+        ),
+        canActivate: [AdminGuard],
+        data: {
+          animation: 'admin-profile',
+          allowedRoles: ['gerente', 'vendedor', 'estoquista'],
+        },
+      },
     ],
   },
   {

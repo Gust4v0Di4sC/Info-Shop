@@ -18,6 +18,8 @@ export type Database = {
           created_at: string;
           theme_id: 'corporate' | 'graphite' | 'emerald';
           store_logo_url: string | null;
+          region: string;
+          store_name: string;
         };
         Insert: {
           id?: string;
@@ -27,6 +29,8 @@ export type Database = {
           created_at?: string;
           theme_id?: 'corporate' | 'graphite' | 'emerald';
           store_logo_url?: string | null;
+          region?: string;
+          store_name?: string;
         };
         Update: {
           id?: string;
@@ -36,6 +40,8 @@ export type Database = {
           created_at?: string;
           theme_id?: 'corporate' | 'graphite' | 'emerald';
           store_logo_url?: string | null;
+          region?: string;
+          store_name?: string;
         };
         Relationships: [];
       };
@@ -333,6 +339,13 @@ export type Database = {
         Args: {
           theme_id_value: 'corporate' | 'graphite' | 'emerald';
           store_logo_url_value: string | null;
+        };
+        Returns: Database['public']['Tables']['admins']['Row'];
+      };
+      update_admin_profile: {
+        Args: {
+          region_value: string;
+          store_name_value: string;
         };
         Returns: Database['public']['Tables']['admins']['Row'];
       };

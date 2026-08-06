@@ -1,0 +1,217 @@
+.profile-page {
+  display: grid;
+  gap: 24px;
+}
+
+.page-header {
+  align-items: end;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+
+  h1 {
+    color: var(--foreground);
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  span {
+    color: var(--muted-foreground);
+    display: block;
+    font-size: 14px;
+    font-weight: 650;
+    margin-top: 10px;
+  }
+}
+
+.eyebrow {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.primary-action {
+  background: var(--primary);
+  border-radius: 8px;
+  color: #ffffff !important;
+  font-weight: 850;
+  height: 44px;
+
+  mat-icon {
+    color: #ffffff;
+  }
+}
+
+.profile-grid {
+  align-items: start;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 320px minmax(0, 1fr);
+}
+
+.profile-card,
+.form-panel,
+.state-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+  color: var(--card-foreground);
+}
+
+.profile-card {
+  display: grid;
+  justify-items: center;
+  padding: 24px;
+  text-align: center;
+
+  h2 {
+    color: var(--foreground);
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  p {
+    color: var(--muted-foreground);
+    font-size: 13px;
+    font-weight: 700;
+    margin: 9px 0 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.avatar {
+  align-items: center;
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--secondary-foreground);
+  display: flex;
+  font-size: 28px;
+  font-weight: 950;
+  height: 92px;
+  justify-content: center;
+  margin-bottom: 18px;
+  width: 92px;
+}
+
+.profile-meta {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+  width: 100%;
+
+  span {
+    align-items: center;
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--foreground);
+    display: flex;
+    font-size: 13px;
+    font-weight: 800;
+    gap: 10px;
+    min-height: 42px;
+    padding: 0 12px;
+    text-align: left;
+  }
+
+  mat-icon {
+    color: var(--primary);
+    flex: 0 0 auto;
+  }
+}
+
+.form-panel {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.section-title {
+  h2 {
+    color: var(--foreground);
+    font-size: 20px;
+    font-weight: 900;
+    margin: 0;
+  }
+}
+
+.operational-title {
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+}
+
+.field-row {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep {
+  .mat-mdc-text-field-wrapper {
+    background: var(--card);
+    border-radius: 8px;
+  }
+
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
+    border-color: var(--border);
+  }
+
+  .mat-mdc-form-field-focus-overlay {
+    background: transparent;
+  }
+
+  .mat-mdc-input-element,
+  .mat-mdc-floating-label,
+  .mat-mdc-form-field-icon-prefix {
+    color: var(--foreground);
+  }
+}
+
+.state-card {
+  color: var(--muted-foreground);
+  font-weight: 800;
+  padding: 24px;
+}
+
+.error-state,
+.error-text {
+  color: #b42318;
+}
+
+.error-text {
+  font-size: 13px;
+  font-weight: 800;
+  margin: 0;
+}
+
+@media (max-width: 960px) {
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}

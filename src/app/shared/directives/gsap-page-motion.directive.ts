@@ -138,6 +138,8 @@ export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
       '.panel',
       '.theme-option',
       '.logo-panel',
+      '.profile-card',
+      '.form-panel',
       '.cart-head',
       '.cart-item',
       '.summary',

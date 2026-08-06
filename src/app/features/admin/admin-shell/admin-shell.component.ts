@@ -41,6 +41,7 @@ export class AdminShellComponent implements OnInit {
     { label: 'Ofertas', icon: 'sell', route: '/offers' },
     { label: 'Clientes', icon: 'people', route: '/clients' },
     { label: 'Personalizacao', icon: 'palette', route: '/customization' },
+    { label: 'Meu perfil', icon: 'account_circle', route: '/admin-profile' },
   ];
 
   async ngOnInit(): Promise<void> {

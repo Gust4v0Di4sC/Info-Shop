@@ -19,9 +19,9 @@ export const ADMIN_DEFAULT_ROUTE: Record<AdminRole, string> = {
 };
 
 export const ADMIN_ROLE_ACCESS: Record<AdminRole, string[]> = {
-  gerente: ['/dash', '/products', '/orders', '/stock', '/deliveries', '/offers', '/clients', '/customization'],
-  vendedor: ['/orders', '/clients', '/deliveries', '/offers', '/customization'],
-  estoquista: ['/stock', '/products', '/customization'],
+  gerente: ['/dash', '/products', '/orders', '/stock', '/deliveries', '/offers', '/clients', '/customization', '/admin-profile'],
+  vendedor: ['/orders', '/clients', '/deliveries', '/offers', '/customization', '/admin-profile'],
+  estoquista: ['/stock', '/products', '/customization', '/admin-profile'],
 };
 
 export function normalizeAdminRole(role: string | null | undefined): AdminRole {
