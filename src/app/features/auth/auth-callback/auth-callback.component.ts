@@ -18,7 +18,7 @@ export class AuthCallbackComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      const type = new URL(window.location.href).searchParams.get('type');
+      const type = this.getCallbackType();
 
       if (type === 'recovery') {
         this.actionTitle = 'Validando recuperacao';
@@ -29,5 +29,12 @@ export class AuthCallbackComponent implements OnInit {
     } catch (error: any) {
       this.errorMessage = error?.message || 'Nao foi possivel concluir o login.';
     }
+  }
+
+  private getCallbackType(): string | null {
+    const url = new URL(window.location.href);
+    const hashParams = new URLSearchParams(url.hash.replace(/^#/, ''));
+
+    return url.searchParams.get('type') || hashParams.get('type');
   }
 }

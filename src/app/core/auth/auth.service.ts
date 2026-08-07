@@ -182,11 +182,11 @@ export class AuthService {
 
   async handleAuthCallback(): Promise<void> {
     const url = new URL(window.location.href);
-    const callbackError = url.searchParams.get('error_description') ||
-      url.searchParams.get('error');
-    const code = url.searchParams.get('code');
-    const tokenHash = url.searchParams.get('token_hash');
-    const type = url.searchParams.get('type') as EmailOtpType | null;
+    const callbackError = this.getCallbackParam(url, 'error_description') ||
+      this.getCallbackParam(url, 'error');
+    const code = this.getCallbackParam(url, 'code');
+    const tokenHash = this.getCallbackParam(url, 'token_hash');
+    const type = this.getCallbackParam(url, 'type') as EmailOtpType | null;
 
     if (callbackError) {
       throw new Error(callbackError);
@@ -207,9 +207,8 @@ export class AuthService {
         throw error;
       }
     } else {
-      const hashParams = new URLSearchParams(url.hash.replace(/^#/, ''));
-      const accessToken = hashParams.get('access_token');
-      const refreshToken = hashParams.get('refresh_token');
+      const accessToken = this.getCallbackParam(url, 'access_token');
+      const refreshToken = this.getCallbackParam(url, 'refresh_token');
 
       if (accessToken && refreshToken) {
         const { error } = await supabase.auth.setSession({
@@ -311,6 +310,17 @@ export class AuthService {
   private getMetadataValue(metadata: Record<string, unknown>, key: string): string | null {
     const value = metadata[key];
     return typeof value === 'string' && value.trim() ? value : null;
+  }
+
+  private getCallbackParam(url: URL, name: string): string | null {
+    const queryValue = url.searchParams.get(name);
+
+    if (queryValue) {
+      return queryValue;
+    }
+
+    const hashParams = new URLSearchParams(url.hash.replace(/^#/, ''));
+    return hashParams.get(name);
   }
 
   private getAuthCallbackUrl(): string {
