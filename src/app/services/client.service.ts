@@ -18,7 +18,7 @@ export class ClientService {
           .from('clients')
           .select('*')
           .eq('store_id', storeId)
-          .ilike('name', `%${term}%`),
+          .or(`name.ilike.%${term}%,email.ilike.%${term}%`),
       )),
       map(getSupabaseList),
     );
@@ -33,7 +33,7 @@ export class ClientService {
           .eq('store_id', storeId),
       )),
       map(result =>
-        getSupabaseList(result).filter(client => client.name && client.address)
+        getSupabaseList(result).filter(client => client.name || client.email)
       ),
     );
   }

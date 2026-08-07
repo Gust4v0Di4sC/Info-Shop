@@ -3,7 +3,7 @@
     <div>
       <p class="eyebrow">Clientes</p>
       <h1>Base de clientes</h1>
-      <span>Perfis cadastrados manualmente para pedidos e atendimento.</span>
+      <span>Perfis cadastrados na landing page e manualmente para pedidos e atendimento.</span>
     </div>
 
     <div class="header-actions">
@@ -40,7 +40,7 @@
             <p>{{ client.address | displayText: 'Endereco nao informado' }}</p>
             <div class="meta-row">
               <span>{{ client.cpf | cpfCnpj: 'CPF nao informado' }}</span>
-              <span>{{ client.phone | phoneBr: 'Telefone nao informado' }}</span>
+              <span>{{ client.phone ? (client.phone | phoneBr) : (client.email | displayText: 'Contato nao informado') }}</span>
             </div>
           </div>
 

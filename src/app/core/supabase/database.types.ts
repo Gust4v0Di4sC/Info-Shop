@@ -94,6 +94,8 @@ export type Database = {
         Row: {
           id: string;
           store_id: string;
+          user_id: string | null;
+          email: string | null;
           name: string;
           age: number;
           address: string;
@@ -107,6 +109,8 @@ export type Database = {
         Insert: {
           id?: string;
           store_id?: string;
+          user_id?: string | null;
+          email?: string | null;
           name: string;
           age: number;
           address: string;
@@ -120,6 +124,8 @@ export type Database = {
         Update: {
           id?: string;
           store_id?: string;
+          user_id?: string | null;
+          email?: string | null;
           name?: string;
           age?: number;
           address?: string;

@@ -45,6 +45,7 @@ export default class ClientesComponent implements OnInit {
       this.filteredClients = this.clients.filter(client =>
         client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.cpf.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     });
