@@ -120,7 +120,7 @@ export class OfferManagementComponent implements OnInit {
 
   selectedProduct(): Product | null {
     const productId = this.offerForm.value.productId;
-    return this.products.find(product => product.id === productId) || null;
+    return this.products.find(product => String(product.id) === String(productId)) || null;
   }
 
   private patchOffer(offer: Product | null): void {

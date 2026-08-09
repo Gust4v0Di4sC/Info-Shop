@@ -37,7 +37,7 @@ export class OfferService {
     );
   }
 
-  setActiveOffer(productId: string, settings: OfferSettings): Observable<Product> {
+  setActiveOffer(productId: string | number, settings: OfferSettings): Observable<Product> {
     return from(this.saveActiveOffer(productId, settings));
   }
 
@@ -55,12 +55,12 @@ export class OfferService {
     );
   }
 
-  updateFeatured(productId: string, isFeatured: boolean): Observable<Product> {
+  updateFeatured(productId: string | number, isFeatured: boolean): Observable<Product> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .rpc('set_product_featured', {
-            product_id: productId,
+            product_id: String(productId),
             featured: isFeatured,
             store_id_value: storeId,
           }),
@@ -86,17 +86,17 @@ export class OfferService {
     return result.data;
   }
 
-  private async saveActiveOffer(productId: string, settings: OfferSettings): Promise<Product> {
+  private async saveActiveOffer(productId: string | number, settings: OfferSettings): Promise<Product> {
     const storeId = await this.tenantContext.getSelectedStoreId();
 
     return getSupabaseData(await supabase
       .rpc('set_active_offer', {
-        product_id: productId,
+        product_id: String(productId),
         offer_price_value: settings.offer_price,
         offer_badge_value: settings.offer_badge,
         offer_ends_at_value: settings.offer_ends_at,
         offer_sold_percent_value: settings.offer_sold_percent,
         store_id_value: storeId,
-      }));
+      } as any));
   }
 }

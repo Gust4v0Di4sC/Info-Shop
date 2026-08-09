@@ -86,6 +86,6 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
       return 0;
     }
 
-    return Math.max(0, this.product.price - this.product.offer_price);
+    return Math.max(0, Number(this.product.price || 0) - this.product.offer_price);
   }
 }

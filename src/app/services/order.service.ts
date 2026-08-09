@@ -41,13 +41,13 @@ export class OrderService {
   }
 
   /** Buscar pedido por ID */
-  getOrder(id: string): Observable<Order> {
+  getOrder(id: string | number): Observable<Order> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('orders')
           .select('*')
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId)
           .single(),
       )),
@@ -56,13 +56,13 @@ export class OrderService {
   }
 
   /** Deletar pedido */
-  deleteOrder(id: string): Observable<void> {
+  deleteOrder(id: string | number): Observable<void> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('orders')
           .delete()
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId),
       )),
       map(throwSupabaseError),

@@ -42,10 +42,11 @@ export default class ProdutosComponent implements OnInit {
         return;
       }
 
+      const normalized = searchTerm.toLowerCase();
       this.filteredProducts = this.products.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.model?.toLowerCase().includes(searchTerm.toLowerCase()),
+        product.name.toLowerCase().includes(normalized) ||
+        (product.description || '').toLowerCase().includes(normalized) ||
+        (product.model || '').toLowerCase().includes(normalized),
       );
     });
   }
@@ -118,7 +119,7 @@ export default class ProdutosComponent implements OnInit {
     return 'Em estoque';
   }
 
-  deleteProduct(id: string): void {
+  deleteProduct(id: string | number): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       panelClass: 'custom-modal',

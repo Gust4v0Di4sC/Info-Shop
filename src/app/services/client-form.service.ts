@@ -47,13 +47,13 @@ export class ClientFormService {
   }
 
   /** Buscar por ID */
-  getClientById(id: string): Observable<Client> {
+  getClientById(id: string | number): Observable<Client> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('clients')
           .select('*')
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId)
           .single(),
       )),
@@ -62,13 +62,13 @@ export class ClientFormService {
   }
 
   /** Atualizar cliente */
-  updateClient(id: string, clientData: ClientUpdate): Observable<Client> {
+  updateClient(id: string | number, clientData: ClientUpdate): Observable<Client> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('clients')
           .update(clientData)
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId)
           .select()
           .single(),
