@@ -1,0 +1,3 @@
+[mcp_servers.mercado-pago-mcp]
+url = "https://mcp.mercadopago.com/mcp"
+bearer_token_env_var = "MERCADO_PAGO_ACCESS_TOKEN"

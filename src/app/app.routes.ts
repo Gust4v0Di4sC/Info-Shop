@@ -67,6 +67,14 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'minhas-entregas',
+    loadComponent: () => import('@app/features/public/customer-deliveries/customer-deliveries.component').then(
+      m => m.CustomerDeliveriesComponent,
+    ),
+    data: { animation: 'customer-deliveries' },
+    canActivate: [AuthGuard],
+  },
+  {
     path: '',
     loadComponent: () =>
       import('@app/features/admin/admin-shell/admin-shell.component').then(

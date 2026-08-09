@@ -1,25 +1,42 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HeaderComponent } from '@app/features/public/components/header/header.component';
 import { FooterComponent } from '@app/features/public/components/footer/footer.component';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { CartItemWithProduct } from '@app/models/cart-item.model';
 import { CartServiceService } from '@app/services/cart-service.service';
+import { DeliveryAddress, ShippingQuoteOption } from '@app/models/shipping.model';
 
 @Component({
   selector: 'app-cart-page',
-  imports: [HeaderComponent, FooterComponent, BrlCurrencyPipe, RouterLink],
+  imports: [HeaderComponent, FooterComponent, BrlCurrencyPipe, RouterLink, ReactiveFormsModule],
   templateUrl: './cart-page.component.html',
   styleUrl: './cart-page.component.scss'
 })
 export class CartPageComponent implements OnInit {
+  shippingForm: FormGroup;
   items: CartItemWithProduct[] = [];
+  shippingQuotes: ShippingQuoteOption[] = [];
+  selectedServiceId = '';
   isLoading = true;
   errorMessage = '';
   feedbackMessage = '';
+  checkoutDeliveryId = '';
+  isQuoting = false;
   isCheckingOut = false;
 
-  constructor(private cartService: CartServiceService) {}
+  constructor(private cartService: CartServiceService, private fb: FormBuilder) {
+    this.shippingForm = this.fb.group({
+      postalCode: ['', [Validators.required, Validators.minLength(8)]],
+      street: ['', [Validators.required]],
+      number: ['', [Validators.required]],
+      district: ['', [Validators.required]],
+      city: ['', [Validators.required]],
+      state: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(2)]],
+      complement: [''],
+    });
+  }
 
   ngOnInit(): void {
     this.loadCart();
@@ -29,6 +46,14 @@ export class CartPageComponent implements OnInit {
     return this.items.reduce((sum, item) => {
       return sum + (this.itemPrice(item) * item.quantity);
     }, 0);
+  }
+
+  get selectedQuote(): ShippingQuoteOption | null {
+    return this.shippingQuotes.find(quote => quote.id === this.selectedServiceId) || null;
+  }
+
+  get total(): number {
+    return this.subtotal + (this.selectedQuote?.price || 0);
   }
 
   itemPrice(item: CartItemWithProduct): number {
@@ -73,6 +98,8 @@ export class CartPageComponent implements OnInit {
     this.cartService.clearCart().subscribe({
       next: () => {
         this.items = [];
+        this.shippingQuotes = [];
+        this.selectedServiceId = '';
         this.feedbackMessage = 'Carrinho limpo.';
       },
       error: error => {
@@ -81,21 +108,75 @@ export class CartPageComponent implements OnInit {
     });
   }
 
+  calculateShipping(): void {
+    if (this.shippingForm.invalid) {
+      this.shippingForm.markAllAsTouched();
+      return;
+    }
+
+    this.isQuoting = true;
+    this.errorMessage = '';
+    this.feedbackMessage = '';
+    this.checkoutDeliveryId = '';
+    this.shippingQuotes = [];
+    this.selectedServiceId = '';
+
+    this.cartService.calculateShipping(this.deliveryAddress()).subscribe({
+      next: quotes => {
+        this.shippingQuotes = quotes;
+        this.selectedServiceId = quotes[0]?.id || '';
+        this.isQuoting = false;
+        if (quotes.length === 0) {
+          this.errorMessage = 'Nenhuma opcao de frete retornada para este endereco.';
+        }
+      },
+      error: error => {
+        this.errorMessage = error?.message || 'Nao foi possivel calcular o frete.';
+        this.isQuoting = false;
+      },
+    });
+  }
+
   checkout(): void {
+    if (!this.selectedServiceId) {
+      this.errorMessage = 'Escolha uma opcao de frete antes de finalizar.';
+      return;
+    }
+
     this.isCheckingOut = true;
     this.errorMessage = '';
 
-    this.cartService.checkoutCart().subscribe({
-      next: () => {
+    this.cartService.checkoutCart({
+      address: this.deliveryAddress(),
+      selectedServiceId: this.selectedServiceId,
+    }).subscribe({
+      next: result => {
         this.items = [];
-        this.feedbackMessage = 'Pedido solicitado. A equipe vai acompanhar a entrega pelo painel administrativo.';
+        this.shippingQuotes = [];
+        this.selectedServiceId = '';
+        this.checkoutDeliveryId = result.delivery.id;
+        this.feedbackMessage = 'Compra simulada concluida. Sua entrega ja esta disponivel para acompanhamento.';
         this.isCheckingOut = false;
+        this.cartService.refreshCartCount().subscribe();
       },
       error: error => {
         this.errorMessage = error?.message || 'Nao foi possivel solicitar o fechamento.';
         this.isCheckingOut = false;
       },
     });
+  }
+
+  private deliveryAddress(): DeliveryAddress {
+    const value = this.shippingForm.value;
+    return {
+      postalCode: value.postalCode || '',
+      street: value.street || '',
+      number: value.number || '',
+      district: value.district || '',
+      city: value.city || '',
+      state: (value.state || '').toUpperCase(),
+      complement: value.complement || null,
+    };
   }
 
 }

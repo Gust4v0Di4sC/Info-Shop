@@ -27,6 +27,9 @@
             <h2>{{ delivery.customer_name || 'Cliente nao informado' }}</h2>
             <p>{{ delivery.address || 'Endereco a confirmar' }}</p>
             <small>Pedido {{ delivery.order_id || 'sem vinculo' }}</small>
+            @if (delivery.melhor_envio_protocol || delivery.melhor_envio_order_id) {
+              <small>Melhor Envio {{ delivery.melhor_envio_protocol || delivery.melhor_envio_order_id }}</small>
+            }
           </div>
 
           <div class="delivery-controls">
@@ -55,6 +58,32 @@
                 (change)="updateDelivery(delivery, 'tracking_code', $any($event.target).value)">
             </mat-form-field>
           </div>
+
+          <div class="shipping-summary">
+            <span>
+              <strong>Servico</strong>
+              {{ delivery.selected_service_name || 'Nao selecionado' }}
+            </span>
+            <span>
+              <strong>Frete</strong>
+              {{ delivery.shipping_price != null ? ('R$ ' + delivery.shipping_price) : 'A confirmar' }}
+            </span>
+            <span>
+              <strong>Prazo</strong>
+              {{ delivery.shipping_deadline ? delivery.shipping_deadline + ' dias uteis' : 'A confirmar' }}
+            </span>
+            <span>
+              <strong>Etiqueta</strong>
+              {{ delivery.label_status || 'Pendente' }}
+            </span>
+          </div>
+
+          @if (delivery.tracking_url) {
+            <a class="tracking-link" [href]="delivery.tracking_url" target="_blank" rel="noopener">
+              <mat-icon>open_in_new</mat-icon>
+              Abrir rastreio
+            </a>
+          }
 
           <mat-form-field appearance="outline" class="notes-field">
             <mat-label>Observacoes</mat-label>

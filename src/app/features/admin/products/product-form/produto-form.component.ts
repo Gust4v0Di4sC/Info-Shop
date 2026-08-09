@@ -39,6 +39,11 @@ export class ProdutoFormComponent implements OnInit {
       stock_quantity: [0, [Validators.required, Validators.min(0)]],
       stock_minimum: [0, [Validators.required, Validators.min(0)]],
       is_featured: [false],
+      shipping_weight: [null, [Validators.min(0.001)]],
+      shipping_width: [null, [Validators.min(1)]],
+      shipping_height: [null, [Validators.min(1)]],
+      shipping_length: [null, [Validators.min(1)]],
+      shipping_insurance_value: [null, [Validators.min(0)]],
     });
 
     if (data?.product) {
@@ -83,6 +88,11 @@ export class ProdutoFormComponent implements OnInit {
       stock_quantity: product.stock_quantity || 0,
       stock_minimum: product.stock_minimum || 0,
       is_featured: Boolean(product.is_featured),
+      shipping_weight: product.shipping_weight,
+      shipping_width: product.shipping_width,
+      shipping_height: product.shipping_height,
+      shipping_length: product.shipping_length,
+      shipping_insurance_value: product.shipping_insurance_value,
     });
   
     if (product.imageUrl) {
@@ -119,6 +129,11 @@ export class ProdutoFormComponent implements OnInit {
       stock_quantity: Number(this.productForm.value.stock_quantity) || 0,
       stock_minimum: Number(this.productForm.value.stock_minimum) || 0,
       is_featured: Boolean(this.productForm.value.is_featured),
+      shipping_weight: this.optionalNumber('shipping_weight'),
+      shipping_width: this.optionalNumber('shipping_width'),
+      shipping_height: this.optionalNumber('shipping_height'),
+      shipping_length: this.optionalNumber('shipping_length'),
+      shipping_insurance_value: this.optionalNumber('shipping_insurance_value'),
     };
   
     if (this.isEditMode && this.productId) {
@@ -214,5 +229,10 @@ export class ProdutoFormComponent implements OnInit {
       return 'Valor nao pode ser negativo';
     }
     return '';
+  }
+
+  private optionalNumber(controlName: string): number | null {
+    const value = this.productForm.get(controlName)?.value;
+    return value === null || value === '' || value === undefined ? null : Number(value);
   }
 }

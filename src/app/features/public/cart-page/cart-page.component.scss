@@ -152,6 +152,13 @@ h2 {
   padding: 22px;
 }
 
+.summary h3 {
+  color: #202833;
+  font-size: 15px;
+  font-weight: 900;
+  margin: 0;
+}
+
 .summary-row {
   align-items: center;
   border-bottom: 1px solid #e2e8f0;
@@ -168,6 +175,7 @@ h2 {
 }
 
 .checkout-btn,
+.quote-btn,
 .clear-btn,
 .primary-link,
 .secondary-action {
@@ -180,6 +188,97 @@ h2 {
   text-decoration: none;
 }
 
+.shipping-form {
+  border-bottom: 1px solid #e2e8f0;
+  display: grid;
+  gap: 12px;
+  padding: 18px 0;
+
+  label {
+    color: #344054;
+    display: grid;
+    font-size: 12px;
+    font-weight: 850;
+    gap: 7px;
+  }
+
+  input {
+    border: 1px solid #d8dee8;
+    border-radius: 8px;
+    color: #202833;
+    font: inherit;
+    min-height: 40px;
+    outline: 0;
+    padding: 0 10px;
+
+    &:focus {
+      border-color: #0f62cf;
+      box-shadow: 0 0 0 3px rgba(15, 98, 207, 0.12);
+    }
+  }
+}
+
+.shipping-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 92px;
+}
+
+.quote-btn {
+  background: #eef5ff;
+  border: 1px solid #bfdbfe;
+  color: #0f62cf;
+  cursor: pointer;
+  height: 42px;
+  width: 100%;
+}
+
+.shipping-options {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.shipping-option {
+  align-items: center;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  cursor: pointer;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  padding: 12px;
+
+  &.selected {
+    background: #eef5ff;
+    border-color: #0f62cf;
+  }
+
+  strong,
+  small {
+    display: block;
+  }
+
+  strong {
+    color: #202833;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  small {
+    color: #667085;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 3px;
+  }
+
+  b {
+    color: #202833;
+    font-size: 13px;
+    font-weight: 900;
+  }
+}
+
 .checkout-btn {
   background: #0f62cf;
   border: 0;
@@ -188,6 +287,12 @@ h2 {
   height: 46px;
   margin-top: 20px;
   width: 100%;
+}
+
+.checkout-btn:disabled,
+.quote-btn:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 
 .clear-btn,
@@ -232,6 +337,18 @@ h2 {
   font-size: 13px;
   font-weight: 750;
   margin: 14px 0 0;
+}
+
+.delivery-link {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.error-text {
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 800;
+  margin: 0;
 }
 
 @media (max-width: 920px) {

@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, Observable } from 'rxjs';
+import { BehaviorSubject, from, map, Observable } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
 import { CartItemWithProduct } from '@app/models/cart-item.model';
+import {
+  CheckoutRequest,
+  CheckoutResult,
+  DeliveryAddress,
+  ShippingQuoteOption,
+  ShippingQuoteResponse,
+} from '@app/models/shipping.model';
 
 @Injectable({
   providedIn: 'root'
@@ -35,8 +42,16 @@ export class CartServiceService {
     return from(this.clearUserCart());
   }
 
-  checkoutCart(): Observable<void> {
-    return from(this.createOrdersFromCart());
+  calculateShipping(address: DeliveryAddress): Observable<ShippingQuoteOption[]> {
+    return from(this.invokeFunction<ShippingQuoteResponse>('melhor-envio-quote', { address }))
+      .pipe(map(response => response.quotes));
+  }
+
+  checkoutCart(request: CheckoutRequest): Observable<CheckoutResult> {
+    return from(this.invokeFunction<CheckoutResult>('melhor-envio-checkout', {
+      address: request.address,
+      selectedServiceId: request.selectedServiceId,
+    }));
   }
 
   incrementCart() {
@@ -203,6 +218,20 @@ export class CartServiceService {
 
     throwSupabaseError(result);
     this.cartCount.next(0);
+  }
+
+  private async invokeFunction<T>(name: string, body: Record<string, unknown>): Promise<T> {
+    const { data, error } = await supabase.functions.invoke<T>(name, { body });
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      throw new Error('Resposta vazia do servidor.');
+    }
+
+    return data;
   }
 
   private async createOrdersFromCart(): Promise<void> {

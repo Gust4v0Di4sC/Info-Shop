@@ -1,0 +1,82 @@
+<app-header></app-header>
+
+<main class="deliveries-page">
+  <section class="deliveries-shell">
+    <div class="deliveries-head">
+      <div>
+        <p class="eyebrow">Minhas entregas</p>
+        <h1>Acompanhamento de pedidos</h1>
+      </div>
+      <a routerLink="/perfil" class="secondary-action">
+        <i class="fas fa-user"></i>
+        Minha conta
+      </a>
+    </div>
+
+    @if (isLoading) {
+      <div class="page-state">Carregando entregas...</div>
+    } @else if (errorMessage) {
+      <div class="page-state error-state">
+        <p>{{ errorMessage }}</p>
+        <a routerLink="/home" class="primary-link">Entrar na conta</a>
+      </div>
+    } @else if (deliveries.length === 0) {
+      <div class="page-state">
+        <p>Nenhuma entrega encontrada.</p>
+        <a routerLink="/" class="primary-link">Ver produtos</a>
+      </div>
+    } @else {
+      <div class="deliveries-list">
+        @for (delivery of deliveries; track delivery.id) {
+          <article class="delivery-card">
+            <div class="delivery-main">
+              <span class="status-pill">{{ statusLabel(delivery.status) }}</span>
+              <h2>Pedido {{ delivery.order_id || 'sem codigo' }}</h2>
+              <p>{{ delivery.address || 'Endereco a confirmar' }}</p>
+
+              <div class="progress-track" aria-hidden="true">
+                <span [style.width.%]="progress(delivery)"></span>
+              </div>
+            </div>
+
+            <div class="delivery-details">
+              <div>
+                <span>Transportadora</span>
+                <strong>{{ delivery.selected_service_name || delivery.carrier || 'A confirmar' }}</strong>
+              </div>
+              <div>
+                <span>Frete</span>
+                <strong>{{ delivery.shipping_price != null ? (delivery.shipping_price | brlCurrency) : 'A confirmar' }}</strong>
+              </div>
+              <div>
+                <span>Prazo</span>
+                <strong>{{ delivery.shipping_deadline ? delivery.shipping_deadline + ' dias uteis' : 'A confirmar' }}</strong>
+              </div>
+              <div>
+                <span>Previsao</span>
+                <strong>{{ dateLabel(delivery.estimated_delivery_date) }}</strong>
+              </div>
+              <div>
+                <span>Codigo</span>
+                <strong>{{ delivery.tracking_code || delivery.melhor_envio_protocol || 'Aguardando postagem' }}</strong>
+              </div>
+              <div>
+                <span>Etiqueta</span>
+                <strong>{{ delivery.label_status || 'Pendente' }}</strong>
+              </div>
+            </div>
+
+            @if (delivery.tracking_url) {
+              <a class="tracking-link" [href]="delivery.tracking_url" target="_blank" rel="noopener">
+                <i class="fas fa-up-right-from-square"></i>
+                Abrir rastreio
+              </a>
+            }
+          </article>
+        }
+      </div>
+    }
+  </section>
+</main>
+
+<app-footer></app-footer>

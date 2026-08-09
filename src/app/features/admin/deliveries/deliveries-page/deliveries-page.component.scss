@@ -119,6 +119,53 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.shipping-summary {
+  display: grid;
+  gap: 10px;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  span {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #4f5967;
+    display: grid;
+    font-size: 13px;
+    font-weight: 750;
+    gap: 4px;
+    min-height: 62px;
+    padding: 10px;
+  }
+
+  strong {
+    color: #202833;
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+}
+
+.tracking-link {
+  align-items: center;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  color: #202833;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 850;
+  gap: 8px;
+  grid-column: 1 / -1;
+  justify-self: start;
+  min-height: 40px;
+  padding: 0 14px;
+  text-decoration: none;
+
+  mat-icon {
+    color: #0f62cf;
+  }
+}
+
 mat-form-field {
   @include mat.form-field-overrides((
     outlined-container-shape: 8px,
@@ -148,6 +195,10 @@ mat-form-field {
   }
 
   .delivery-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .shipping-summary {
     grid-template-columns: 1fr;
   }
 }

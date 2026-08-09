@@ -12,6 +12,10 @@
           <i class="fas fa-shopping-bag"></i>
           Ver carrinho
         </a>
+        <a routerLink="/minhas-entregas" class="secondary-action">
+          <i class="fas fa-truck"></i>
+          Minhas entregas
+        </a>
         <button class="logout-action" type="button" (click)="logout()" [disabled]="isLoggingOut">
           <i class="fas fa-right-from-bracket"></i>
           {{ isLoggingOut ? 'Saindo...' : 'Sair' }}

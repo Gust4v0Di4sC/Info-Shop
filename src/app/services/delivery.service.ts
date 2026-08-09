@@ -24,6 +24,10 @@ export class DeliveryService {
     );
   }
 
+  getCurrentUserDeliveries(): Observable<Delivery[]> {
+    return from(this.loadCurrentUserDeliveries());
+  }
+
   updateDelivery(id: string, delivery: DeliveryUpdate): Observable<Delivery> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
@@ -37,5 +41,25 @@ export class DeliveryService {
       )),
       map(getSupabaseData),
     );
+  }
+
+  private async loadCurrentUserDeliveries(): Promise<Delivery[]> {
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data.user) {
+      throw new Error('Entre na sua conta para acompanhar entregas.');
+    }
+
+    const result = await supabase
+      .from('deliveries')
+      .select('*')
+      .eq('user_id', data.user.id)
+      .order('created_at', { ascending: false });
+
+    return getSupabaseList(result);
   }
 }

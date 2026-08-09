@@ -67,10 +67,79 @@
           </div>
           <div class="summary-row">
             <span>Frete</span>
-            <strong>Calcular no atendimento</strong>
+            <strong>{{ selectedQuote ? (selectedQuote.price | brlCurrency) : 'Calcular' }}</strong>
           </div>
-          <button class="checkout-btn" type="button" (click)="checkout()" [disabled]="isCheckingOut">
-            {{ isCheckingOut ? 'Solicitando...' : 'Solicitar fechamento' }}
+          <div class="summary-row">
+            <span>Total</span>
+            <strong>{{ total | brlCurrency }}</strong>
+          </div>
+
+          <form class="shipping-form" [formGroup]="shippingForm" (ngSubmit)="calculateShipping()">
+            <h3>Entrega</h3>
+            <div class="shipping-grid">
+              <label>
+                CEP
+                <input formControlName="postalCode" inputmode="numeric" placeholder="00000000">
+              </label>
+              <label>
+                UF
+                <input formControlName="state" maxlength="2" placeholder="SP">
+              </label>
+            </div>
+            <label>
+              Rua
+              <input formControlName="street" placeholder="Endereco">
+            </label>
+            <div class="shipping-grid">
+              <label>
+                Numero
+                <input formControlName="number" placeholder="123">
+              </label>
+              <label>
+                Bairro
+                <input formControlName="district" placeholder="Centro">
+              </label>
+            </div>
+            <label>
+              Cidade
+              <input formControlName="city" placeholder="Cidade">
+            </label>
+            <label>
+              Complemento
+              <input formControlName="complement" placeholder="Opcional">
+            </label>
+
+            @if (shippingForm.touched && shippingForm.invalid) {
+              <p class="error-text">Preencha o endereco para calcular o frete.</p>
+            }
+
+            <button class="quote-btn" type="submit" [disabled]="isQuoting">
+              {{ isQuoting ? 'Calculando...' : 'Calcular frete' }}
+            </button>
+          </form>
+
+          @if (shippingQuotes.length > 0) {
+            <div class="shipping-options" role="radiogroup" aria-label="Opcoes de frete">
+              @for (quote of shippingQuotes; track quote.id) {
+                <label class="shipping-option" [class.selected]="selectedServiceId === quote.id">
+                  <input
+                    type="radio"
+                    name="shipping"
+                    [value]="quote.id"
+                    [checked]="selectedServiceId === quote.id"
+                    (change)="selectedServiceId = quote.id">
+                  <span>
+                    <strong>{{ quote.company }} - {{ quote.name }}</strong>
+                    <small>{{ quote.deliveryTime ? quote.deliveryTime + ' dias uteis' : 'Prazo a confirmar' }}</small>
+                  </span>
+                  <b>{{ quote.price | brlCurrency }}</b>
+                </label>
+              }
+            </div>
+          }
+
+          <button class="checkout-btn" type="button" (click)="checkout()" [disabled]="isCheckingOut || !selectedServiceId">
+            {{ isCheckingOut ? 'Finalizando...' : 'Finalizar compra simulada' }}
           </button>
           <button class="clear-btn" type="button" (click)="clearCart()">
             Limpar carrinho
@@ -78,6 +147,9 @@
 
           @if (feedbackMessage) {
             <p class="feedback">{{ feedbackMessage }}</p>
+            <a routerLink="/minhas-entregas" class="primary-link delivery-link">
+              Acompanhar entrega
+            </a>
           }
         </aside>
       </div>
