@@ -36,7 +36,7 @@ export class InventoryPageComponent implements OnInit {
       const normalized = (term || '').toLowerCase();
       this.filteredProducts = this.products.filter(product =>
         product.name.toLowerCase().includes(normalized) ||
-        product.model?.toLowerCase().includes(normalized),
+        (product.model || '').toLowerCase().includes(normalized),
       );
     });
   }

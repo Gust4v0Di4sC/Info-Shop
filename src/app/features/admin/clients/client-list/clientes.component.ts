@@ -42,11 +42,12 @@ export default class ClientesComponent implements OnInit {
         return;
       }
 
+      const normalized = searchTerm.toLowerCase();
       this.filteredClients = this.clients.filter(client =>
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.cpf.toLowerCase().includes(searchTerm.toLowerCase()),
+        client.name.toLowerCase().includes(normalized) ||
+        (client.address || '').toLowerCase().includes(normalized) ||
+        (client.email || '').toLowerCase().includes(normalized) ||
+        (client.cpf || '').toLowerCase().includes(normalized),
       );
     });
   }
@@ -107,7 +108,7 @@ export default class ClientesComponent implements OnInit {
     });
   }
 
-  deleteClient(id: string): void {
+  deleteClient(id: string | number): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       panelClass: 'custom-modal',

@@ -38,13 +38,13 @@ export class ClientService {
     );
   }
 
-  getClient(id: string): Observable<Client> {
+  getClient(id: string | number): Observable<Client> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('clients')
           .select('*')
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId)
           .single(),
       )),
@@ -65,13 +65,13 @@ export class ClientService {
     );
   }
 
-  updateClient(id: string, client: ClientUpdate): Observable<Client> {
+  updateClient(id: string | number, client: ClientUpdate): Observable<Client> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('clients')
           .update(client)
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId)
           .select()
           .single(),
@@ -80,13 +80,13 @@ export class ClientService {
     );
   }
 
-  deleteClient(id: string): Observable<void> {
+  deleteClient(id: string | number): Observable<void> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('clients')
           .delete()
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId),
       )),
       map(throwSupabaseError),

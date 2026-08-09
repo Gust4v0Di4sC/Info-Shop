@@ -106,6 +106,8 @@ export default class PedidosComponent implements OnInit {
   statusLabel(status: string): string {
     const labels: Record<string, string> = {
       open: 'Aberto',
+      payment_pending: 'Aguardando pagamento',
+      payment_failed: 'Pagamento nao aprovado',
       confirmed: 'Confirmado',
       preparing: 'Em preparo',
       shipped: 'Enviado',
@@ -116,7 +118,7 @@ export default class PedidosComponent implements OnInit {
     return labels[status] || status;
   }
 
-  deleteOrder(id: string): void {
+  deleteOrder(id: string | number): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       panelClass: 'custom-modal',

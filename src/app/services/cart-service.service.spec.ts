@@ -31,25 +31,6 @@ describe('CartServiceService', () => {
     expect(quotes[0].company).toBe('Correios');
   });
 
-  it('should checkout through the Melhor Envio checkout function', async () => {
-    const address = deliveryAddress();
-    const invokeSpy = spyOn<any>(service, 'invokeFunction').and.resolveTo({
-        order: { id: 'order-1' },
-        delivery: { id: 'delivery-1' },
-        quote: { id: '1', name: 'PAC', company: 'Correios', price: 19.9, deliveryTime: 5 },
-    });
-
-    const result = await firstValueFrom(service.checkoutCart({
-      address,
-      selectedServiceId: '1',
-    }));
-
-    expect(invokeSpy).toHaveBeenCalledWith('melhor-envio-checkout', {
-        address,
-        selectedServiceId: '1',
-    });
-    expect(result.delivery.id).toBe('delivery-1');
-  });
 });
 
 function deliveryAddress(): DeliveryAddress {

@@ -50,13 +50,13 @@ export class OrderFormService {
     );
   }
 
-  getOrderById(id: string): Observable<Order> {
+  getOrderById(id: string | number): Observable<Order> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('orders')
           .select('*')
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId)
           .single(),
       )),
@@ -64,13 +64,13 @@ export class OrderFormService {
     );
   }
 
-  updateOrder(id: string, orderData: OrderUpdate): Observable<Order> {
+  updateOrder(id: string | number, orderData: OrderUpdate): Observable<Order> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('orders')
           .update(orderData)
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId)
           .select()
           .single(),

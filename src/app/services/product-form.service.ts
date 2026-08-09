@@ -49,13 +49,13 @@ export class ProductFormService {
   }
 
   /** Buscar por ID */
-  getProductById(id: string): Observable<Product> {
+  getProductById(id: string | number): Observable<Product> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('products')
           .select('*')
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId)
           .single(),
       )),
@@ -64,13 +64,13 @@ export class ProductFormService {
   }
 
   /** Atualizar */
-  updateProduct(id: string, productData: ProductUpdate): Observable<Product> {
+  updateProduct(id: string | number, productData: ProductUpdate): Observable<Product> {
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('products')
           .update(productData)
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId)
           .select()
           .single(),

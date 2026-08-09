@@ -1,42 +1,40 @@
 import { Component, Inject, OnInit, Optional } from '@angular/core';
-
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Order, OrderInsert } from '@app/models/order.model';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Client } from '@app/models/client.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ReactiveFormsModule } from '@angular/forms';
-import { OrderFormService } from '@app/services/order-form.service';
+import { Client } from '@app/models/client.model';
+import { Order, OrderInsert } from '@app/models/order.model';
 import { Product } from '@app/models/product.model';
-import { forkJoin } from 'rxjs';
+import { OrderFormService } from '@app/services/order-form.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-pedido-form',
   imports: [SharedMaterialModule, ReactiveFormsModule],
   templateUrl: './pedido-form.component.html',
-  styleUrl: './pedido-form.component.scss'
+  styleUrl: './pedido-form.component.scss',
 })
 export class PedidoFormComponent implements OnInit {
   orderForm: FormGroup;
-  clients: Client[] = []; // Armazena a lista de clientes
-  products: Product[] = []; // Armazena a lista de produtos
+  clients: Client[] = [];
+  products: Product[] = [];
   isLoading = false;
-  orderId: string | undefined;
-  isEditMode: boolean = false;
+  orderId: string | number | undefined;
+  isEditMode = false;
 
   constructor(
     private fb: FormBuilder,
     private orderFormService: OrderFormService,
     private snackBar: MatSnackBar,
     @Optional() public dialogRef: MatDialogRef<PedidoFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.orderForm = this.fb.group({
       clientId: ['', [Validators.required]],
       userId: [{ value: '', disabled: true }, [Validators.required]],
       address: [{ value: '', disabled: true }, [Validators.required]],
-      productId: ['', [Validators.required]]
+      productId: ['', [Validators.required]],
     });
 
     if (data?.order) {
@@ -48,136 +46,48 @@ export class PedidoFormComponent implements OnInit {
   ngOnInit(): void {
     forkJoin({
       clients: this.orderFormService.getClients(),
-      products: this.orderFormService.getProducts()
+      products: this.orderFormService.getProducts(),
     }).subscribe({
-      next: (response) => {
+      next: response => {
         this.clients = response.clients;
         this.products = response.products;
 
         if (this.orderId) {
           this.orderFormService.getOrderById(this.orderId).subscribe({
-            next: (order) => {
-              this.loadOrderData(order);
-            },
-            error: (error) => {
-              console.error('Error loading order:', error);
-            }
+            next: order => this.loadOrderData(order),
+            error: error => console.error('Error loading order:', error),
           });
         }
       },
-      error: (error) => {
+      error: error => {
         console.error('Error loading clients or products:', error);
         this.showSnackbar('Erro ao carregar clientes ou produtos.');
-      }
+      },
     });
   }
 
-  private loadOrderData(order: any): void {
-    const selectedClient = this.clients.find(client => client.id === order.clientId);
-    const selectedProduct = this.products.find(product => product.id === order.productId);
-
-    this.orderForm.patchValue({
-      clientId: selectedClient?.id || '',
-      userId: order.userId,
-      address: order.address,
-      productId: selectedProduct?.id || '',
-    });
-  }
-
-  private showSnackbar(message: string): void {
-    this.snackBar.open(message, 'Fechar', {
-      duration: 3000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top'
-    });
-  }
-
-  onClientChange(clientId: string): void {
-    const selectedClient = this.clients.find((client) => client.id === clientId);
+  onClientChange(clientId: string | number): void {
+    const selectedClient = this.clients.find(client => String(client.id) === String(clientId));
     if (selectedClient) {
       this.orderForm.patchValue({
-        userId: selectedClient.id,
-        address: selectedClient.address,
-      });
-    }
-  }
-
-  private saveOrder(): void {
-    const selectedClient = this.clients.find(client => client.id === this.orderForm.value.clientId);
-    const selectedProduct = this.products.find(product => product.id === this.orderForm.value.productId);
-  
-    if (!selectedClient || !selectedProduct) {
-      this.showSnackbar('Erro: Cliente ou Produto invalido.');
-      return;
-    }
-  
-    // Prepara os dados do Pedido com clientId e productId
-    const orderData: OrderInsert = {
-      id: this.orderId, // Se for edição, mantém o ID atual
-      clientId: selectedClient.id, // Agora salvamos o clientId corretamente
-      name: selectedClient.name, // Ainda salvamos o nome para exibição
-      userId: selectedClient.id, 
-      address: selectedClient.address,
-      productId: selectedProduct.id, // Agora salvamos o productId corretamente
-      product: selectedProduct.name,
-      imageProd: selectedProduct.imageUrl,
-      imageClient: selectedClient.imageUrl,
-      quantity: 1,
-      total_amount: Number(selectedProduct.price || 0),
-      status: 'open',
-    };
-  
-    if (this.isEditMode && this.orderId) {
-      // Atualiza um pedido existente
-      this.orderFormService.updateOrder(this.orderId, orderData).subscribe({
-        next: (response) => {
-          console.log('Pedido atualizado com sucesso:', response);
-          this.showSnackbar('Pedido atualizado com sucesso!');
-          this.dialogRef.close(response);
-        },
-        error: (error) => {
-          console.error('Erro ao atualizar Pedido:', error);
-          this.showSnackbar('Erro ao atualizar o Pedido. Tente novamente.');
-        },
-      });
-    } else {
-      // Cria um novo Pedido
-      this.orderFormService.createOrder(orderData).subscribe({
-        next: (response) => {
-          console.log('Pedido criado com sucesso:', response);
-          this.showSnackbar('Pedido criado com sucesso!');
-          this.dialogRef.close(response);
-        },
-        error: (error) => {
-          console.error('Erro ao criar Pedido:', error);
-          this.showSnackbar('Erro ao criar o Pedido. Tente novamente.');
-        },
+        userId: String(selectedClient.id),
+        address: selectedClient.address || '',
       });
     }
   }
 
   onSubmit(): void {
     if (this.orderForm.valid) {
-      console.log('Formulario valido:', this.orderForm.value);
       this.saveOrder();
-    } else {
-      console.error('Formulario invalido:', this.orderForm.value);
-      this.markFormGroupTouched(this.orderForm);
-      this.showSnackbar('Formulario invalido. Preencha todos os campos obrigatorios.');
+      return;
     }
+
+    this.markFormGroupTouched(this.orderForm);
+    this.showSnackbar('Formulario invalido. Preencha todos os campos obrigatorios.');
   }
 
   onCancel(): void {
     this.dialogRef.close();
-  }
-
-  private markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
-      control.markAsTouched();
-      if (control instanceof FormGroup) {
-        this.markFormGroupTouched(control);
-      }
-    });
   }
 
   getErrorMessage(controlName: string): string {
@@ -186,5 +96,84 @@ export class PedidoFormComponent implements OnInit {
       return 'Campo obrigatorio';
     }
     return '';
+  }
+
+  private loadOrderData(order: Order): void {
+    const selectedClient = this.clients.find(client => String(client.id) === String(order.clientId));
+    const selectedProduct = this.products.find(product => String(product.id) === String(order.productId));
+
+    this.orderForm.patchValue({
+      clientId: selectedClient?.id || '',
+      userId: order.userId || '',
+      address: order.address || '',
+      productId: selectedProduct?.id || '',
+    });
+  }
+
+  private saveOrder(): void {
+    const selectedClient = this.clients.find(client => String(client.id) === String(this.orderForm.value.clientId));
+    const selectedProduct = this.products.find(product => String(product.id) === String(this.orderForm.value.productId));
+
+    if (!selectedClient || !selectedProduct) {
+      this.showSnackbar('Erro: Cliente ou Produto invalido.');
+      return;
+    }
+
+    const orderData: OrderInsert = {
+      id: this.orderId === undefined ? undefined : Number(this.orderId),
+      clientId: selectedClient.id,
+      name: selectedClient.name,
+      userId: String(selectedClient.id),
+      address: selectedClient.address || '',
+      productId: selectedProduct.id,
+      product: selectedProduct.name,
+      imageProd: selectedProduct.imageUrl,
+      imageClient: selectedClient.imageUrl,
+      quantity: 1,
+      total_amount: Number(selectedProduct.price || 0),
+      status: 'open',
+    };
+
+    if (this.isEditMode && this.orderId) {
+      this.orderFormService.updateOrder(this.orderId, orderData).subscribe({
+        next: response => {
+          this.showSnackbar('Pedido atualizado com sucesso!');
+          this.dialogRef.close(response);
+        },
+        error: error => {
+          console.error('Erro ao atualizar Pedido:', error);
+          this.showSnackbar('Erro ao atualizar o Pedido. Tente novamente.');
+        },
+      });
+      return;
+    }
+
+    this.orderFormService.createOrder(orderData).subscribe({
+      next: response => {
+        this.showSnackbar('Pedido criado com sucesso!');
+        this.dialogRef.close(response);
+      },
+      error: error => {
+        console.error('Erro ao criar Pedido:', error);
+        this.showSnackbar('Erro ao criar o Pedido. Tente novamente.');
+      },
+    });
+  }
+
+  private showSnackbar(message: string): void {
+    this.snackBar.open(message, 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+    });
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
 }

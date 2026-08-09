@@ -1,0 +1,78 @@
+.payment-return-page {
+  background: #f6f8fb;
+  min-height: 62vh;
+  padding: 64px 24px;
+}
+
+.return-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin: 0 auto;
+  max-width: 620px;
+  padding: 32px;
+  text-align: center;
+}
+
+.eyebrow {
+  color: #0f62cf;
+  font-size: 12px;
+  font-weight: 850;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+h1 {
+  color: #202833;
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin: 0 0 14px;
+}
+
+p {
+  color: #667085;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.55;
+  margin: 0;
+}
+
+small {
+  color: #475467;
+  display: block;
+  font-weight: 800;
+  margin-top: 18px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.primary-link,
+.secondary-link {
+  align-items: center;
+  border-radius: 8px;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 850;
+  height: 42px;
+  justify-content: center;
+  padding: 0 18px;
+  text-decoration: none;
+}
+
+.primary-link {
+  background: #0f62cf;
+  color: #ffffff;
+}
+
+.secondary-link {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  color: #202833;
+}

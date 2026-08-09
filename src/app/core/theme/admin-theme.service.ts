@@ -89,7 +89,7 @@ export class AdminThemeService {
 
     const { data, error } = await supabase.rpc('update_admin_personalization', {
       theme_id_value: nextPersonalization.themeId,
-      store_logo_url_value: nextPersonalization.storeLogoUrl,
+      store_logo_url_value: nextPersonalization.storeLogoUrl ?? '',
     });
 
     if (error) {

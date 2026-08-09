@@ -82,12 +82,12 @@ export class ProductService {
   /**
    * Busca um produto por ID
    */
-  getProduct(id: string): Observable<Product> {
+  getProduct(id: string | number): Observable<Product> {
     return from(
       supabase
         .from('products')
         .select('*')
-        .eq('id', id)
+        .eq('id', Number(id))
         .single()
     ).pipe(
       map(getSupabaseData)
@@ -97,13 +97,13 @@ export class ProductService {
   /**
    * Deleta um produto por ID
    */
-  deleteProduct(id: string): Observable<void> {
+  deleteProduct(id: string | number): Observable<void> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
       switchMap(storeId => from(
         supabase
           .from('products')
           .delete()
-          .eq('id', id)
+          .eq('id', Number(id))
           .eq('store_id', storeId),
       )),
       map(throwSupabaseError),
