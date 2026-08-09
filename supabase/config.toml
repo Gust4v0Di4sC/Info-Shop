@@ -391,6 +391,9 @@ verify_jwt = false
 [functions.melhor-envio-webhook]
 verify_jwt = false
 
+[functions.mercado-pago-webhook]
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327
