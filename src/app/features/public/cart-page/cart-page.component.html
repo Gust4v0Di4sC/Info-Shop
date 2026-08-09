@@ -139,7 +139,7 @@
           }
 
           <button class="checkout-btn" type="button" (click)="checkout()" [disabled]="isCheckingOut || !selectedServiceId">
-            {{ isCheckingOut ? 'Finalizando...' : 'Finalizar compra simulada' }}
+            {{ isCheckingOut ? 'Abrindo pagamento...' : 'Pagar com Mercado Pago' }}
           </button>
           <button class="clear-btn" type="button" (click)="clearCart()">
             Limpar carrinho

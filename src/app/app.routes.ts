@@ -75,6 +75,14 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'pagamento/retorno',
+    loadComponent: () => import('@app/features/public/payment-return/payment-return.component').then(
+      m => m.PaymentReturnComponent,
+    ),
+    data: { animation: 'payment-return' },
+    canActivate: [AuthGuard],
+  },
+  {
     path: '',
     loadComponent: () =>
       import('@app/features/admin/admin-shell/admin-shell.component').then(

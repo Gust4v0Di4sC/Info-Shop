@@ -7,6 +7,7 @@ import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { CartItemWithProduct } from '@app/models/cart-item.model';
 import { CartServiceService } from '@app/services/cart-service.service';
 import { DeliveryAddress, ShippingQuoteOption } from '@app/models/shipping.model';
+import { PaymentService } from '@app/services/payment.service';
 
 @Component({
   selector: 'app-cart-page',
@@ -22,11 +23,14 @@ export class CartPageComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
   feedbackMessage = '';
-  checkoutDeliveryId = '';
   isQuoting = false;
   isCheckingOut = false;
 
-  constructor(private cartService: CartServiceService, private fb: FormBuilder) {
+  constructor(
+    private cartService: CartServiceService,
+    private paymentService: PaymentService,
+    private fb: FormBuilder,
+  ) {
     this.shippingForm = this.fb.group({
       postalCode: ['', [Validators.required, Validators.minLength(8)]],
       street: ['', [Validators.required]],
@@ -117,7 +121,6 @@ export class CartPageComponent implements OnInit {
     this.isQuoting = true;
     this.errorMessage = '';
     this.feedbackMessage = '';
-    this.checkoutDeliveryId = '';
     this.shippingQuotes = [];
     this.selectedServiceId = '';
 
@@ -146,21 +149,16 @@ export class CartPageComponent implements OnInit {
     this.isCheckingOut = true;
     this.errorMessage = '';
 
-    this.cartService.checkoutCart({
+    this.paymentService.createPreference({
       address: this.deliveryAddress(),
       selectedServiceId: this.selectedServiceId,
     }).subscribe({
       next: result => {
-        this.items = [];
-        this.shippingQuotes = [];
-        this.selectedServiceId = '';
-        this.checkoutDeliveryId = result.delivery.id;
-        this.feedbackMessage = 'Compra simulada concluida. Sua entrega ja esta disponivel para acompanhamento.';
+        this.redirectToPayment(result.initPoint);
         this.isCheckingOut = false;
-        this.cartService.refreshCartCount().subscribe();
       },
       error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel solicitar o fechamento.';
+        this.errorMessage = error?.message || 'Nao foi possivel iniciar o pagamento.';
         this.isCheckingOut = false;
       },
     });
@@ -177,6 +175,10 @@ export class CartPageComponent implements OnInit {
       state: (value.state || '').toUpperCase(),
       complement: value.complement || null,
     };
+  }
+
+  redirectToPayment(url: string): void {
+    window.location.href = url;
   }
 
 }

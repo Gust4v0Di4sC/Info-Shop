@@ -1,0 +1,20 @@
+<app-header></app-header>
+
+<main class="payment-return-page">
+  <section class="return-panel">
+    <p class="eyebrow">Mercado Pago</p>
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+
+    @if (orderId) {
+      <small>Pedido {{ orderId }}</small>
+    }
+
+    <div class="actions">
+      <a routerLink="/minhas-entregas" class="primary-link">Acompanhar entregas</a>
+      <a routerLink="/carrinho" class="secondary-link">Voltar ao carrinho</a>
+    </div>
+  </section>
+</main>
+
+<app-footer></app-footer>

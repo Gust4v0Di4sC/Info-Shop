@@ -1,6 +1,3 @@
-import { Delivery } from './delivery.model';
-import { Order } from './order.model';
-
 export interface DeliveryAddress {
   postalCode: string;
   street: string;
@@ -22,15 +19,4 @@ export interface ShippingQuoteOption {
 
 export interface ShippingQuoteResponse {
   quotes: ShippingQuoteOption[];
-}
-
-export interface CheckoutRequest {
-  address: DeliveryAddress;
-  selectedServiceId: string;
-}
-
-export interface CheckoutResult {
-  order: Order;
-  delivery: Delivery;
-  quote: ShippingQuoteOption;
 }
