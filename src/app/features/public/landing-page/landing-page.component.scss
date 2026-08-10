@@ -2,4 +2,136 @@
   font-family: "Roboto Flex", sans-serif;
 }
 
+.ai-benchmark-section {
+  background: #f6f8fb;
+  padding: 70px 0;
+}
+
+.ai-benchmark-container {
+  align-items: center;
+  display: grid;
+  gap: 34px;
+  grid-template-columns: minmax(0, 0.95fr) minmax(280px, 0.8fr) auto;
+  margin: 0 auto;
+  max-width: 1220px;
+  padding: 0 24px;
+}
+
+.ai-benchmark-copy {
+  max-width: 560px;
+}
+
+.ai-eyebrow {
+  color: #0f62cf;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+h2 {
+  color: #202833;
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.ai-benchmark-copy p:not(.ai-eyebrow) {
+  color: #667085;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.6;
+  margin: 16px 0 0;
+}
+
+.ai-benchmark-panel {
+  background: #ffffff;
+  border: 1px solid #dfe7f1;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.benchmark-line {
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.45;
+  padding: 12px;
+
+  span {
+    display: block;
+    font-size: 11px;
+    font-weight: 900;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+  }
+}
+
+.user-line {
+  background: #0f62cf;
+  color: #ffffff;
+}
+
+.ai-line {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #202833;
+
+  span {
+    color: #0f62cf;
+  }
+}
+
+.ai-benchmark-action {
+  align-items: center;
+  background: #0f62cf;
+  border-radius: 8px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 850;
+  gap: 10px;
+  height: 46px;
+  justify-content: center;
+  padding: 0 18px;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    background: #0b55b6;
+  }
+}
+
+@media (max-width: 960px) {
+  .ai-benchmark-container {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-benchmark-action {
+    width: fit-content;
+  }
+}
+
+@media (max-width: 620px) {
+  .ai-benchmark-section {
+    padding: 54px 0;
+  }
+
+  .ai-benchmark-container {
+    padding: 0 18px;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
+
+  .ai-benchmark-action {
+    width: 100%;
+  }
+}
+
 

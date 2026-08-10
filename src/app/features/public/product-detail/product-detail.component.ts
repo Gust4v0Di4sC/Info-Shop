@@ -6,10 +6,11 @@ import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { Product } from '@app/models/product.model';
 import { ProductService } from '@app/services/product.service';
 import { CartServiceService } from '@app/services/cart-service.service';
+import { HardwareBenchmarkChatComponent } from '@app/features/public/components/hardware-benchmark-chat/hardware-benchmark-chat.component';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [HeaderComponent, FooterComponent, BrlCurrencyPipe, RouterLink],
+  imports: [HeaderComponent, FooterComponent, BrlCurrencyPipe, RouterLink, HardwareBenchmarkChatComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })

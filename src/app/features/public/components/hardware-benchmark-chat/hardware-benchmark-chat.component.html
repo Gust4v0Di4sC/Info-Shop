@@ -1,0 +1,85 @@
+<section class="benchmark-chat" aria-labelledby="benchmark-title">
+  <div class="benchmark-head">
+    <div>
+      <p class="eyebrow">Benchmark com IA</p>
+      <h2 id="benchmark-title">Compare com seu hardware atual</h2>
+    </div>
+    <span class="status-pill">
+      <i class="fas fa-microchip"></i>
+      Gemini
+    </span>
+  </div>
+
+  @if (!isAuthenticated) {
+    <div class="login-state">
+      <strong>Entre para usar o comparador</strong>
+      <p>Usuarios logados podem comparar este produto com o computador, notebook ou setup atual.</p>
+      <button class="secondary-action" type="button" (click)="goToLogin()">
+        <i class="far fa-user"></i>
+        Entrar na conta
+      </button>
+    </div>
+  } @else {
+    <label class="hardware-field">
+      <span>Seu hardware atual</span>
+      <textarea
+        [formControl]="currentHardwareControl"
+        rows="3"
+        maxlength="1200"
+        placeholder="Ex.: Ryzen 5 3600, GTX 1660, 16GB RAM, SSD NVMe 500GB"></textarea>
+    </label>
+
+    <div class="prompt-row" aria-label="Perguntas sugeridas">
+      <button type="button" (click)="usePrompt('Esse produto e um upgrade relevante para jogos?')">
+        Jogos
+      </button>
+      <button type="button" (click)="usePrompt('Qual gargalo esse produto pode resolver no meu setup?')">
+        Gargalos
+      </button>
+      <button type="button" (click)="usePrompt('O custo-beneficio compensa comparado ao meu hardware atual?')">
+        Custo-beneficio
+      </button>
+    </div>
+
+    <div class="messages" aria-live="polite">
+      @for (message of messages; track $index) {
+        <article class="message" [class.model-message]="message.role === 'model'">
+          <span>{{ message.role === 'user' ? 'Voce' : 'InfoShop IA' }}</span>
+          <p>{{ message.text }}</p>
+        </article>
+      } @empty {
+        <p class="empty-state">Pergunte sobre desempenho, gargalos, compatibilidade ou custo-beneficio.</p>
+      }
+
+      @if (isSending) {
+        <article class="message model-message loading-message">
+          <span>InfoShop IA</span>
+          <p>Analisando benchmark...</p>
+        </article>
+      }
+    </div>
+
+    @if (validationMessage) {
+      <p class="field-feedback">{{ validationMessage }}</p>
+    }
+
+    @if (errorMessage) {
+      <p class="field-feedback error-text">{{ errorMessage }}</p>
+    }
+
+    <form class="chat-form" (ngSubmit)="sendMessage()">
+      <label>
+        <span>Pergunta</span>
+        <textarea
+          [formControl]="messageControl"
+          rows="2"
+          maxlength="600"
+          placeholder="Pergunte como este produto se compara ao seu setup"></textarea>
+      </label>
+      <button class="primary-action" type="submit" [disabled]="isSending">
+        <i class="fas fa-paper-plane"></i>
+        {{ isSending ? 'Enviando...' : 'Enviar' }}
+      </button>
+    </form>
+  }
+</section>

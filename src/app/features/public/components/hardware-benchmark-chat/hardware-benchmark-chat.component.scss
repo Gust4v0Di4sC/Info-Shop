@@ -1,0 +1,264 @@
+.benchmark-chat {
+  background: #ffffff;
+  border: 1px solid #dfe7f1;
+  border-radius: 8px;
+  margin: 34px auto 0;
+  max-width: 1180px;
+  padding: 28px;
+}
+
+.benchmark-head {
+  align-items: start;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.eyebrow {
+  color: #0f62cf;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+h2 {
+  color: #202833;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.status-pill {
+  align-items: center;
+  background: #eef6ff;
+  border: 1px solid #cfe4ff;
+  border-radius: 999px;
+  color: #0f62cf;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 850;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.login-state {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 22px;
+
+  strong {
+    color: #202833;
+    display: block;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  p {
+    color: #667085;
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.5;
+    margin: 8px 0 18px;
+  }
+}
+
+label,
+.hardware-field {
+  display: grid;
+  gap: 8px;
+
+  span {
+    color: #344054;
+    font-size: 13px;
+    font-weight: 850;
+  }
+}
+
+textarea {
+  background: #ffffff;
+  border: 1px solid #cfd8e3;
+  border-radius: 8px;
+  color: #202833;
+  font: 600 14px/1.45 "Roboto Flex", Roboto, sans-serif;
+  min-height: 68px;
+  outline: none;
+  padding: 12px 14px;
+  resize: vertical;
+  width: 100%;
+
+  &:focus {
+    border-color: #0f62cf;
+    box-shadow: 0 0 0 3px rgba(15, 98, 207, 0.12);
+  }
+}
+
+.prompt-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+
+  button {
+    background: #f8fafc;
+    border: 1px solid #d8dee8;
+    border-radius: 999px;
+    color: #344054;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 850;
+    min-height: 34px;
+    padding: 0 12px;
+
+    &:hover {
+      border-color: #0f62cf;
+      color: #0f62cf;
+    }
+  }
+}
+
+.messages {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+  max-height: 390px;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.empty-state {
+  color: #667085;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.message {
+  justify-self: end;
+  max-width: min(82%, 720px);
+
+  span {
+    color: #667085;
+    display: block;
+    font-size: 11px;
+    font-weight: 850;
+    margin-bottom: 5px;
+    text-align: right;
+    text-transform: uppercase;
+  }
+
+  p {
+    background: #0f62cf;
+    border-radius: 8px 8px 0 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.55;
+    margin: 0;
+    padding: 12px 14px;
+    white-space: pre-wrap;
+  }
+}
+
+.model-message {
+  justify-self: start;
+
+  span {
+    text-align: left;
+  }
+
+  p {
+    background: #ffffff;
+    border: 1px solid #dfe7f1;
+    border-radius: 8px 8px 8px 0;
+    color: #202833;
+  }
+}
+
+.loading-message p {
+  color: #667085;
+}
+
+.field-feedback {
+  color: #9a3412;
+  font-size: 13px;
+  font-weight: 800;
+  margin: -4px 0 14px;
+}
+
+.error-text {
+  color: #b42318;
+}
+
+.chat-form {
+  align-items: end;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) 150px;
+}
+
+.primary-action,
+.secondary-action {
+  align-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 850;
+  gap: 10px;
+  justify-content: center;
+  min-height: 46px;
+  text-decoration: none;
+}
+
+.primary-action {
+  background: #0f62cf;
+  border: 0;
+  color: #ffffff;
+  padding: 0 18px;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.66;
+  }
+}
+
+.secondary-action {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  color: #202833;
+  padding: 0 18px;
+}
+
+@media (max-width: 720px) {
+  .benchmark-chat {
+    padding: 22px 18px;
+  }
+
+  .benchmark-head,
+  .chat-form {
+    grid-template-columns: 1fr;
+  }
+
+  .benchmark-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .message {
+    max-width: 100%;
+  }
+
+  .primary-action {
+    width: 100%;
+  }
+}
