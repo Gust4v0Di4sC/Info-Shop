@@ -73,6 +73,8 @@ label,
 .hardware-field {
   display: grid;
   gap: 8px;
+  min-width: 0;
+  width: 100%;
 
   span {
     color: #344054;
@@ -85,13 +87,21 @@ textarea {
   background: #ffffff;
   border: 1px solid #cfd8e3;
   border-radius: 8px;
+  box-sizing: border-box;
   color: #202833;
+  display: block;
   font: 600 14px/1.45 "Roboto Flex", Roboto, sans-serif;
+  max-width: 100%;
   min-height: 68px;
   outline: none;
   padding: 12px 14px;
   resize: vertical;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
   width: 100%;
+
+  &:hover {
+    border-color: #9db7d6;
+  }
 
   &:focus {
     border-color: #0f62cf;
@@ -204,6 +214,10 @@ textarea {
   display: grid;
   gap: 14px;
   grid-template-columns: minmax(0, 1fr) 150px;
+
+  label {
+    min-width: 0;
+  }
 }
 
 .primary-action,
@@ -218,6 +232,7 @@ textarea {
   justify-content: center;
   min-height: 46px;
   text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
 .primary-action {
@@ -225,6 +240,20 @@ textarea {
   border: 0;
   color: #ffffff;
   padding: 0 18px;
+
+  &:hover:not(:disabled) {
+    background: #0b55b6;
+    box-shadow: 0 10px 22px rgba(15, 98, 207, 0.22);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px rgba(15, 98, 207, 0.18);
+    outline: none;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
 
   &:disabled {
     cursor: not-allowed;
@@ -237,6 +266,17 @@ textarea {
   border: 1px solid #d8dee8;
   color: #202833;
   padding: 0 18px;
+
+  &:hover {
+    background: #f8fafc;
+    border-color: #0f62cf;
+    color: #0f62cf;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px rgba(15, 98, 207, 0.14);
+    outline: none;
+  }
 }
 
 @media (max-width: 720px) {

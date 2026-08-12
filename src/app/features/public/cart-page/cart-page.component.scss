@@ -149,7 +149,11 @@ h2 {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
   padding: 22px;
+  width: 100%;
 }
 
 .summary h3 {
@@ -190,26 +194,36 @@ h2 {
 
 .shipping-form {
   border-bottom: 1px solid #e2e8f0;
+  box-sizing: border-box;
   display: grid;
   gap: 12px;
   padding: 18px 0;
+  min-width: 0;
+  width: 100%;
 
   label {
+    box-sizing: border-box;
     color: #344054;
     display: grid;
     font-size: 12px;
     font-weight: 850;
     gap: 7px;
+    min-width: 0;
+    width: 100%;
   }
 
   input {
     border: 1px solid #d8dee8;
     border-radius: 8px;
+    box-sizing: border-box;
     color: #202833;
+    display: block;
     font: inherit;
+    max-width: 100%;
     min-height: 40px;
     outline: 0;
     padding: 0 10px;
+    width: 100%;
 
     &:focus {
       border-color: #0f62cf;
@@ -221,7 +235,13 @@ h2 {
 .shipping-grid {
   display: grid;
   gap: 10px;
-  grid-template-columns: minmax(0, 1fr) 92px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+  width: 100%;
+}
+
+.shipping-grid:first-of-type {
+  grid-template-columns: minmax(0, 1fr) minmax(64px, 76px);
 }
 
 .quote-btn {
@@ -351,6 +371,17 @@ h2 {
   margin: 0;
 }
 
+.action-error {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  box-sizing: border-box;
+  line-height: 1.4;
+  margin-top: 14px;
+  padding: 10px 12px;
+  width: 100%;
+}
+
 @media (max-width: 920px) {
   .cart-content {
     grid-template-columns: 1fr;
@@ -370,5 +401,12 @@ h2 {
   .quantity-control {
     grid-column: 2 / -1;
     justify-self: start;
+  }
+}
+
+@media (max-width: 420px) {
+  .shipping-grid,
+  .shipping-grid:first-of-type {
+    grid-template-columns: 1fr;
   }
 }

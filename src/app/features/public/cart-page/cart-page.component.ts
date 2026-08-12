@@ -21,7 +21,8 @@ export class CartPageComponent implements OnInit {
   shippingQuotes: ShippingQuoteOption[] = [];
   selectedServiceId = '';
   isLoading = true;
-  errorMessage = '';
+  pageErrorMessage = '';
+  actionErrorMessage = '';
   feedbackMessage = '';
   isQuoting = false;
   isCheckingOut = false;
@@ -66,7 +67,8 @@ export class CartPageComponent implements OnInit {
 
   loadCart(): void {
     this.isLoading = true;
-    this.errorMessage = '';
+    this.pageErrorMessage = '';
+    this.actionErrorMessage = '';
 
     this.cartService.getCartItems().subscribe({
       next: items => {
@@ -74,40 +76,44 @@ export class CartPageComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar seu carrinho agora. Tente novamente em alguns instantes.';
+        this.pageErrorMessage = 'Nao foi possivel carregar seu carrinho agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });
   }
 
   changeQuantity(item: CartItemWithProduct, quantity: number): void {
+    this.actionErrorMessage = '';
     this.cartService.updateQuantity(item.id, quantity).subscribe({
       next: () => this.loadCart(),
       error: () => {
-        this.errorMessage = 'Nao foi possivel atualizar este item agora. Tente novamente.';
+        this.actionErrorMessage = 'Nao foi possivel atualizar este item agora. Tente novamente.';
       },
     });
   }
 
   removeItem(item: CartItemWithProduct): void {
+    this.actionErrorMessage = '';
     this.cartService.removeItem(item.id).subscribe({
       next: () => this.loadCart(),
       error: () => {
-        this.errorMessage = 'Nao foi possivel remover este item agora. Tente novamente.';
+        this.actionErrorMessage = 'Nao foi possivel remover este item agora. Tente novamente.';
       },
     });
   }
 
   clearCart(): void {
+    this.actionErrorMessage = '';
     this.cartService.clearCart().subscribe({
       next: () => {
         this.items = [];
         this.shippingQuotes = [];
         this.selectedServiceId = '';
+        this.actionErrorMessage = '';
         this.feedbackMessage = 'Carrinho limpo.';
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel limpar o carrinho agora. Tente novamente.';
+        this.actionErrorMessage = 'Nao foi possivel limpar o carrinho agora. Tente novamente.';
       },
     });
   }
@@ -119,7 +125,7 @@ export class CartPageComponent implements OnInit {
     }
 
     this.isQuoting = true;
-    this.errorMessage = '';
+    this.actionErrorMessage = '';
     this.feedbackMessage = '';
     this.shippingQuotes = [];
     this.selectedServiceId = '';
@@ -130,11 +136,13 @@ export class CartPageComponent implements OnInit {
         this.selectedServiceId = quotes[0]?.id || '';
         this.isQuoting = false;
         if (quotes.length === 0) {
-          this.errorMessage = 'Nao encontramos frete disponivel para este endereco.';
+          this.actionErrorMessage = 'Nao encontramos frete disponivel para este endereco.';
         }
       },
-      error: () => {
-        this.errorMessage = 'Nao foi possivel calcular o frete agora. Confira o endereco e tente novamente.';
+      error: error => {
+        this.actionErrorMessage = error instanceof Error && error.message
+          ? error.message
+          : 'Nao foi possivel calcular o frete agora. Confira o endereco e tente novamente.';
         this.isQuoting = false;
       },
     });
@@ -142,12 +150,12 @@ export class CartPageComponent implements OnInit {
 
   checkout(): void {
     if (!this.selectedServiceId) {
-      this.errorMessage = 'Escolha uma opcao de frete antes de finalizar.';
+      this.actionErrorMessage = 'Escolha uma opcao de frete antes de finalizar.';
       return;
     }
 
     this.isCheckingOut = true;
-    this.errorMessage = '';
+    this.actionErrorMessage = '';
 
     this.paymentService.createPreference({
       address: this.deliveryAddress(),
@@ -158,7 +166,7 @@ export class CartPageComponent implements OnInit {
         this.isCheckingOut = false;
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.';
+        this.actionErrorMessage = 'Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.';
         this.isCheckingOut = false;
       },
     });
@@ -167,7 +175,7 @@ export class CartPageComponent implements OnInit {
   private deliveryAddress(): DeliveryAddress {
     const value = this.shippingForm.value;
     return {
-      postalCode: value.postalCode || '',
+      postalCode: this.onlyDigits(value.postalCode || ''),
       street: value.street || '',
       number: value.number || '',
       district: value.district || '',
@@ -175,6 +183,10 @@ export class CartPageComponent implements OnInit {
       state: (value.state || '').toUpperCase(),
       complement: value.complement || null,
     };
+  }
+
+  private onlyDigits(value: string): string {
+    return value.replace(/\D/g, '');
   }
 
   redirectToPayment(url: string): void {

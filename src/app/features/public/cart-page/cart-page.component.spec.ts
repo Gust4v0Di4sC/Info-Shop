@@ -42,8 +42,41 @@ describe('CartPageComponent', () => {
     fillAddress(component);
     component.checkout();
 
-    expect(component.errorMessage).toBe('Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.');
+    expect(component.actionErrorMessage).toBe('Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.');
     expect(component.isCheckingOut).toBeFalse();
+  });
+
+  it('should keep shipping errors inline when no quotes are returned', () => {
+    const cartService = cartServiceMock();
+    const paymentService = paymentServiceMock();
+    const component = new CartPageComponent(cartService, paymentService, new FormBuilder());
+    (cartService.calculateShipping as jasmine.Spy).and.returnValue(of([]));
+
+    fillAddress(component);
+    component.calculateShipping();
+
+    expect(component.pageErrorMessage).toBe('');
+    expect(component.actionErrorMessage).toBe('Nao encontramos frete disponivel para este endereco.');
+    expect(component.shippingQuotes).toEqual([]);
+    expect(component.selectedServiceId).toBe('');
+    expect(component.isQuoting).toBeFalse();
+  });
+
+  it('should select the first shipping quote returned', () => {
+    const cartService = cartServiceMock();
+    const paymentService = paymentServiceMock();
+    const component = new CartPageComponent(cartService, paymentService, new FormBuilder());
+    (cartService.calculateShipping as jasmine.Spy).and.returnValue(of([
+      { id: '2', name: 'SEDEX', company: 'Correios', price: 29.9, deliveryTime: 2 },
+    ]));
+
+    fillAddress(component);
+    component.calculateShipping();
+
+    expect(component.actionErrorMessage).toBe('');
+    expect(component.shippingQuotes.length).toBe(1);
+    expect(component.selectedServiceId).toBe('2');
+    expect(component.isQuoting).toBeFalse();
   });
 });
 

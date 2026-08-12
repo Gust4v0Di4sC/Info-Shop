@@ -15,9 +15,9 @@
 
     @if (isLoading) {
       <div class="page-state">Carregando carrinho...</div>
-    } @else if (errorMessage) {
+    } @else if (pageErrorMessage) {
       <div class="page-state error-state">
-        <p>{{ errorMessage }}</p>
+        <p>{{ pageErrorMessage }}</p>
         <a routerLink="/home" class="primary-link">Entrar na conta</a>
       </div>
     } @else if (items.length === 0) {
@@ -117,6 +117,10 @@
               {{ isQuoting ? 'Calculando...' : 'Calcular frete' }}
             </button>
           </form>
+
+          @if (actionErrorMessage) {
+            <p class="error-text action-error">{{ actionErrorMessage }}</p>
+          }
 
           @if (shippingQuotes.length > 0) {
             <div class="shipping-options" role="radiogroup" aria-label="Opcoes de frete">

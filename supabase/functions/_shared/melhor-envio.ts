@@ -166,17 +166,32 @@ export async function loadCartForUser(serviceClient: SupabaseClient, user: User)
 }
 
 export async function calculateQuotes(cart: LoadedCart, address: DeliveryAddress): Promise<ShippingQuote[]> {
-  const payload = buildCalculatePayload(cart, address);
-  const response = await melhorEnvioRequest('/api/v2/me/shipment/calculate', {
+  const productPayload = buildCalculatePayload(cart, address, 'products');
+  const productResponse = await melhorEnvioRequest('/api/v2/me/shipment/calculate', {
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: JSON.stringify(productPayload),
   });
+  const productResult = normalizeQuoteResponse(productResponse);
 
-  const list = Array.isArray(response) ? response : [];
-  return list
-    .filter(item => item && typeof item === 'object' && !('error' in (item as JsonRecord)))
-    .map(item => normalizeQuote(item as JsonRecord))
-    .filter((quote): quote is ShippingQuote => Boolean(quote));
+  if (productResult.quotes.length > 0) {
+    return productResult.quotes;
+  }
+
+  const volumePayload = buildCalculatePayload(cart, address, 'volumes');
+  const volumeResponse = await melhorEnvioRequest('/api/v2/me/shipment/calculate', {
+    method: 'POST',
+    body: JSON.stringify(volumePayload),
+  });
+  const volumeResult = normalizeQuoteResponse(volumeResponse);
+
+  if (volumeResult.quotes.length > 0) {
+    return volumeResult.quotes;
+  }
+
+  const detail = summarizeQuoteErrors([...productResult.errors, ...volumeResult.errors]);
+  throw new Error(detail
+    ? `Nenhuma opcao de frete retornada pelo Melhor Envio: ${detail}`
+    : 'Nenhuma opcao de frete retornada pelo Melhor Envio para este endereco.');
 }
 
 export async function melhorEnvioRequest(path: string, init: RequestInit): Promise<unknown> {
@@ -319,6 +334,7 @@ export function buildCartPayload(cart: LoadedCart, address: DeliveryAddress, sel
       state_abbr: normalizedAddress.state,
     },
     products: buildProductsPayload(cart),
+    volumes: buildQuoteVolumes(selectedQuote) || [buildShipmentVolume(cart)],
     options: {
       insurance_value: cart.subtotal,
       receipt: false,
@@ -433,26 +449,38 @@ async function persistToken(serviceClient: SupabaseClient, token: JsonRecord): P
   }
 }
 
-function buildCalculatePayload(cart: LoadedCart, address: DeliveryAddress): JsonRecord {
+function buildCalculatePayload(cart: LoadedCart, address: DeliveryAddress, mode: 'products' | 'volumes'): JsonRecord {
   const normalizedAddress = normalizeAddress(address);
   if (!cart.store.sender_postal_code) {
     throw new Error('Cadastre o CEP de origem da loja antes de calcular frete.');
   }
 
-  return {
+  const payload: JsonRecord = {
     from: {
       postal_code: onlyDigits(cart.store.sender_postal_code),
     },
     to: {
       postal_code: normalizedAddress.postalCode,
     },
-    products: buildProductsPayload(cart),
     options: {
       receipt: false,
       own_hand: false,
       collect: false,
     },
   };
+
+  const configuredServices = Deno.env.get('ME_SHIPPING_SERVICES')?.trim();
+  if (configuredServices) {
+    payload['services'] = configuredServices;
+  }
+
+  if (mode === 'products') {
+    payload['products'] = buildProductsPayload(cart);
+  } else {
+    payload['volumes'] = [buildShipmentVolume(cart)];
+  }
+
+  return payload;
 }
 
 function buildProductsPayload(cart: LoadedCart): JsonRecord[] {
@@ -477,7 +505,7 @@ function buildProductsPayload(cart: LoadedCart): JsonRecord[] {
 }
 
 function normalizeQuote(item: JsonRecord): ShippingQuote | null {
-  const price = Number(item['custom_price'] ?? item['price']);
+  const price = parseNumber(item['custom_price'] ?? item['price']);
   if (!Number.isFinite(price)) {
     return null;
   }
@@ -489,10 +517,177 @@ function normalizeQuote(item: JsonRecord): ShippingQuote | null {
     company: String(company?.['name'] ?? item['company_name'] ?? 'Transportadora'),
     price,
     deliveryTime: item['custom_delivery_time'] || item['delivery_time']
-      ? Number(item['custom_delivery_time'] ?? item['delivery_time'])
+      ? parseNumber(item['custom_delivery_time'] ?? item['delivery_time'])
       : null,
     raw: item,
   };
+}
+
+function normalizeQuoteResponse(response: unknown): { quotes: ShippingQuote[]; errors: string[] } {
+  const list = extractQuoteList(response);
+  const errors: string[] = [];
+  const quotes: ShippingQuote[] = [];
+
+  for (const item of list) {
+    if (!item || typeof item !== 'object') {
+      continue;
+    }
+
+    const record = item as JsonRecord;
+    if ('error' in record) {
+      errors.push(quoteErrorMessage(record));
+      continue;
+    }
+
+    const quote = normalizeQuote(record);
+    if (quote) {
+      quotes.push(quote);
+    }
+  }
+
+  return { quotes, errors };
+}
+
+function extractQuoteList(response: unknown): unknown[] {
+  if (Array.isArray(response)) {
+    return response;
+  }
+
+  if (!response || typeof response !== 'object') {
+    return [];
+  }
+
+  const record = response as JsonRecord;
+  const candidates = [record['data'], record['quotes'], record['services'], record['results']];
+  const list = candidates.find(Array.isArray);
+  return Array.isArray(list) ? list : [];
+}
+
+function quoteErrorMessage(item: JsonRecord): string {
+  const serviceName = [item['company'] && typeof item['company'] === 'object'
+    ? (item['company'] as JsonRecord)['name']
+    : item['company_name'], item['name']]
+    .filter(Boolean)
+    .map(value => String(value))
+    .join(' - ');
+  const message = item['error'] ?? item['message'] ?? item['warning'];
+  return [serviceName, message ? String(message) : 'Servico indisponivel']
+    .filter(Boolean)
+    .join(': ');
+}
+
+function summarizeQuoteErrors(errors: string[]): string {
+  return [...new Set(errors.map(error => error.trim()).filter(Boolean))]
+    .slice(0, 3)
+    .join(' | ');
+}
+
+function buildShipmentVolume(cart: LoadedCart): JsonRecord {
+  const productById = new Map(cart.products.map(product => [String(product.id), product]));
+  let totalWeight = 0;
+  let maxWidth = 0;
+  let maxLength = 0;
+  let stackedHeight = 0;
+
+  for (const item of cart.items) {
+    const product = productById.get(String(item.product_id));
+    if (!product) {
+      throw new Error('Produto nao encontrado no carrinho.');
+    }
+
+    const quantity = Math.max(1, Number(item.quantity || 1));
+    const width = parseNumber(product.shipping_width || cart.store.default_package_width);
+    const height = parseNumber(product.shipping_height || cart.store.default_package_height);
+    const length = parseNumber(product.shipping_length || cart.store.default_package_length);
+    const weight = parseNumber(product.shipping_weight || cart.store.default_package_weight);
+
+    maxWidth = Math.max(maxWidth, width);
+    maxLength = Math.max(maxLength, length);
+    stackedHeight += height * quantity;
+    totalWeight += weight * quantity;
+  }
+
+  return {
+    width: normalizeDimension(maxWidth, cart.store.default_package_width, 11),
+    height: normalizeDimension(stackedHeight, cart.store.default_package_height, 4),
+    length: normalizeDimension(maxLength, cart.store.default_package_length, 16),
+    weight: normalizeWeight(totalWeight, cart.store.default_package_weight),
+    insurance: roundMoney(cart.subtotal),
+  };
+}
+
+function buildQuoteVolumes(quote: ShippingQuote): JsonRecord[] | null {
+  const raw = quote.raw as JsonRecord | null;
+  if (!raw || typeof raw !== 'object') {
+    return null;
+  }
+
+  const packages = Array.isArray(raw['packages'])
+    ? raw['packages']
+    : Array.isArray(raw['volumes'])
+      ? raw['volumes']
+      : [];
+  const volumes = packages
+    .map(packageToVolume)
+    .filter((volume): volume is JsonRecord => Boolean(volume));
+
+  return volumes.length > 0 ? volumes : null;
+}
+
+function packageToVolume(item: unknown): JsonRecord | null {
+  if (!item || typeof item !== 'object') {
+    return null;
+  }
+
+  const record = item as JsonRecord;
+  const dimensions = record['dimensions'] && typeof record['dimensions'] === 'object'
+    ? record['dimensions'] as JsonRecord
+    : {};
+  const width = parseNumber(record['width'] ?? dimensions['width']);
+  const height = parseNumber(record['height'] ?? dimensions['height']);
+  const length = parseNumber(record['length'] ?? dimensions['length']);
+  const weight = parseNumber(record['weight']);
+  const insurance = parseNumber(record['insurance'] ?? record['insurance_value']);
+
+  if (![width, height, length, weight].every(Number.isFinite)) {
+    return null;
+  }
+
+  return {
+    width,
+    height,
+    length,
+    weight,
+    insurance: Number.isFinite(insurance) ? insurance : 0,
+  };
+}
+
+function normalizeDimension(value: number, fallback: number, minimum: number): number {
+  return roundMeasure(Math.max(value, parseNumber(fallback), minimum));
+}
+
+function normalizeWeight(value: number, fallback: number): number {
+  return roundMeasure(Math.max(value, parseNumber(fallback), 0.1));
+}
+
+function parseNumber(value: unknown): number {
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    return Number(value.replace(',', '.'));
+  }
+
+  return Number(value || 0);
+}
+
+function roundMeasure(value: number): number {
+  return Math.round(value * 1000) / 1000;
+}
+
+function roundMoney(value: number): number {
+  return Math.round(value * 100) / 100;
 }
 
 function assertSenderData(store: StoreRow): void {

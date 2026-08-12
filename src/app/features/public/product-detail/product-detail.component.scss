@@ -114,6 +114,33 @@ h1 {
     background: #ffffff;
     color: #202833;
     cursor: pointer;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+
+    &:hover:not(:disabled) {
+      background: #eef6ff;
+      border-color: #0f62cf;
+      color: #0f62cf;
+      position: relative;
+      z-index: 1;
+    }
+
+    &:focus-visible {
+      border-color: #0f62cf;
+      box-shadow: 0 0 0 3px rgba(15, 98, 207, 0.14);
+      outline: none;
+      position: relative;
+      z-index: 2;
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    &:disabled {
+      background: #f1f5f9;
+      color: #98a2b3;
+      cursor: not-allowed;
+    }
   }
 
   span {
@@ -142,10 +169,21 @@ h1 {
   color: #ffffff;
   cursor: pointer;
   height: 48px;
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
   width: 100%;
 
   &:hover {
     background: #0b55b6;
+    box-shadow: 0 10px 22px rgba(15, 98, 207, 0.22);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px rgba(15, 98, 207, 0.18);
+    outline: none;
+  }
+
+  &:active {
+    transform: translateY(1px);
   }
 }
 
@@ -154,6 +192,13 @@ h1 {
   color: #202833;
   height: 42px;
   padding: 0 18px;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+
+  &:hover {
+    background: #f8fafc;
+    border-color: #0f62cf;
+    color: #0f62cf;
+  }
 }
 
 .feedback {

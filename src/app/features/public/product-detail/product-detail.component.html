@@ -26,10 +26,14 @@
         </div>
 
         <div class="quantity-row" aria-label="Quantidade">
-          <button type="button" (click)="decreaseQuantity()" aria-label="Diminuir quantidade">
+          <button
+            type="button"
+            (click)="decreaseQuantity()"
+            [disabled]="quantity <= 1"
+            aria-label="Diminuir quantidade">
             <i class="fas fa-minus"></i>
           </button>
-          <span>{{ quantity }}</span>
+          <span aria-live="polite">{{ quantity }}</span>
           <button type="button" (click)="increaseQuantity()" aria-label="Aumentar quantidade">
             <i class="fas fa-plus"></i>
           </button>
