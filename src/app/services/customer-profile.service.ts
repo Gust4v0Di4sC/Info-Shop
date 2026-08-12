@@ -16,6 +16,10 @@ export class CustomerProfileService {
     return from(this.updateProfile(profile));
   }
 
+  uploadAvatar(file: File): Observable<string> {
+    return from(this.uploadProfileAvatar(file));
+  }
+
   isCurrentUserAdmin(): Observable<boolean> {
     return from(this.loadAdminStatus());
   }
@@ -64,6 +68,23 @@ export class CustomerProfileService {
     return getSupabaseData(result);
   }
 
+  private async uploadProfileAvatar(file: File): Promise<string> {
+    const user = await this.getAuthUser();
+    const filePath = `${user.id}/${Date.now()}-${this.sanitizeFileName(file.name)}`;
+    const uploadResult = await supabase.storage
+      .from('customer-avatars')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+    if (uploadResult.error) {
+      throw uploadResult.error;
+    }
+
+    return supabase.storage.from('customer-avatars').getPublicUrl(filePath).data.publicUrl;
+  }
+
   private async loadAdminStatus(): Promise<boolean> {
     const user = await this.getAuthUser();
     const result = await supabase
@@ -83,6 +104,15 @@ export class CustomerProfileService {
   private getMetadataValue(metadata: Record<string, unknown>, key: string): string | null {
     const value = metadata[key];
     return typeof value === 'string' && value.trim() ? value : null;
+  }
+
+  private sanitizeFileName(fileName: string): string {
+    return fileName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9._-]/g, '-')
+      .replace(/-+/g, '-')
+      .toLowerCase();
   }
 
 }

@@ -39,10 +39,10 @@
             <mat-icon matPrefix>mail_outline</mat-icon>
             <input matInput formControlName="email" type="email" placeholder="voce@email.com">
             @if (loginForm.get('email')?.hasError('required')) {
-              <mat-error>Email e obrigatorio</mat-error>
+              <mat-error>Informe seu e-mail</mat-error>
             }
             @if (loginForm.get('email')?.hasError('email')) {
-              <mat-error>Email invalido</mat-error>
+              <mat-error>Informe um e-mail valido</mat-error>
             }
           </mat-form-field>
 

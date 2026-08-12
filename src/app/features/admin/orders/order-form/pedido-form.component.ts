@@ -61,7 +61,7 @@ export class PedidoFormComponent implements OnInit {
       },
       error: error => {
         console.error('Error loading clients or products:', error);
-        this.showSnackbar('Erro ao carregar clientes ou produtos.');
+        this.showSnackbar('Nao foi possivel carregar clientes ou produtos agora.');
       },
     });
   }
@@ -83,7 +83,7 @@ export class PedidoFormComponent implements OnInit {
     }
 
     this.markFormGroupTouched(this.orderForm);
-    this.showSnackbar('Formulario invalido. Preencha todos os campos obrigatorios.');
+    this.showSnackbar('Preencha os campos obrigatorios antes de continuar.');
   }
 
   onCancel(): void {
@@ -115,7 +115,7 @@ export class PedidoFormComponent implements OnInit {
     const selectedProduct = this.products.find(product => String(product.id) === String(this.orderForm.value.productId));
 
     if (!selectedClient || !selectedProduct) {
-      this.showSnackbar('Erro: Cliente ou Produto invalido.');
+      this.showSnackbar('Escolha um cliente e um produto validos.');
       return;
     }
 
@@ -142,7 +142,7 @@ export class PedidoFormComponent implements OnInit {
         },
         error: error => {
           console.error('Erro ao atualizar Pedido:', error);
-          this.showSnackbar('Erro ao atualizar o Pedido. Tente novamente.');
+          this.showSnackbar('Nao foi possivel atualizar o pedido agora. Tente novamente.');
         },
       });
       return;
@@ -155,7 +155,7 @@ export class PedidoFormComponent implements OnInit {
       },
       error: error => {
         console.error('Erro ao criar Pedido:', error);
-        this.showSnackbar('Erro ao criar o Pedido. Tente novamente.');
+        this.showSnackbar('Nao foi possivel criar o pedido agora. Tente novamente.');
       },
     });
   }

@@ -32,8 +32,8 @@ export class CustomerDeliveriesComponent implements OnInit {
         this.deliveries = deliveries;
         this.isLoading = false;
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel carregar suas entregas.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel carregar suas entregas agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });

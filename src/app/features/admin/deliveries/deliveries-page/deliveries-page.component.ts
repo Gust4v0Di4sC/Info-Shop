@@ -34,8 +34,8 @@ export class DeliveriesPageComponent implements OnInit {
         this.deliveries = deliveries;
         this.isLoading = false;
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel carregar entregas.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel carregar as entregas agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });
@@ -52,8 +52,8 @@ export class DeliveriesPageComponent implements OnInit {
         this.deliveries = this.deliveries.map(item => item.id === updated.id ? updated : item);
         this.showSnackbar('Entrega atualizada.');
       },
-      error: error => {
-        this.showSnackbar(error?.message || 'Nao foi possivel atualizar a entrega.');
+      error: () => {
+        this.showSnackbar('Nao foi possivel atualizar a entrega agora. Tente novamente.');
       },
     });
   }

@@ -1,17 +1,19 @@
 import { Component } from '@angular/core';
-
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-categories',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './categories.component.html',
-  styleUrls: ['./categories.component.scss']
+  styleUrls: ['./categories.component.scss'],
 })
 export class CategoriesComponent {
-  categories = [
-    { name: 'Notebooks', count: 42, icon: 'fas fa-laptop' },
-    { name: 'Smartphones', count: 35, icon: 'fas fa-mobile-alt' },
-    { name: 'Periféricos', count: 28, icon: 'fas fa-keyboard' },
-    { name: 'Acessórios', count: 15, icon: 'fas fa-headphones' }
+  readonly categories = [
+    { name: 'Notebooks', count: 5, icon: 'fas fa-laptop', slug: 'notebooks' },
+    { name: 'Smartphones', count: 5, icon: 'fas fa-mobile-alt', slug: 'smartphones' },
+    { name: 'Tablets', count: 5, icon: 'fas fa-tablet-alt', slug: 'tablets' },
+    { name: 'Games', count: 5, icon: 'fas fa-gamepad', slug: 'games' },
+    { name: 'Hardware', count: 5, icon: 'fas fa-microchip', slug: 'hardware' },
+    { name: 'Perifericos', count: 5, icon: 'fas fa-keyboard', slug: 'perifericos' },
   ];
 }

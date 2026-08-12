@@ -26,8 +26,8 @@ export class AuthCallbackComponent implements OnInit {
       }
 
       await this.authService.handleAuthCallback();
-    } catch (error: any) {
-      this.errorMessage = error?.message || 'Nao foi possivel concluir o login.';
+    } catch {
+      this.errorMessage = 'Nao foi possivel concluir o login. Tente entrar novamente.';
     }
   }
 

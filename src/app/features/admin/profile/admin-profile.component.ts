@@ -86,8 +86,8 @@ export class AdminProfileComponent implements OnInit {
         });
         this.isLoading = false;
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel carregar o perfil administrativo.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel carregar o perfil agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });
@@ -158,8 +158,8 @@ export class AdminProfileComponent implements OnInit {
         this.isSaving = false;
         this.showFeedback('Perfil administrativo atualizado.');
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel salvar o perfil administrativo.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel salvar o perfil agora. Confira os dados e tente novamente.';
         this.isSaving = false;
       },
     });

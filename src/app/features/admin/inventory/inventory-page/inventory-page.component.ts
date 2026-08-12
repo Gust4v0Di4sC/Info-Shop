@@ -51,8 +51,8 @@ export class InventoryPageComponent implements OnInit {
         this.filteredProducts = products;
         this.isLoading = false;
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel carregar o estoque.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel carregar o estoque agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });
@@ -67,8 +67,8 @@ export class InventoryPageComponent implements OnInit {
         this.filteredProducts = this.filteredProducts.map(item => item.id === updated.id ? updated : item);
         this.showSnackbar('Estoque atualizado.');
       },
-      error: error => {
-        this.showSnackbar(error?.message || 'Nao foi possivel atualizar o estoque.');
+      error: () => {
+        this.showSnackbar('Nao foi possivel atualizar o estoque agora. Tente novamente.');
       },
     });
   }

@@ -340,6 +340,33 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -573,6 +600,7 @@ export type Database = {
       }
       products: {
         Row: {
+          category: string
           cost: number | null
           created_at: string | null
           description: string | null
@@ -599,6 +627,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          category?: string
           cost?: number | null
           created_at?: string | null
           description?: string | null
@@ -625,6 +654,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          category?: string
           cost?: number | null
           created_at?: string | null
           description?: string | null
@@ -816,6 +846,7 @@ export type Database = {
           store_id_value: string
         }
         Returns: {
+          category: string
           cost: number | null
           created_at: string | null
           description: string | null
@@ -851,6 +882,7 @@ export type Database = {
       set_product_featured: {
         Args: { featured: boolean; product_id: string; store_id_value: string }
         Returns: {
+          category: string
           cost: number | null
           created_at: string | null
           description: string | null
@@ -879,6 +911,23 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "products"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      subscribe_newsletter: {
+        Args: { email_value: string }
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+          source: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "newsletter_subscribers"
           isOneToOne: true
           isSetofReturn: false
         }

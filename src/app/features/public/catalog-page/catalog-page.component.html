@@ -1,0 +1,55 @@
+<app-header></app-header>
+
+<main class="catalog-page">
+  <section class="catalog-header">
+    <div>
+      <p class="eyebrow">Catalogo InfoShop</p>
+      <h1>{{ selectedCategory?.label || 'Todos os produtos' }}</h1>
+      <p>
+        Produtos cadastrados por categoria para validar a navegacao da loja.
+      </p>
+    </div>
+  </section>
+
+  <nav class="category-tabs" aria-label="Categorias do catalogo">
+    <a routerLink="/catalogo" [class.active]="!selectedCategory">Todos</a>
+    @for (category of categories; track category.slug) {
+      <a
+        [routerLink]="['/catalogo', category.slug]"
+        [class.active]="selectedCategory?.slug === category.slug"
+      >
+        {{ category.label }}
+      </a>
+    }
+  </nav>
+
+  @if (isLoading) {
+    <section class="catalog-state">Carregando produtos...</section>
+  } @else if (errorMessage) {
+    <section class="catalog-state error-state">{{ errorMessage }}</section>
+  } @else if (products.length === 0) {
+    <section class="catalog-state">Nenhum produto encontrado nesta categoria.</section>
+  } @else {
+    <section class="products-grid" aria-label="Produtos do catalogo">
+      @for (product of products; track product.id) {
+        <article class="product-card">
+          <a class="product-media" [routerLink]="['/produto', product.id]">
+            @if (product.is_featured) {
+              <span class="product-badge">Destaque</span>
+            }
+            <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name">
+          </a>
+
+          <div class="product-info">
+            <a class="product-title" [routerLink]="['/produto', product.id]">{{ product.name }}</a>
+            <p class="product-description">{{ product.model || product.description }}</p>
+            <strong class="product-price">{{ product.price | brlCurrency }}</strong>
+            <p class="installments">Em ate 12x sem juros</p>
+          </div>
+        </article>
+      }
+    </section>
+  }
+</main>
+
+<app-footer></app-footer>

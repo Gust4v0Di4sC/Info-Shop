@@ -62,8 +62,8 @@ export class AdminPersonalizationComponent implements OnInit, OnDestroy {
     try {
       this.logoUrl = await this.themeService.uploadStoreLogo(file);
       this.showFeedback('Logo enviada. Salve para aplicar no perfil.');
-    } catch (error: any) {
-      this.showFeedback(error?.message || 'Nao foi possivel enviar a logo.');
+    } catch {
+      this.showFeedback('Nao foi possivel enviar a logo agora. Verifique a imagem e tente novamente.');
     } finally {
       this.isUploading = false;
     }
@@ -75,8 +75,8 @@ export class AdminPersonalizationComponent implements OnInit, OnDestroy {
     try {
       await this.themeService.savePersonalization(this.selectedThemeId, this.logoUrl);
       this.showFeedback('Personalizacao salva no seu perfil.');
-    } catch (error: any) {
-      this.showFeedback(error?.message || 'Nao foi possivel salvar a personalizacao.');
+    } catch {
+      this.showFeedback('Nao foi possivel salvar a personalizacao agora. Tente novamente em alguns instantes.');
     } finally {
       this.isSaving = false;
     }

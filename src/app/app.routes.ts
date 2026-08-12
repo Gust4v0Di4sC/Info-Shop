@@ -52,6 +52,27 @@ export const routes: Routes = [
     data: { animation: 'product-detail' },
   },
   {
+    path: 'catalogo',
+    loadComponent: () => import('@app/features/public/catalog-page/catalog-page.component').then(
+      m => m.CatalogPageComponent,
+    ),
+    data: { animation: 'catalog' },
+  },
+  {
+    path: 'catalogo/:category',
+    loadComponent: () => import('@app/features/public/catalog-page/catalog-page.component').then(
+      m => m.CatalogPageComponent,
+    ),
+    data: { animation: 'catalog-category' },
+  },
+  {
+    path: 'suporte/:topic',
+    loadComponent: () => import('@app/features/public/support-page/support-page.component').then(
+      m => m.SupportPageComponent,
+    ),
+    data: { animation: 'support' },
+  },
+  {
     path: 'carrinho',
     loadComponent: () => import('@app/features/public/cart-page/cart-page.component').then(
       m => m.CartPageComponent,

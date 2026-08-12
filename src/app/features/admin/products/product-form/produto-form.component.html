@@ -54,6 +54,18 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
+        <mat-label>Categoria</mat-label>
+        <mat-select formControlName="category">
+          @for (category of categories; track category.value) {
+            <mat-option [value]="category.value">{{ category.label }}</mat-option>
+          }
+        </mat-select>
+        @if (productForm.get('category')?.invalid) {
+          <mat-error>{{ getErrorMessage('category') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
         <mat-label>Preco</mat-label>
         <input matInput type="number" formControlName="price" placeholder="0,00">
         @if (productForm.get('price')?.invalid) {

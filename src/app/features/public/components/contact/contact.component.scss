@@ -81,6 +81,11 @@ button {
   &:hover {
     background: #0b55b6;
   }
+
+  &:disabled {
+    background: #8bb8ea;
+    cursor: wait;
+  }
 }
 
 .newsletter-form span {
@@ -88,6 +93,25 @@ button {
   font-size: 12px;
   font-weight: 600;
   line-height: 1.45;
+}
+
+.newsletter-feedback {
+  min-height: 20px;
+
+  p {
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.45;
+    margin: 0;
+  }
+}
+
+.error-text {
+  color: #b42318;
+}
+
+.success-text {
+  color: #176b3a;
 }
 
 @media (max-width: 720px) {

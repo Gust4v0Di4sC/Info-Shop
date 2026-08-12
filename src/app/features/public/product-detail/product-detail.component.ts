@@ -66,8 +66,8 @@ export class ProductDetailComponent implements OnInit {
       next: () => {
         this.feedbackMessage = 'Produto adicionado ao carrinho.';
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel adicionar ao carrinho.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel adicionar este produto ao carrinho. Entre na sua conta e tente novamente.';
       },
     });
   }

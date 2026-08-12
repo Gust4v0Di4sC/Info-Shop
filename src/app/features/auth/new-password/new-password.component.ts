@@ -51,9 +51,9 @@ export class NewPasswordComponent {
         await this.authService.logout();
         await this.router.navigate(['/home']);
       },
-      error: error => {
+      error: () => {
         this.isLoading = false;
-        this.snackBar.open(error?.message || 'Nao foi possivel atualizar a senha.', 'Fechar', {
+        this.snackBar.open('Nao foi possivel atualizar a senha agora. Tente novamente em alguns instantes.', 'Fechar', {
           duration: 5000,
           horizontalPosition: 'center',
           verticalPosition: 'bottom',

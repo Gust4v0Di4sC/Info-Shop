@@ -102,7 +102,7 @@ export default class ClientesComponent implements OnInit {
       },
       error: error => {
         console.error('Error loading clients:', error);
-        this.showSnackbar('Erro ao carregar clientes');
+        this.showSnackbar('Nao foi possivel carregar os clientes agora.');
         this.isLoading = false;
       },
     });
@@ -126,7 +126,7 @@ export default class ClientesComponent implements OnInit {
           },
           error: error => {
             console.error('Error deleting client:', error);
-            this.showSnackbar('Erro ao excluir cliente');
+            this.showSnackbar('Nao foi possivel excluir o cliente agora. Tente novamente.');
           },
         });
       }

@@ -32,7 +32,7 @@ h1 {
 .categories-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   margin-top: 34px;
 }
 
@@ -41,8 +41,10 @@ h1 {
   border: 1px solid #e1e7ef;
   border-radius: 8px;
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  color: inherit;
   min-height: 126px;
   padding: 18px;
+  text-decoration: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {

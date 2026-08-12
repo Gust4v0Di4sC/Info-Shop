@@ -20,6 +20,7 @@
 }
 
 .logo-section p {
+  color: #9fb0c3;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.6;
@@ -32,7 +33,7 @@
   gap: 12px;
   margin-top: 24px;
 
-  i {
+  a {
     align-items: center;
     border: 1px solid #2b3a4c;
     border-radius: 8px;
@@ -72,6 +73,17 @@ li {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.45;
+}
+
+li a {
+  color: #9fb0c3;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: #d9e3ef;
+  }
 }
 
 .contact-list li {

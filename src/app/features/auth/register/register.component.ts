@@ -66,8 +66,8 @@ export class RegisterComponent {
 
         this.authService.redirectAfterSignIn(result.user?.id);
       },
-      error: error => {
-        this.snackBar.open(error?.message || 'Nao foi possivel criar a conta.', 'Fechar', {
+      error: () => {
+        this.snackBar.open('Nao foi possivel criar sua conta agora. Confira os dados e tente novamente.', 'Fechar', {
           duration: 5000,
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
@@ -95,10 +95,10 @@ export class RegisterComponent {
           verticalPosition: 'bottom',
         });
       },
-      error: error => {
+      error: () => {
         this.isResendingConfirmation = false;
         this.snackBar.open(
-          error?.message || 'Nao foi possivel reenviar a confirmacao.',
+          'Nao foi possivel reenviar a confirmacao agora. Tente novamente em alguns instantes.',
           'Fechar',
           {
             duration: 6000,

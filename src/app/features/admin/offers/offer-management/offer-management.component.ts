@@ -53,8 +53,8 @@ export class OfferManagementComponent implements OnInit {
         this.patchOffer(offer);
         this.isLoading = false;
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel carregar ofertas.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel carregar as ofertas agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });
@@ -85,8 +85,8 @@ export class OfferManagementComponent implements OnInit {
         this.showSnackbar('Oferta atualizada na landing page.');
         this.isSaving = false;
       },
-      error: error => {
-        this.showSnackbar(error?.message || 'Nao foi possivel salvar a oferta.');
+      error: () => {
+        this.showSnackbar('Nao foi possivel salvar a oferta agora. Confira os dados e tente novamente.');
         this.isSaving = false;
       },
     });
@@ -100,8 +100,8 @@ export class OfferManagementComponent implements OnInit {
         this.offerForm.patchValue({ productId: '' });
         this.showSnackbar('Oferta removida da landing page.');
       },
-      error: error => {
-        this.showSnackbar(error?.message || 'Nao foi possivel remover a oferta.');
+      error: () => {
+        this.showSnackbar('Nao foi possivel remover a oferta agora. Tente novamente.');
       },
     });
   }
@@ -112,8 +112,8 @@ export class OfferManagementComponent implements OnInit {
         this.products = this.products.map(item => item.id === updated.id ? updated : item);
         this.showSnackbar('Destaque atualizado.');
       },
-      error: error => {
-        this.showSnackbar(error?.message || 'Nao foi possivel atualizar o destaque.');
+      error: () => {
+        this.showSnackbar('Nao foi possivel atualizar o destaque agora. Tente novamente.');
       },
     });
   }

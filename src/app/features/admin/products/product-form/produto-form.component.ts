@@ -15,6 +15,15 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
   styleUrl: './produto-form.component.scss'
 })
 export class ProdutoFormComponent implements OnInit {
+  readonly categories = [
+    { label: 'Notebooks', value: 'notebooks' },
+    { label: 'Smartphones', value: 'smartphones' },
+    { label: 'Tablets', value: 'tablets' },
+    { label: 'Games', value: 'games' },
+    { label: 'Hardware', value: 'hardware' },
+    { label: 'Perifericos', value: 'perifericos' },
+  ];
+
   productForm: FormGroup;
   productId: string | null = null;
   isEditMode: boolean = false;
@@ -32,6 +41,7 @@ export class ProdutoFormComponent implements OnInit {
     this.productForm = this.fb.group({
       name: ['', [Validators.required]],
       model: ['', [Validators.required]], // adicionado o campo model
+      category: ['hardware', [Validators.required]],
       price: ['', [Validators.required, Validators.min(0)]],
       cost: ['', [Validators.required, Validators.min(0)]],
       description: ['', [Validators.required]],
@@ -81,6 +91,7 @@ export class ProdutoFormComponent implements OnInit {
     this.productForm.patchValue({
       name: product.name,
       model: product.model,
+      category: product.category || 'hardware',
       price: product.price,
       cost: product.cost,
       description: product.description,
@@ -122,6 +133,7 @@ export class ProdutoFormComponent implements OnInit {
     const productData: ProductInsert = {
       name: this.productForm.value.name,
       model: this.productForm.value.model,
+      category: this.productForm.value.category,
       price: Number(this.productForm.value.price),
       cost: Number(this.productForm.value.cost),
       description: this.productForm.value.description,
@@ -146,7 +158,7 @@ export class ProdutoFormComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao atualizar produto:', error);
-          this.showSnackbar('Erro ao atualizar o produto. Tente novamente.');
+          this.showSnackbar('Nao foi possivel atualizar o produto agora. Tente novamente.');
         },
       });
     } else {
@@ -159,7 +171,7 @@ export class ProdutoFormComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao criar produto:', error);
-          this.showSnackbar('Erro ao criar o produto. Tente novamente.');
+          this.showSnackbar('Nao foi possivel criar o produto agora. Tente novamente.');
         },
       });
     }
@@ -189,7 +201,7 @@ export class ProdutoFormComponent implements OnInit {
           },
           error: (error) => {
             console.error('Erro no upload da imagem:', error);
-            this.showSnackbar('Erro no upload da imagem. Tente novamente.');
+            this.showSnackbar('Nao foi possivel enviar a imagem agora. Tente novamente.');
           },
         });
       } else {
@@ -202,7 +214,7 @@ export class ProdutoFormComponent implements OnInit {
   
       // Marca os campos como "tocados" para exibir mensagens de erro no template
       this.markFormGroupTouched(this.productForm);
-      this.showSnackbar('Formulario invalido. Preencha todos os campos obrigatorios.');
+      this.showSnackbar('Preencha os campos obrigatorios antes de continuar.');
     }
   }
 

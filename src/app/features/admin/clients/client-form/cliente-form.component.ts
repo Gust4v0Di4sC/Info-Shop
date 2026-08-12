@@ -120,7 +120,7 @@ export class ClienteFormComponent implements OnInit {
           },
           error: (error) => {
             console.error('Erro ao atualizar Cliente:', error);
-            this.showSnackbar('Erro ao atualizar o Cliente. Tente novamente.');
+            this.showSnackbar('Nao foi possivel atualizar o cliente agora. Tente novamente.');
           },
         });
       } else {
@@ -133,7 +133,7 @@ export class ClienteFormComponent implements OnInit {
           },
           error: (error) => {
             console.error('Erro ao criar Cliente:', error);
-            this.showSnackbar('Erro ao criar o Cliente. Tente novamente.');
+            this.showSnackbar('Nao foi possivel criar o cliente agora. Tente novamente.');
           },
         });
       }
@@ -161,7 +161,7 @@ export class ClienteFormComponent implements OnInit {
           },
           error: (error) => {
             console.error('Erro no upload da imagem:', error);
-            this.showSnackbar('Erro no upload da imagem. Tente novamente.');
+            this.showSnackbar('Nao foi possivel enviar a imagem agora. Tente novamente.');
           },
         });
       } else {
@@ -174,7 +174,7 @@ export class ClienteFormComponent implements OnInit {
   
       // Marca os campos como "tocados" para exibir mensagens de erro no template
       this.markFormGroupTouched(this.clientForm);
-      this.showSnackbar('Formulario invalido. Preencha todos os campos obrigatorios.');
+      this.showSnackbar('Preencha os campos obrigatorios antes de continuar.');
     }
   } 
 
@@ -200,7 +200,7 @@ export class ClienteFormComponent implements OnInit {
       return 'Campo obrigatorio';
     }
     if (control?.hasError('email')) {
-      return 'Email invalido';
+      return 'Informe um e-mail valido';
     }
     return '';
   }

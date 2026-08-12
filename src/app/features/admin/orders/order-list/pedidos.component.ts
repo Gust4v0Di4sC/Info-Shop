@@ -57,7 +57,7 @@ export default class PedidosComponent implements OnInit {
       },
       error: error => {
         console.error('Error loading orders:', error);
-        this.showSnackbar('Erro ao carregar pedidos');
+        this.showSnackbar('Nao foi possivel carregar os pedidos agora.');
         this.isLoading = false;
       },
     });
@@ -136,7 +136,7 @@ export default class PedidosComponent implements OnInit {
           },
           error: error => {
             console.error('Error deleting order:', error);
-            this.showSnackbar('Erro ao excluir pedido');
+            this.showSnackbar('Nao foi possivel excluir o pedido agora. Tente novamente.');
           },
         });
       }

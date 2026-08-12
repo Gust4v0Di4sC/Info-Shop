@@ -1,0 +1,35 @@
+<app-header></app-header>
+
+<main class="support-page">
+  <section class="support-layout">
+    <nav class="support-nav" aria-label="Topicos de suporte">
+      @for (supportTopic of topics; track supportTopic.slug) {
+        <a
+          [routerLink]="['/suporte', supportTopic.slug]"
+          [class.active]="supportTopic.slug === topic.slug"
+        >
+          {{ supportTopic.title }}
+        </a>
+      }
+    </nav>
+
+    <article class="support-content">
+      <p class="eyebrow">Suporte InfoShop</p>
+      <h1>{{ topic.title }}</h1>
+      <p class="summary">{{ topic.summary }}</p>
+
+      <ul>
+        @for (item of topic.items; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+
+      <a class="contact-action" routerLink="/catalogo">
+        Ver catalogo
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    </article>
+  </section>
+</main>
+
+<app-footer></app-footer>

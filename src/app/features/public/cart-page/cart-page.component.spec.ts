@@ -42,7 +42,7 @@ describe('CartPageComponent', () => {
     fillAddress(component);
     component.checkout();
 
-    expect(component.errorMessage).toBe('Falha MP');
+    expect(component.errorMessage).toBe('Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.');
     expect(component.isCheckingOut).toBeFalse();
   });
 });

@@ -55,9 +55,9 @@ export class PasswordRecoveryComponent {
           verticalPosition: 'bottom',
         });
       },
-      error: error => {
+      error: () => {
         this.isLoading = false;
-        this.snackBar.open(error?.message || 'Nao foi possivel enviar o link.', 'Fechar', {
+        this.snackBar.open('Nao foi possivel enviar o link agora. Confira o e-mail e tente novamente.', 'Fechar', {
           duration: 5000,
           horizontalPosition: 'center',
           verticalPosition: 'bottom',

@@ -73,8 +73,8 @@ export class CartPageComponent implements OnInit {
         this.items = items;
         this.isLoading = false;
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel carregar o carrinho.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel carregar seu carrinho agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });
@@ -83,8 +83,8 @@ export class CartPageComponent implements OnInit {
   changeQuantity(item: CartItemWithProduct, quantity: number): void {
     this.cartService.updateQuantity(item.id, quantity).subscribe({
       next: () => this.loadCart(),
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel atualizar o item.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel atualizar este item agora. Tente novamente.';
       },
     });
   }
@@ -92,8 +92,8 @@ export class CartPageComponent implements OnInit {
   removeItem(item: CartItemWithProduct): void {
     this.cartService.removeItem(item.id).subscribe({
       next: () => this.loadCart(),
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel remover o item.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel remover este item agora. Tente novamente.';
       },
     });
   }
@@ -106,8 +106,8 @@ export class CartPageComponent implements OnInit {
         this.selectedServiceId = '';
         this.feedbackMessage = 'Carrinho limpo.';
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel limpar o carrinho.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel limpar o carrinho agora. Tente novamente.';
       },
     });
   }
@@ -130,11 +130,11 @@ export class CartPageComponent implements OnInit {
         this.selectedServiceId = quotes[0]?.id || '';
         this.isQuoting = false;
         if (quotes.length === 0) {
-          this.errorMessage = 'Nenhuma opcao de frete retornada para este endereco.';
+          this.errorMessage = 'Nao encontramos frete disponivel para este endereco.';
         }
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel calcular o frete.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel calcular o frete agora. Confira o endereco e tente novamente.';
         this.isQuoting = false;
       },
     });
@@ -157,8 +157,8 @@ export class CartPageComponent implements OnInit {
         this.redirectToPayment(result.initPoint);
         this.isCheckingOut = false;
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel iniciar o pagamento.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.';
         this.isCheckingOut = false;
       },
     });

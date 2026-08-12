@@ -7,40 +7,57 @@
         produtos.
       </p>
       <div class="social-icons" aria-label="Redes sociais">
-        <i class="fab fa-facebook-f"></i>
-        <i class="fab fa-instagram"></i>
-        <i class="fab fa-youtube"></i>
+        <a href="https://www.facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="https://www.instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="YouTube">
+          <i class="fab fa-youtube"></i>
+        </a>
       </div>
     </section>
 
     <section class="footer-section">
       <h1>Loja</h1>
       <ul>
-        <li>Notebooks</li>
-        <li>Smartphones</li>
-        <li>Tablets</li>
-        <li>Games</li>
-        <li>Hardware</li>
+        @for (category of categories; track category.slug) {
+          <li>
+            <a [routerLink]="['/catalogo', category.slug]">{{ category.label }}</a>
+          </li>
+        }
       </ul>
     </section>
 
     <section class="footer-section">
       <h1>Suporte</h1>
       <ul>
-        <li>Fale conosco</li>
-        <li>Perguntas frequentes</li>
-        <li>Politica de compra</li>
-        <li>Trocas e devolucoes</li>
-        <li>Privacidade</li>
+        @for (link of supportLinks; track link.slug) {
+          <li>
+            <a [routerLink]="['/suporte', link.slug]">{{ link.label }}</a>
+          </li>
+        }
       </ul>
     </section>
 
     <section class="footer-section">
       <h1>Contato</h1>
       <ul class="contact-list">
-        <li><i class="fas fa-map-marker-alt"></i> Rua Tech, 123 - Esquina da Ciencia</li>
-        <li><i class="fas fa-phone-alt"></i> +55 8 9999-9999</li>
-        <li><i class="fas fa-envelope"></i> suporte&#64;infoshop.com</li>
+        <li>
+          <i class="fas fa-map-marker-alt"></i>
+          <a href="https://www.google.com/maps/search/?api=1&query=Rua%20Tech%2C%20123" target="_blank" rel="noopener">
+            Rua Tech, 123 - Esquina da Ciencia
+          </a>
+        </li>
+        <li>
+          <i class="fas fa-phone-alt"></i>
+          <a href="tel:+558999999999">+55 8 9999-9999</a>
+        </li>
+        <li>
+          <i class="fas fa-envelope"></i>
+          <a href="mailto:suporte@infoshop.com">suporte&#64;infoshop.com</a>
+        </li>
       </ul>
     </section>
   </div>

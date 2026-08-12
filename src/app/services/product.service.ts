@@ -59,6 +59,23 @@ export class ProductService {
     );
   }
 
+  getPublicCatalog(category?: string | null): Observable<Product[]> {
+    let query = supabase
+      .from('products')
+      .select('*')
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (category) {
+      query = query.eq('category', category);
+    }
+
+    return from(query).pipe(
+      map(getSupabaseList),
+      map(products => products.filter(product => product.name && product.price != null)),
+    );
+  }
+
   getOfferProduct(): Observable<Product | null> {
     return from(
       supabase

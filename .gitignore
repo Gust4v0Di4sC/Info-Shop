@@ -37,6 +37,7 @@ yarn-error.log
 /coverage
 /libpeerconnection.log
 testem.log
+ng-serve-*.log
 /typings
 /src/environments/environment.ts
 /src/environments/environment.prod.ts

@@ -31,8 +31,8 @@ export class AdminDashboardComponent implements OnInit {
         this.overview = overview;
         this.isLoading = false;
       },
-      error: error => {
-        this.errorMessage = error?.message || 'Nao foi possivel carregar o dashboard.';
+      error: () => {
+        this.errorMessage = 'Nao foi possivel carregar o painel agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });

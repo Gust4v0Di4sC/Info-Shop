@@ -61,7 +61,7 @@ export default class ProdutosComponent implements OnInit {
       },
       error: error => {
         console.error('Error loading products:', error);
-        this.showSnackbar('Erro ao carregar produtos');
+        this.showSnackbar('Nao foi possivel carregar os produtos agora.');
         this.isLoading = false;
       },
     });
@@ -137,7 +137,7 @@ export default class ProdutosComponent implements OnInit {
           },
           error: error => {
             console.error('Error deleting product:', error);
-            this.showSnackbar('Erro ao excluir produto');
+            this.showSnackbar('Nao foi possivel excluir o produto agora. Tente novamente.');
           },
         });
       }

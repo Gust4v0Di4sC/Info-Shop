@@ -25,34 +25,61 @@
 
     @if (isLoading) {
       <div class="page-state">Carregando perfil...</div>
-    } @else if (errorMessage && !profileForm.value.email) {
+    } @else if (errorMessage && !profileForm.getRawValue().email) {
       <div class="page-state error-state">
         <p>{{ errorMessage }}</p>
         <a routerLink="/home" class="primary-link">Entrar na conta</a>
       </div>
     } @else {
       <form class="profile-form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
-        <aside class="profile-card">
-          <div class="avatar">
-            <i class="far fa-user"></i>
+        <section class="profile-section identity-section">
+          <div class="section-head">
+            <div>
+              <h2>Identificacao</h2>
+            </div>
+            @if (isAdmin) {
+              <span class="admin-badge">Administrador</span>
+            }
           </div>
-          <h2>{{ profileForm.value.full_name || 'Cliente InfoShop' }}</h2>
-          <p>{{ profileForm.getRawValue().email }}</p>
-          @if (isAdmin) {
-            <span class="admin-badge">Administrador</span>
-          }
-        </aside>
 
-        <section class="form-panel">
-          <div class="field-row">
-            <label>
-              Email
-              <input formControlName="email" type="email">
-            </label>
-            <label>
-              Nome completo
-              <input formControlName="full_name" type="text">
-            </label>
+          <div class="identity-grid">
+            <div class="avatar-editor">
+              <div class="avatar">
+                @if (avatarPreviewUrl) {
+                  <img [src]="avatarPreviewUrl" [alt]="profileForm.value.full_name || 'Avatar do cliente'">
+                } @else {
+                  <i class="far fa-user"></i>
+                }
+              </div>
+              <label class="avatar-action">
+                <i class="fas fa-camera"></i>
+                Trocar foto
+                <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onAvatarSelected($event)">
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>
+                Nome completo
+                <input formControlName="full_name" type="text">
+              </label>
+              <label>
+                Email
+                <input formControlName="email" type="email">
+              </label>
+            </div>
+          </div>
+
+          @if (profileForm.get('full_name')?.touched && profileForm.get('full_name')?.hasError('required')) {
+            <p class="error-text">Informe seu nome para salvar o perfil.</p>
+          }
+        </section>
+
+        <section class="profile-section">
+          <div class="section-head">
+            <div>
+              <h2>Contato</h2>
+            </div>
           </div>
 
           <div class="field-row">
@@ -65,15 +92,40 @@
               <input formControlName="document" type="text">
             </label>
           </div>
+        </section>
 
-          <label>
-            Endereco
-            <textarea formControlName="address" rows="4"></textarea>
-          </label>
+        <section class="profile-section">
+          <div class="section-head">
+            <div>
+              <h2>Endereco</h2>
+            </div>
+          </div>
 
-          @if (profileForm.get('full_name')?.touched && profileForm.get('full_name')?.hasError('required')) {
-            <p class="error-text">Informe seu nome para salvar o perfil.</p>
-          }
+          <div class="field-row">
+            <label>
+              Rua
+              <input formControlName="street" type="text">
+            </label>
+            <label>
+              CEP
+              <input formControlName="postalCode" type="text" inputmode="numeric">
+            </label>
+          </div>
+
+          <div class="field-row three-columns">
+            <label>
+              Bairro
+              <input formControlName="district" type="text">
+            </label>
+            <label>
+              Numero
+              <input formControlName="number" type="text">
+            </label>
+            <label>
+              Estado
+              <input formControlName="state" type="text" maxlength="2">
+            </label>
+          </div>
 
           @if (feedbackMessage) {
             <p class="feedback">{{ feedbackMessage }}</p>
