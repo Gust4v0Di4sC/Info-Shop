@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { gsap } from 'gsap';
 import { Product } from '@app/models/product.model';
 import { CartServiceService } from '@app/services/cart-service.service';
 import { ProductService } from '@app/services/product.service';
@@ -69,12 +70,19 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
     clearInterval(this.intervalId);
   }
 
-  addToCart(): void {
+  addToCart(event: MouseEvent): void {
     if (!this.product) {
       return;
     }
 
-    this.cartService.addProduct(this.product.id).subscribe();
+    const sourceElement = event.currentTarget as HTMLElement;
+
+    this.cartService.addProduct(this.product.id).subscribe({
+      next: () => this.animateToCart(sourceElement),
+      error: () => {
+        this.errorMessage = 'Entre na sua conta para adicionar produtos ao carrinho.';
+      },
+    });
   }
 
   offerPrice(): number {
@@ -87,5 +95,52 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
     }
 
     return Math.max(0, Number(this.product.price || 0) - this.product.offer_price);
+  }
+
+  private animateToCart(sourceElement: HTMLElement): void {
+    const cartTopElement = document.querySelector<HTMLElement>('.cart-btn');
+
+    if (!cartTopElement) {
+      return;
+    }
+
+    const start = sourceElement.getBoundingClientRect();
+    const end = cartTopElement.getBoundingClientRect();
+    const startX = start.left + start.width / 2;
+    const startY = start.top + start.height / 2;
+    const endX = end.left + end.width / 2;
+    const endY = end.top + end.height / 2;
+
+    const clone = document.createElement('div');
+    clone.classList.add('flying-cart');
+    clone.style.left = `${startX}px`;
+    clone.style.top = `${startY}px`;
+
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-shopping-cart';
+    clone.appendChild(icon);
+    document.body.appendChild(clone);
+
+    gsap.to(clone, {
+      x: endX - startX,
+      y: endY - startY,
+      scale: 0.32,
+      autoAlpha: 0,
+      duration: 0.68,
+      ease: 'power3.inOut',
+      onComplete: () => clone.remove(),
+    });
+
+    gsap.fromTo(
+      cartTopElement,
+      { scale: 0.94 },
+      {
+        scale: 1,
+        duration: 0.42,
+        ease: 'elastic.out(1, 0.45)',
+        delay: 0.42,
+        clearProps: 'transform',
+      },
+    );
   }
 }

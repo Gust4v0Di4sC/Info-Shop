@@ -8,6 +8,7 @@ import {
   inject,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { gsap } from 'gsap';
@@ -18,7 +19,7 @@ import { CartServiceService } from '@app/services/cart-service.service';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink],
+  imports: [FormsModule, RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
@@ -30,6 +31,7 @@ export class HeaderComponent implements OnInit {
   readonly themeService = inject(AdminThemeService);
 
   cartCount = 0;
+  searchTerm = '';
   private hasCartCountSnapshot = false;
 
   constructor(private cartService: CartServiceService, private router: Router) {}
@@ -65,6 +67,14 @@ export class HeaderComponent implements OnInit {
 
   goToCart(): void {
     this.router.navigate(['/carrinho']);
+  }
+
+  submitSearch(): void {
+    const query = this.searchTerm.trim();
+
+    this.router.navigate(['/catalogo'], {
+      queryParams: query ? { q: query } : {},
+    });
   }
 
   private animateCartFeedback(): void {

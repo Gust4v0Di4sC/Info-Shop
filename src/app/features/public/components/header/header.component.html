@@ -17,13 +17,19 @@
     </nav>
 
     <div class="header-actions">
-      <label class="search-container">
+      <form class="search-container" role="search" (ngSubmit)="submitSearch()">
         <i class="fas fa-search"></i>
-        <input type="text" class="search-input" placeholder="Buscar notebooks, celulares...">
-        <button class="search-btn" type="button" aria-label="Buscar">
+        <input
+          type="search"
+          class="search-input"
+          name="publicSearch"
+          placeholder="Buscar notebooks, celulares..."
+          [(ngModel)]="searchTerm"
+        >
+        <button class="search-btn" type="submit" aria-label="Buscar">
           <i class="fas fa-arrow-right"></i>
         </button>
-      </label>
+      </form>
 
       <div class="user-actions">
         <button class="icon-btn" (click)="goToProfile()" type="button" aria-label="Perfil">

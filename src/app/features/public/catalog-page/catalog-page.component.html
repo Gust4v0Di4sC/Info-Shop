@@ -4,9 +4,13 @@
   <section class="catalog-header">
     <div>
       <p class="eyebrow">Catalogo InfoShop</p>
-      <h1>{{ selectedCategory?.label || 'Todos os produtos' }}</h1>
+      <h1>{{ pageTitle() }}</h1>
       <p>
-        Produtos cadastrados por categoria para validar a navegacao da loja.
+        @if (searchTerm) {
+          Resultado filtrado pela busca feita no topo da loja.
+        } @else {
+          Produtos cadastrados por categoria para validar a navegacao da loja.
+        }
       </p>
     </div>
   </section>
@@ -28,7 +32,7 @@
   } @else if (errorMessage) {
     <section class="catalog-state error-state">{{ errorMessage }}</section>
   } @else if (products.length === 0) {
-    <section class="catalog-state">Nenhum produto encontrado nesta categoria.</section>
+    <section class="catalog-state">{{ emptyMessage() }}</section>
   } @else {
     <section class="products-grid" aria-label="Produtos do catalogo">
       @for (product of products; track product.id) {

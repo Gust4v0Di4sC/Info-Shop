@@ -59,7 +59,8 @@ export class ProductService {
     );
   }
 
-  getPublicCatalog(category?: string | null): Observable<Product[]> {
+  getPublicCatalog(category?: string | null, searchTerm = ''): Observable<Product[]> {
+    const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase('pt-BR');
     let query = supabase
       .from('products')
       .select('*')
@@ -73,6 +74,25 @@ export class ProductService {
     return from(query).pipe(
       map(getSupabaseList),
       map(products => products.filter(product => product.name && product.price != null)),
+      map(products => {
+        if (!normalizedSearchTerm) {
+          return products;
+        }
+
+        return products.filter(product => {
+          const searchableText = [
+            product.name,
+            product.model,
+            product.description,
+            product.category,
+          ]
+            .filter(Boolean)
+            .join(' ')
+            .toLocaleLowerCase('pt-BR');
+
+          return searchableText.includes(normalizedSearchTerm);
+        });
+      }),
     );
   }
 

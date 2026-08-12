@@ -25,7 +25,7 @@
 
         <div class="buttons">
           <a class="buy-now" [routerLink]="['/produto', product.id]">Comprar agora</a>
-          <button class="add-to-cart" type="button" (click)="addToCart()">Adicionar ao carrinho</button>
+          <button class="add-to-cart" type="button" (click)="addToCart($event)">Adicionar ao carrinho</button>
         </div>
       </div>
 

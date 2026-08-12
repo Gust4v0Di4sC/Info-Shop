@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { combineLatest } from 'rxjs';
 
 import { FooterComponent } from '@app/features/public/components/footer/footer.component';
 import { HeaderComponent } from '@app/features/public/components/header/header.component';
@@ -31,6 +32,7 @@ export class CatalogPageComponent implements OnInit {
   readonly categories = CATEGORIES;
   products: Product[] = [];
   selectedCategory: CatalogCategory | null = null;
+  searchTerm = '';
   isLoading = true;
   errorMessage = '';
 
@@ -40,18 +42,39 @@ export class CatalogPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
+    combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(([params, queryParams]) => {
       const categorySlug = params.get('category');
       this.selectedCategory = this.categories.find(category => category.slug === categorySlug) || null;
-      this.loadProducts(this.selectedCategory?.slug || null);
+      this.searchTerm = (queryParams.get('q') || '').trim();
+      this.loadProducts(this.selectedCategory?.slug || null, this.searchTerm);
     });
   }
 
-  private loadProducts(categorySlug: string | null): void {
+  pageTitle(): string {
+    if (this.searchTerm && this.selectedCategory) {
+      return `${this.selectedCategory.label}: "${this.searchTerm}"`;
+    }
+
+    if (this.searchTerm) {
+      return `Busca por "${this.searchTerm}"`;
+    }
+
+    return this.selectedCategory?.label || 'Todos os produtos';
+  }
+
+  emptyMessage(): string {
+    if (this.searchTerm) {
+      return 'Nenhum produto encontrado para esta busca.';
+    }
+
+    return 'Nenhum produto encontrado nesta categoria.';
+  }
+
+  private loadProducts(categorySlug: string | null, searchTerm: string): void {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.productService.getPublicCatalog(categorySlug).subscribe({
+    this.productService.getPublicCatalog(categorySlug, searchTerm).subscribe({
       next: products => {
         this.products = products;
         this.isLoading = false;
