@@ -2,11 +2,11 @@
 
 .admin-page {
   display: grid;
-  gap: 24px;
+  gap: 18px;
 }
 
 .page-header {
-  align-items: end;
+  align-items: center;
   display: flex;
   gap: 20px;
   justify-content: space-between;
@@ -44,8 +44,38 @@
     outlined-focus-outline-color: #0f62cf,
   ));
 
-  background: #ffffff;
+  align-self: center;
   min-width: 320px;
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background: #ffffff;
+      border-radius: 8px;
+      height: 44px;
+      overflow: hidden;
+    }
+
+    .mat-mdc-form-field-flex {
+      align-items: center;
+      height: 44px;
+    }
+
+    .mat-mdc-form-field-infix {
+      min-height: 44px;
+      padding-bottom: 10px;
+      padding-top: 10px;
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      align-items: center;
+      display: flex;
+      padding-inline: 12px 4px;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
 }
 
 .state-card,
@@ -68,15 +98,15 @@
 
 .inventory-list {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .inventory-row {
   align-items: center;
   display: grid;
-  gap: 18px;
-  grid-template-columns: 92px 1fr minmax(360px, 0.9fr) 92px;
-  padding: 14px;
+  column-gap: 18px;
+  grid-template-columns: 92px minmax(220px, 1fr) minmax(480px, 1.1fr) 96px;
+  padding: 12px 16px;
 
   img {
     aspect-ratio: 1;
@@ -115,7 +145,7 @@
 
 .stock-fields {
   display: grid;
-  gap: 12px;
+  gap: 16px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 
   label {
@@ -124,6 +154,7 @@
     font-size: 12px;
     font-weight: 850;
     gap: 6px;
+    line-height: 14px;
     text-transform: uppercase;
   }
 
@@ -134,21 +165,36 @@
     color: #202833;
     font-size: 15px;
     font-weight: 850;
-    height: 40px;
+    box-sizing: border-box;
+    height: 42px;
     padding: 0 10px;
     width: 100%;
   }
 }
 
 .quick-actions {
+  align-self: start;
   display: flex;
-  gap: 8px;
-  justify-content: end;
+  justify-content: flex-end;
+  padding-top: 20px;
+
+  .quick-actions-inner {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    height: 42px;
+  }
 
   button {
     background: #eef6ff;
     color: #0f62cf;
+    height: 42px;
+    width: 42px;
   }
+}
+
+:host ::ng-deep mat-paginator {
+  min-height: 54px;
 }
 
 @media (max-width: 1080px) {
@@ -159,6 +205,11 @@
   .stock-fields,
   .quick-actions {
     grid-column: 2;
+  }
+
+  .quick-actions {
+    justify-content: flex-start;
+    padding-top: 0;
   }
 }
 

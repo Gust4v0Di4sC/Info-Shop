@@ -1,24 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Product } from '@app/models/product.model';
 import { ProductFormService } from '@app/services/product-form.service';
 import { ProductService } from '@app/services/product.service';
+import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-inventory-page',
-  imports: [SharedMaterialModule, ReactiveFormsModule],
+  imports: [SharedMaterialModule, ReactiveFormsModule, AdminSectionTabsComponent],
   templateUrl: './inventory-page.component.html',
   styleUrl: './inventory-page.component.scss'
 })
 export class InventoryPageComponent implements OnInit {
+  readonly productTabs: AdminSectionTab[] = [
+    { label: 'Produtos', icon: 'storefront', route: '/products' },
+    { label: 'Estoque', icon: 'inventory_2', route: '/stock' },
+    { label: 'Ofertas', icon: 'sell', route: '/offers' },
+  ];
+
   searchControl = new FormControl('');
   products: Product[] = [];
   filteredProducts: Product[] = [];
   isLoading = true;
   errorMessage = '';
+  pageIndex = 0;
+  pageSize = 3;
+  readonly pageSizeOptions = [3, 4, 6];
 
   constructor(
     private productService: ProductService,
@@ -38,6 +49,7 @@ export class InventoryPageComponent implements OnInit {
         product.name.toLowerCase().includes(normalized) ||
         (product.model || '').toLowerCase().includes(normalized),
       );
+      this.resetPagination();
     });
   }
 
@@ -49,6 +61,7 @@ export class InventoryPageComponent implements OnInit {
       next: products => {
         this.products = products;
         this.filteredProducts = products;
+        this.resetPagination();
         this.isLoading = false;
       },
       error: () => {
@@ -93,12 +106,26 @@ export class InventoryPageComponent implements OnInit {
     return 'Disponivel';
   }
 
+  pagedProducts(): Product[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredProducts.slice(start, start + this.pageSize);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
+
   private showSnackbar(message: string): void {
     this.snackBar.open(message, 'Fechar', {
       duration: 2500,
       horizontalPosition: 'end',
       verticalPosition: 'top',
     });
+  }
+
+  private resetPagination(): void {
+    this.pageIndex = 0;
   }
 
 }

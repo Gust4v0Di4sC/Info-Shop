@@ -12,6 +12,8 @@
     </button>
   </header>
 
+  <app-admin-section-tabs [tabs]="profileTabs"></app-admin-section-tabs>
+
   @if (isLoading) {
     <div class="state-card">Carregando perfil administrativo...</div>
   } @else if (errorMessage && !profileForm.getRawValue().email) {

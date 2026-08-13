@@ -6,11 +6,13 @@
       <span>Atualize unidades disponiveis, reservas e minimo operacional.</span>
     </div>
 
-    <mat-form-field appearance="outline" class="search-field">
+    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
       <mat-icon matPrefix>search</mat-icon>
       <input matInput [formControl]="searchControl" placeholder="Buscar produto">
     </mat-form-field>
   </header>
+
+  <app-admin-section-tabs [tabs]="productTabs"></app-admin-section-tabs>
 
   @if (isLoading) {
     <div class="state-card">Carregando estoque...</div>
@@ -18,7 +20,7 @@
     <div class="state-card error-state">{{ errorMessage }}</div>
   } @else {
     <div class="inventory-list">
-      @for (product of filteredProducts; track product.id) {
+      @for (product of pagedProducts(); track product.id) {
         <article class="inventory-row">
           <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name">
 
@@ -58,15 +60,26 @@
           </div>
 
           <div class="quick-actions">
-            <button mat-icon-button type="button" (click)="adjustStock(product, -1)" aria-label="Reduzir estoque">
-              <mat-icon>remove</mat-icon>
-            </button>
-            <button mat-icon-button type="button" (click)="adjustStock(product, 1)" aria-label="Adicionar estoque">
-              <mat-icon>add</mat-icon>
-            </button>
+            <div class="quick-actions-inner">
+              <button mat-icon-button type="button" (click)="adjustStock(product, -1)" aria-label="Reduzir estoque">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <button mat-icon-button type="button" (click)="adjustStock(product, 1)" aria-label="Adicionar estoque">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
           </div>
         </article>
       }
     </div>
+
+    <mat-paginator
+      [length]="filteredProducts.length"
+      [pageIndex]="pageIndex"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"
+      aria-label="Paginacao de estoque">
+    </mat-paginator>
   }
 </section>

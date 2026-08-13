@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
-import { AdminGuard, AuthGuard, GuestGuard } from '@app/core/auth/auth.guard';
+import { AdminGuard, AuthGuard, GuestGuard, PublicGuard } from '@app/core/auth/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
     loadComponent: () => import('@app/features/public/landing-page/landing-page.component'),
+    canActivate: [PublicGuard],
   },
   {
     path: 'home',
@@ -50,6 +51,7 @@ export const routes: Routes = [
       m => m.ProductDetailComponent,
     ),
     data: { animation: 'product-detail' },
+    canActivate: [PublicGuard],
   },
   {
     path: 'catalogo',
@@ -57,6 +59,7 @@ export const routes: Routes = [
       m => m.CatalogPageComponent,
     ),
     data: { animation: 'catalog' },
+    canActivate: [PublicGuard],
   },
   {
     path: 'catalogo/:category',
@@ -64,6 +67,7 @@ export const routes: Routes = [
       m => m.CatalogPageComponent,
     ),
     data: { animation: 'catalog-category' },
+    canActivate: [PublicGuard],
   },
   {
     path: 'suporte/:topic',
@@ -71,6 +75,7 @@ export const routes: Routes = [
       m => m.SupportPageComponent,
     ),
     data: { animation: 'support' },
+    canActivate: [PublicGuard],
   },
   {
     path: 'carrinho',
@@ -78,6 +83,7 @@ export const routes: Routes = [
       m => m.CartPageComponent,
     ),
     data: { animation: 'cart' },
+    canActivate: [PublicGuard],
   },
   {
     path: 'perfil',
@@ -85,7 +91,7 @@ export const routes: Routes = [
       m => m.CustomerProfileComponent,
     ),
     data: { animation: 'profile' },
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, PublicGuard],
   },
   {
     path: 'minhas-entregas',
@@ -93,7 +99,7 @@ export const routes: Routes = [
       m => m.CustomerDeliveriesComponent,
     ),
     data: { animation: 'customer-deliveries' },
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, PublicGuard],
   },
   {
     path: 'pagamento/retorno',
@@ -101,7 +107,7 @@ export const routes: Routes = [
       m => m.PaymentReturnComponent,
     ),
     data: { animation: 'payment-return' },
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, PublicGuard],
   },
   {
     path: '',

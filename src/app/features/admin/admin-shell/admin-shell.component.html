@@ -8,24 +8,20 @@
     mode="side"
     opened
     fixedInViewport="true">
-    <div
-      class="sidebar-panel"
-      [class.expanded]="isExpanded"
-      (mouseenter)="expandSidebar()"
-      (mouseleave)="collapseSidebar()">
-      <button class="brand" type="button" routerLink="/" aria-label="Voltar para a loja">
+    <div class="sidebar-panel">
+      <button class="brand" type="button" aria-label="Voltar para o inicio administrativo" (click)="goToAdminHome()">
         <img class="brand-icon" [src]="themeService.adminIconUrl()" alt="InfoShop">
         <img class="brand-logo" [src]="themeService.adminLogoUrl()" alt="InfoShop Logo">
       </button>
 
       <mat-nav-list class="nav-list">
-        @for (item of visibleNavItems(); track item.route) {
+        @for (item of visibleNavItems(); track item.label) {
           <a
             mat-list-item
             class="nav-link"
-            [routerLink]="item.route"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: item.route === '/dash' }">
+            [routerLink]="navItemRoute(item)"
+            [class.active]="isNavItemActive(item)"
+            (click)="collapseSidebar()">
             <span class="nav-link-content">
               <mat-icon>{{ item.icon }}</mat-icon>
               <span class="nav-label">{{ item.label }}</span>
@@ -35,30 +31,6 @@
       </mat-nav-list>
 
       <div class="sidebar-footer">
-        @if (canSwitchStores()) {
-          <mat-form-field class="store-select" appearance="outline">
-            <mat-label>Loja atual</mat-label>
-            <mat-select
-              [value]="selectedStoreId"
-              (selectionChange)="selectStore($event.value)"
-              aria-label="Selecionar loja atual">
-              @for (store of stores; track store.id) {
-                <mat-option [value]="store.id">
-                  {{ store.name }} - {{ store.region }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        } @else {
-          <div class="store-chip">
-            <mat-icon>storefront</mat-icon>
-            <span>{{ selectedStoreLabel() }}</span>
-          </div>
-        }
-        <div class="role-chip">
-          <mat-icon>admin_panel_settings</mat-icon>
-          <span>{{ roleLabel() }}</span>
-        </div>
         <button class="logout-button" type="button" mat-stroked-button (click)="logout()">
           <mat-icon>logout</mat-icon>
           <span>Sair</span>
@@ -70,4 +42,32 @@
   <mat-sidenav-content class="admin-content" appGsapPageMotion appGsapInteractiveMotion>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
+
 </mat-sidenav-container>
+
+<div class="admin-topbar">
+  <button
+    class="profile-badge"
+    type="button"
+    [matMenuTriggerFor]="storeMenu"
+    [attr.aria-label]="canSwitchStores() ? 'Selecionar loja atual' : 'Loja atual'">
+    <span class="profile-avatar">{{ userInitials() }}</span>
+    <span class="profile-copy">
+      <strong>{{ adminName }}</strong>
+      <small>{{ roleLabel() }}</small>
+      <em>{{ selectedStoreLabel() }}</em>
+    </span>
+    @if (canSwitchStores()) {
+      <mat-icon>expand_more</mat-icon>
+    }
+  </button>
+
+  <mat-menu #storeMenu="matMenu" xPosition="before" class="store-menu">
+    @for (store of stores; track store.id) {
+      <button mat-menu-item type="button" (click)="selectStore(store.id)">
+        <mat-icon>{{ store.id === selectedStoreId ? 'check_circle' : 'storefront' }}</mat-icon>
+        <span>{{ store.name }} - {{ store.region }}</span>
+      </button>
+    }
+  </mat-menu>
+</div>

@@ -25,7 +25,7 @@
     <div class="state-card">Nenhum cliente encontrado.</div>
   } @else {
     <div class="clients-grid">
-      @for (client of filteredClients; track client.id) {
+      @for (client of pagedClients(); track client.id) {
         <article class="client-card">
           <button class="client-media" type="button" (click)="openEditForm(client)">
             @if (client.imageUrl) {
@@ -56,5 +56,14 @@
         </article>
       }
     </div>
+
+    <mat-paginator
+      [length]="filteredClients.length"
+      [pageIndex]="pageIndex"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"
+      aria-label="Paginacao de clientes">
+    </mat-paginator>
   }
 </section>

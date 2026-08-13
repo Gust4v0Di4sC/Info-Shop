@@ -1,0 +1,15 @@
+@if (visibleTabs().length > 1) {
+  <nav class="section-tabs" aria-label="Secoes administrativas">
+    @for (tab of visibleTabs(); track tab.route) {
+      <a
+        mat-button
+        class="section-tab"
+        [routerLink]="tab.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        <mat-icon>{{ tab.icon }}</mat-icon>
+        <span>{{ tab.label }}</span>
+      </a>
+    }
+  </nav>
+}

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PedidoFormComponent } from '@app/features/admin/orders/order-form/pedido-form.component';
+import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { Order } from '@app/models/order.model';
 import { OrderService } from '@app/services/order.service';
 import { ConfirmDialogComponent } from '@app/shared/dialogs/confirm-dialog/confirm-dialog.component';
@@ -11,14 +13,22 @@ import { DisplayTextPipe } from '@app/shared/pipes/display-text.pipe';
 
 @Component({
   selector: 'app-pedidos',
-  imports: [SharedMaterialModule, DisplayTextPipe, BrlCurrencyPipe],
+  imports: [SharedMaterialModule, AdminSectionTabsComponent, DisplayTextPipe, BrlCurrencyPipe],
   templateUrl: './pedidos.component.html',
   styleUrl: './pedidos.component.scss',
 })
 export default class PedidosComponent implements OnInit {
+  readonly orderTabs: AdminSectionTab[] = [
+    { label: 'Pedidos', icon: 'receipt_long', route: '/orders' },
+    { label: 'Entregas', icon: 'local_shipping', route: '/deliveries' },
+  ];
+
   orders: Order[] = [];
   filteredOrders: Order[] = [];
   isLoading = false;
+  pageIndex = 0;
+  pageSize = 4;
+  readonly pageSizeOptions = [4, 8, 12];
   hoveredImage: string | null = null;
   hoveredImageX = 0;
   hoveredImageY = 0;
@@ -53,6 +63,7 @@ export default class PedidosComponent implements OnInit {
       next: (rawOrders: Order[]) => {
         this.orders = rawOrders.filter(order => order.id !== undefined);
         this.filteredOrders = this.orders;
+        this.resetPagination();
         this.isLoading = false;
       },
       error: error => {
@@ -118,6 +129,16 @@ export default class PedidosComponent implements OnInit {
     return labels[status] || status;
   }
 
+  pagedOrders(): Order[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredOrders.slice(start, start + this.pageSize);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
+
   deleteOrder(id: string | number): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
@@ -149,5 +170,9 @@ export default class PedidosComponent implements OnInit {
       horizontalPosition: 'end',
       verticalPosition: 'top',
     });
+  }
+
+  private resetPagination(): void {
+    this.pageIndex = 0;
   }
 }

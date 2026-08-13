@@ -1,17 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { ADMIN_ROLE_LABELS, AdminRole, normalizeAdminRole } from '@app/models/admin.model';
 import { AdminProfileService } from '@app/services/admin-profile.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 
 @Component({
   selector: 'app-admin-profile',
-  imports: [ReactiveFormsModule, SharedMaterialModule],
+  imports: [ReactiveFormsModule, SharedMaterialModule, AdminSectionTabsComponent],
   templateUrl: './admin-profile.component.html',
   styleUrl: './admin-profile.component.scss',
 })
 export class AdminProfileComponent implements OnInit {
+  readonly profileTabs: AdminSectionTab[] = [
+    { label: 'Perfil', icon: 'account_circle', route: '/admin-profile' },
+    { label: 'Personalizacao', icon: 'palette', route: '/customization' },
+  ];
+
   profileForm: FormGroup;
   isLoading = true;
   isSaving = false;

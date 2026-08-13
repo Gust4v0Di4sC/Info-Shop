@@ -52,6 +52,33 @@ export class GuestGuard implements CanActivate {
 @Injectable({
   providedIn: 'root',
 })
+export class PublicGuard implements CanActivate {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
+
+  async canActivate(): Promise<boolean> {
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data.user) {
+      return true;
+    }
+
+    const adminRole = await this.authService.getAdminRole(data.user.id);
+
+    if (adminRole) {
+      await this.router.navigate([ADMIN_DEFAULT_ROUTE[adminRole]]);
+      return false;
+    }
+
+    return true;
+  }
+}
+
+@Injectable({
+  providedIn: 'root',
+})
 export class AdminGuard implements CanActivate {
   constructor(
     private authService: AuthService,

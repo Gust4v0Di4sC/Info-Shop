@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Product } from '@app/models/product.model';
 import { ProductService } from '@app/services/product.service';
+import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { ConfirmDialogComponent } from '@app/shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
@@ -14,15 +16,24 @@ import { ProdutoFormComponent } from '@app/features/admin/products/product-form/
 
 @Component({
   selector: 'app-produtos',
-  imports: [SharedMaterialModule, ReactiveFormsModule, BrlCurrencyPipe, DisplayTextPipe],
+  imports: [SharedMaterialModule, ReactiveFormsModule, AdminSectionTabsComponent, BrlCurrencyPipe, DisplayTextPipe],
   templateUrl: './produtos.component.html',
   styleUrl: './produtos.component.scss',
 })
 export default class ProdutosComponent implements OnInit {
+  readonly productTabs: AdminSectionTab[] = [
+    { label: 'Produtos', icon: 'storefront', route: '/products' },
+    { label: 'Estoque', icon: 'inventory_2', route: '/stock' },
+    { label: 'Ofertas', icon: 'sell', route: '/offers' },
+  ];
+
   searchControl = new FormControl('');
   products: Product[] = [];
   filteredProducts: Product[] = [];
   isLoading = false;
+  pageIndex = 0;
+  pageSize = 3;
+  readonly pageSizeOptions = [3, 6, 9];
 
   constructor(
     private dialog: MatDialog,
@@ -39,6 +50,7 @@ export default class ProdutosComponent implements OnInit {
     ).subscribe(searchTerm => {
       if (!searchTerm) {
         this.filteredProducts = this.products;
+        this.resetPagination();
         return;
       }
 
@@ -48,6 +60,7 @@ export default class ProdutosComponent implements OnInit {
         (product.description || '').toLowerCase().includes(normalized) ||
         (product.model || '').toLowerCase().includes(normalized),
       );
+      this.resetPagination();
     });
   }
 
@@ -57,6 +70,7 @@ export default class ProdutosComponent implements OnInit {
       next: (rawProducts: Product[]) => {
         this.products = rawProducts.filter(product => product.id !== undefined);
         this.filteredProducts = this.products;
+        this.resetPagination();
         this.isLoading = false;
       },
       error: error => {
@@ -119,6 +133,16 @@ export default class ProdutosComponent implements OnInit {
     return 'Em estoque';
   }
 
+  pagedProducts(): Product[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredProducts.slice(start, start + this.pageSize);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
+
   deleteProduct(id: string | number): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
@@ -150,5 +174,9 @@ export default class ProdutosComponent implements OnInit {
       horizontalPosition: 'end',
       verticalPosition: 'top',
     });
+  }
+
+  private resetPagination(): void {
+    this.pageIndex = 0;
   }
 }

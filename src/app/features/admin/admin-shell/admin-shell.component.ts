@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
-import { ADMIN_ROLE_ACCESS, ADMIN_ROLE_LABELS, AdminRole } from '@app/models/admin.model';
+import { ADMIN_DEFAULT_ROUTE, ADMIN_ROLE_ACCESS, ADMIN_ROLE_LABELS, AdminRole } from '@app/models/admin.model';
 import { AdminStoreContext, TenantContextService } from '@app/core/tenant/tenant-context.service';
 import { AdminThemeService } from '@app/core/theme/admin-theme.service';
+import { AdminProfileService } from '@app/services/admin-profile.service';
 import { GsapInteractiveMotionDirective } from '@app/shared/directives/gsap-interactive-motion.directive';
 import { GsapPageMotionDirective } from '@app/shared/directives/gsap-page-motion.directive';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
@@ -12,7 +13,7 @@ import { Subscription } from 'rxjs';
 interface AdminNavItem {
   label: string;
   icon: string;
-  route: string;
+  routes: string[];
 }
 
 @Component({
@@ -30,6 +31,8 @@ interface AdminNavItem {
 export class AdminShellComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private tenantContext = inject(TenantContextService);
+  private adminProfileService = inject(AdminProfileService);
+  private router = inject(Router);
   readonly themeService = inject(AdminThemeService);
   private subscriptions = new Subscription();
 
@@ -37,17 +40,14 @@ export class AdminShellComponent implements OnInit, OnDestroy {
   adminRole: AdminRole | null = null;
   stores: AdminStoreContext[] = [];
   selectedStoreId: string | null = null;
+  adminName = 'Administrador';
 
   navItems: AdminNavItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/dash' },
-    { label: 'Produtos', icon: 'storefront', route: '/products' },
-    { label: 'Pedidos', icon: 'receipt_long', route: '/orders' },
-    { label: 'Estoque', icon: 'inventory_2', route: '/stock' },
-    { label: 'Entregas', icon: 'local_shipping', route: '/deliveries' },
-    { label: 'Ofertas', icon: 'sell', route: '/offers' },
-    { label: 'Clientes', icon: 'people', route: '/clients' },
-    { label: 'Personalizacao', icon: 'palette', route: '/customization' },
-    { label: 'Meu perfil', icon: 'account_circle', route: '/admin-profile' },
+    { label: 'Dashboard', icon: 'dashboard', routes: ['/dash'] },
+    { label: 'Produtos', icon: 'storefront', routes: ['/products', '/stock', '/offers'] },
+    { label: 'Pedidos', icon: 'receipt_long', routes: ['/orders', '/deliveries'] },
+    { label: 'Clientes', icon: 'people', routes: ['/clients'] },
+    { label: 'Perfil', icon: 'account_circle', routes: ['/admin-profile', '/customization'] },
   ];
 
   async ngOnInit(): Promise<void> {
@@ -64,6 +64,7 @@ export class AdminShellComponent implements OnInit, OnDestroy {
 
     await this.tenantContext.initialize();
     this.adminRole = await this.authService.getAdminRole();
+    this.loadAdminName();
   }
 
   ngOnDestroy(): void {
@@ -76,7 +77,21 @@ export class AdminShellComponent implements OnInit, OnDestroy {
     }
 
     const allowedRoutes = ADMIN_ROLE_ACCESS[this.adminRole];
-    return this.navItems.filter(item => allowedRoutes.includes(item.route));
+    return this.navItems.filter(item => item.routes.some(route => allowedRoutes.includes(route)));
+  }
+
+  navItemRoute(item: AdminNavItem): string {
+    if (!this.adminRole) {
+      return item.routes[0];
+    }
+
+    const allowedRoutes = ADMIN_ROLE_ACCESS[this.adminRole];
+    return item.routes.find(route => allowedRoutes.includes(route)) || item.routes[0];
+  }
+
+  isNavItemActive(item: AdminNavItem): boolean {
+    const currentPath = this.router.url.split(/[?#]/)[0];
+    return item.routes.includes(currentPath);
   }
 
   roleLabel(): string {
@@ -95,6 +110,24 @@ export class AdminShellComponent implements OnInit, OnDestroy {
     this.tenantContext.selectStore(storeId);
   }
 
+  goToAdminHome(): void {
+    if (!this.adminRole) {
+      return;
+    }
+
+    this.collapseSidebar();
+    void this.router.navigate([ADMIN_DEFAULT_ROUTE[this.adminRole]]);
+  }
+
+  userInitials(): string {
+    return this.adminName
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0]?.toUpperCase())
+      .join('') || 'AD';
+  }
+
   expandSidebar(): void {
     this.isExpanded = true;
   }
@@ -106,5 +139,20 @@ export class AdminShellComponent implements OnInit, OnDestroy {
   logout(): void {
     this.tenantContext.reset();
     this.authService.logout();
+  }
+
+  private loadAdminName(): void {
+    this.subscriptions.add(
+      this.adminProfileService.getCurrentAdminProfile().subscribe({
+        next: profile => {
+          this.adminName = profile.user.full_name || profile.user.email || 'Administrador';
+        },
+        error: () => {
+          const user = this.authService.getCurrentUser();
+          const metadata = user?.user_metadata || {};
+          this.adminName = String(metadata['full_name'] || metadata['name'] || user?.email || 'Administrador');
+        },
+      }),
+    );
   }
 }

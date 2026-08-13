@@ -7,6 +7,8 @@
     </div>
   </header>
 
+  <app-admin-section-tabs [tabs]="productTabs"></app-admin-section-tabs>
+
   @if (isLoading) {
     <div class="state-card">Carregando produtos...</div>
   } @else if (errorMessage) {
@@ -88,7 +90,7 @@
       </div>
 
       <div class="featured-grid">
-        @for (product of products; track product.id) {
+        @for (product of pagedProducts(); track product.id) {
           <article class="featured-card">
             <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name">
             <div>
@@ -103,6 +105,15 @@
           </article>
         }
       </div>
+
+      <mat-paginator
+        [length]="products.length"
+        [pageIndex]="pageIndex"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+        aria-label="Paginacao de produtos em destaque">
+      </mat-paginator>
     </section>
   }
 </section>

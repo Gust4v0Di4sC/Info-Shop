@@ -1,25 +1,36 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Product } from '@app/models/product.model';
 import { OfferService } from '@app/services/offer.service';
+import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-offer-management',
-  imports: [SharedMaterialModule, ReactiveFormsModule, BrlCurrencyPipe],
+  imports: [SharedMaterialModule, ReactiveFormsModule, AdminSectionTabsComponent, BrlCurrencyPipe],
   templateUrl: './offer-management.component.html',
   styleUrl: './offer-management.component.scss'
 })
 export class OfferManagementComponent implements OnInit {
+  readonly productTabs: AdminSectionTab[] = [
+    { label: 'Produtos', icon: 'storefront', route: '/products' },
+    { label: 'Estoque', icon: 'inventory_2', route: '/stock' },
+    { label: 'Ofertas', icon: 'sell', route: '/offers' },
+  ];
+
   products: Product[] = [];
   activeOffer: Product | null = null;
   offerForm: FormGroup;
   isLoading = true;
   isSaving = false;
   errorMessage = '';
+  pageIndex = 0;
+  pageSize = 3;
+  readonly pageSizeOptions = [3, 6, 9];
 
   constructor(
     private fb: FormBuilder,
@@ -51,6 +62,7 @@ export class OfferManagementComponent implements OnInit {
         this.products = products;
         this.activeOffer = offer;
         this.patchOffer(offer);
+        this.resetPagination();
         this.isLoading = false;
       },
       error: () => {
@@ -123,6 +135,16 @@ export class OfferManagementComponent implements OnInit {
     return this.products.find(product => String(product.id) === String(productId)) || null;
   }
 
+  pagedProducts(): Product[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.products.slice(start, start + this.pageSize);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
+
   private patchOffer(offer: Product | null): void {
     if (!offer) {
       this.offerForm.patchValue({
@@ -150,6 +172,10 @@ export class OfferManagementComponent implements OnInit {
       horizontalPosition: 'end',
       verticalPosition: 'top',
     });
+  }
+
+  private resetPagination(): void {
+    this.pageIndex = 0;
   }
 
 }

@@ -12,6 +12,8 @@
     </button>
   </header>
 
+  <app-admin-section-tabs [tabs]="orderTabs"></app-admin-section-tabs>
+
   @if (isLoading) {
     <div class="state-card">Carregando entregas...</div>
   } @else if (errorMessage) {
@@ -20,7 +22,7 @@
     <div class="state-card">Nenhuma entrega criada ainda.</div>
   } @else {
     <div class="deliveries-list">
-      @for (delivery of deliveries; track delivery.id) {
+      @for (delivery of pagedDeliveries(); track delivery.id) {
         <article class="delivery-card">
           <div class="delivery-main">
             <span class="status-pill">{{ statusLabel(delivery.status) }}</span>
@@ -97,5 +99,14 @@
         </article>
       }
     </div>
+
+    <mat-paginator
+      [length]="deliveries.length"
+      [pageIndex]="pageIndex"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"
+      aria-label="Paginacao de entregas">
+    </mat-paginator>
   }
 </section>

@@ -12,13 +12,15 @@
     </button>
   </header>
 
+  <app-admin-section-tabs [tabs]="orderTabs"></app-admin-section-tabs>
+
   @if (isLoading) {
     <div class="state-card">Carregando pedidos...</div>
   } @else if (filteredOrders.length === 0) {
     <div class="state-card">Nenhum pedido cadastrado.</div>
   } @else {
     <div class="orders-list">
-      @for (order of filteredOrders; track order.id) {
+      @for (order of pagedOrders(); track order.id) {
         <article class="order-card">
           <img [src]="order.imageProd || '/product1.png'" [alt]="order.product | displayText: 'Produto'">
 
@@ -52,5 +54,14 @@
         </article>
       }
     </div>
+
+    <mat-paginator
+      [length]="filteredOrders.length"
+      [pageIndex]="pageIndex"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"
+      aria-label="Paginacao de pedidos">
+    </mat-paginator>
   }
 </section>

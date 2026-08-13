@@ -1,16 +1,22 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminThemeService } from '@app/core/theme/admin-theme.service';
+import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { AdminThemeId } from '@app/models/admin-theme.model';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 
 @Component({
   selector: 'app-admin-personalization',
-  imports: [SharedMaterialModule],
+  imports: [SharedMaterialModule, AdminSectionTabsComponent],
   templateUrl: './admin-personalization.component.html',
   styleUrl: './admin-personalization.component.scss',
 })
 export class AdminPersonalizationComponent implements OnInit, OnDestroy {
+  readonly profileTabs: AdminSectionTab[] = [
+    { label: 'Perfil', icon: 'account_circle', route: '/admin-profile' },
+    { label: 'Personalizacao', icon: 'palette', route: '/customization' },
+  ];
+
   readonly themeService = inject(AdminThemeService);
   private readonly snackBar = inject(MatSnackBar);
 

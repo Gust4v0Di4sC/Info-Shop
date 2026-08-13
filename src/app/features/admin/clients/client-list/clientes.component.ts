@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClienteFormComponent } from '@app/features/admin/clients/client-form/cliente-form.component';
 import { Client } from '@app/models/client.model';
@@ -23,6 +24,9 @@ export default class ClientesComponent implements OnInit {
   clients: Client[] = [];
   filteredClients: Client[] = [];
   isLoading = false;
+  pageIndex = 0;
+  pageSize = 3;
+  readonly pageSizeOptions = [3, 6, 9];
 
   constructor(
     private dialog: MatDialog,
@@ -39,6 +43,7 @@ export default class ClientesComponent implements OnInit {
     ).subscribe(searchTerm => {
       if (!searchTerm) {
         this.filteredClients = this.clients;
+        this.resetPagination();
         return;
       }
 
@@ -49,6 +54,7 @@ export default class ClientesComponent implements OnInit {
         (client.email || '').toLowerCase().includes(normalized) ||
         (client.cpf || '').toLowerCase().includes(normalized),
       );
+      this.resetPagination();
     });
   }
 
@@ -98,6 +104,7 @@ export default class ClientesComponent implements OnInit {
       next: (rawClients: Client[]) => {
         this.clients = rawClients.filter(client => client.id !== undefined);
         this.filteredClients = this.clients;
+        this.resetPagination();
         this.isLoading = false;
       },
       error: error => {
@@ -133,11 +140,25 @@ export default class ClientesComponent implements OnInit {
     });
   }
 
+  pagedClients(): Client[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredClients.slice(start, start + this.pageSize);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
+
   private showSnackbar(message: string): void {
     this.snackBar.open(message, 'Fechar', {
       duration: 3000,
       horizontalPosition: 'end',
       verticalPosition: 'top',
     });
+  }
+
+  private resetPagination(): void {
+    this.pageIndex = 0;
   }
 }
