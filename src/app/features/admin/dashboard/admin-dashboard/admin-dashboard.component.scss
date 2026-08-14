@@ -45,7 +45,7 @@
 
 .state-card,
 .panel,
-.metric-card,
+.summary-strip,
 .insight-card {
   background: #ffffff;
   border: 1px solid #dfe5ed;
@@ -63,32 +63,43 @@
   color: #b42318;
 }
 
-.metrics-grid {
+.summary-strip {
   display: grid;
-  gap: 16px;
+  gap: 0;
   grid-template-columns: repeat(6, minmax(0, 1fr));
+  overflow: hidden;
 }
 
-.metric-card {
+.summary-item {
+  align-items: center;
+  border-right: 1px solid #e2e8f0;
   display: grid;
-  gap: 8px;
-  min-height: 136px;
-  padding: 18px;
+  gap: 5px 12px;
+  grid-template-columns: 32px 1fr;
+  min-height: 82px;
+  padding: 14px 16px;
+
+  &:last-child {
+    border-right: 0;
+  }
 
   mat-icon {
     color: #0f62cf;
+    grid-row: span 2;
   }
 
   span {
     color: #667085;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 800;
+    line-height: 1.2;
   }
 
   strong {
     color: #202833;
-    font-size: 30px;
+    font-size: 22px;
     font-weight: 950;
+    line-height: 1;
   }
 }
 
@@ -138,25 +149,25 @@
 .charts-grid {
   display: grid;
   gap: 18px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .chart-panel {
-  min-height: 386px;
+  min-height: 338px;
 }
 
 .chart-panel-wide {
-  grid-column: 1 / -1;
+  grid-column: span 2;
 }
 
 .chart-box {
-  height: 292px;
+  height: 244px;
   position: relative;
   width: 100%;
 }
 
-.chart-box-donut {
-  height: 300px;
+.chart-box-pie {
+  height: 248px;
 }
 
 .content-grid {
@@ -266,11 +277,19 @@
 }
 
 @media (max-width: 1180px) {
-  .metrics-grid {
+  .summary-strip {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .summary-item:nth-child(3n) {
+    border-right: 0;
+  }
+
   .strategy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .charts-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -281,19 +300,28 @@
     flex-direction: column;
   }
 
-  .metrics-grid,
+  .summary-strip,
   .strategy-grid,
   .charts-grid,
   .content-grid {
     grid-template-columns: 1fr;
   }
 
+  .summary-item {
+    border-right: 0;
+    border-bottom: 1px solid #e2e8f0;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
   .chart-panel-wide {
-    grid-column: auto;
+    grid-column: span 1;
   }
 
   .chart-box,
-  .chart-box-donut {
+  .chart-box-pie {
     height: 260px;
   }
 }

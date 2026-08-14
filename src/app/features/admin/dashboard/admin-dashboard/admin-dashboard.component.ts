@@ -104,10 +104,9 @@ export class AdminDashboardComponent implements OnInit {
     },
   };
 
-  readonly doughnutOptions: ChartOptions<'doughnut'> = {
+  readonly pieOptions: ChartOptions<'pie'> = {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: '62%',
     plugins: {
       legend: {
         position: 'bottom',
@@ -127,11 +126,11 @@ export class AdminDashboardComponent implements OnInit {
     labels: [],
     datasets: [],
   };
-  ordersByStatusData: ChartData<'doughnut'> = {
+  ordersByStatusData: ChartData<'pie'> = {
     labels: [],
     datasets: [],
   };
-  inventoryByCategoryData: ChartData<'doughnut'> = {
+  inventoryByCategoryData: ChartData<'pie'> = {
     labels: [],
     datasets: [],
   };
@@ -173,7 +172,7 @@ export class AdminDashboardComponent implements OnInit {
     return this.overview?.analytics.slowMovingProducts[0] || null;
   }
 
-  hasChartData(data: ChartData<'bar' | 'line' | 'doughnut'>): boolean {
+  hasChartData(data: ChartData<'bar' | 'line' | 'pie'>): boolean {
     return data.datasets.some(dataset => dataset.data.some(value => Number(value) > 0));
   }
 

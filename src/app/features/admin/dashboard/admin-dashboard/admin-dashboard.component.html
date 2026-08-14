@@ -17,36 +17,128 @@
   } @else if (errorMessage) {
     <div class="state-card error-state">{{ errorMessage }}</div>
   } @else if (overview) {
-    <div class="metrics-grid">
-      <article class="metric-card">
+    <section class="summary-strip" aria-label="Indicadores operacionais">
+      <div class="summary-item">
         <mat-icon>inventory_2</mat-icon>
         <span>Produtos</span>
         <strong>{{ overview.totals.products }}</strong>
-      </article>
-      <article class="metric-card">
+      </div>
+      <div class="summary-item">
         <mat-icon>receipt_long</mat-icon>
         <span>Pedidos abertos</span>
         <strong>{{ overview.totals.openOrders }}</strong>
-      </article>
-      <article class="metric-card">
+      </div>
+      <div class="summary-item">
         <mat-icon>local_shipping</mat-icon>
         <span>Entregas</span>
         <strong>{{ overview.totals.deliveries }}</strong>
-      </article>
-      <article class="metric-card">
+      </div>
+      <div class="summary-item">
         <mat-icon>shopping_cart</mat-icon>
-        <span>Itens em carrinhos</span>
+        <span>Carrinhos</span>
         <strong>{{ overview.totals.cartItems }}</strong>
-      </article>
-      <article class="metric-card">
+      </div>
+      <div class="summary-item">
         <mat-icon>people</mat-icon>
         <span>Usuarios</span>
         <strong>{{ overview.totals.users }}</strong>
-      </article>
-      <article class="metric-card">
+      </div>
+      <div class="summary-item">
         <mat-icon>warehouse</mat-icon>
-        <span>Unidades em estoque</span>
+        <span>Estoque</span>
         <strong>{{ overview.totals.inventoryUnits }}</strong>
+      </div>
+    </section>
+
+    <div class="charts-grid">
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Pedidos</p>
+            <h2>Status da carteira</h2>
+          </div>
+          <a routerLink="/orders">Pedidos</a>
+        </div>
+
+        @if (hasChartData(ordersByStatusData)) {
+          <div class="chart-box chart-box-pie">
+            <canvas baseChart [data]="ordersByStatusData" [options]="pieOptions" [type]="'pie'"></canvas>
+          </div>
+        } @else {
+          <p class="empty-note">Nenhum pedido cadastrado.</p>
+        }
+      </article>
+
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Estoque</p>
+            <h2>Unidades por categoria</h2>
+          </div>
+          <a routerLink="/products">Produtos</a>
+        </div>
+
+        @if (hasChartData(inventoryByCategoryData)) {
+          <div class="chart-box chart-box-pie">
+            <canvas baseChart [data]="inventoryByCategoryData" [options]="pieOptions" [type]="'pie'"></canvas>
+          </div>
+        } @else {
+          <p class="empty-note">Sem estoque cadastrado por categoria.</p>
+        }
+      </article>
+
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Receita</p>
+            <h2>Evolucao mensal</h2>
+          </div>
+          <a routerLink="/orders">Pedidos</a>
+        </div>
+
+        @if (hasChartData(revenueByMonthData)) {
+          <div class="chart-box">
+            <canvas baseChart [data]="revenueByMonthData" [options]="revenueByMonthOptions" [type]="'line'"></canvas>
+          </div>
+        } @else {
+          <p class="empty-note">Sem receita nos ultimos meses.</p>
+        }
+      </article>
+
+      <article class="panel chart-panel chart-panel-wide">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Vendas</p>
+            <h2>Quantidade de vendas por produto</h2>
+          </div>
+          <a routerLink="/orders">Pedidos</a>
+        </div>
+
+        @if (hasChartData(salesByProductData)) {
+          <div class="chart-box">
+            <canvas baseChart [data]="salesByProductData" [options]="salesByProductOptions" [type]="'bar'"></canvas>
+          </div>
+        } @else {
+          <p class="empty-note">Sem vendas registradas para comparar produtos.</p>
+        }
+      </article>
+
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Giro</p>
+            <h2>Produtos com menor saida</h2>
+          </div>
+          <a routerLink="/stock">Estoque</a>
+        </div>
+
+        @if (overview.analytics.slowMovingProducts.length) {
+          <div class="chart-box">
+            <canvas baseChart [data]="slowMovingData" [options]="slowMovingOptions" [type]="'bar'"></canvas>
+          </div>
+        } @else {
+          <p class="empty-note">Nenhum produto cadastrado para analise.</p>
+        }
       </article>
     </div>
 
@@ -82,98 +174,6 @@
         } @else {
           <strong>0 un.</strong>
           <small>Nenhum produto cadastrado</small>
-        }
-      </article>
-    </div>
-
-    <div class="charts-grid">
-      <article class="panel chart-panel chart-panel-wide">
-        <div class="panel-head">
-          <div>
-            <p class="eyebrow">Vendas</p>
-            <h2>Quantidade de vendas por produto</h2>
-          </div>
-          <a routerLink="/orders">Pedidos</a>
-        </div>
-
-        @if (hasChartData(salesByProductData)) {
-          <div class="chart-box">
-            <canvas baseChart [data]="salesByProductData" [options]="salesByProductOptions" [type]="'bar'"></canvas>
-          </div>
-        } @else {
-          <p class="empty-note">Sem vendas registradas para comparar produtos.</p>
-        }
-      </article>
-
-      <article class="panel chart-panel">
-        <div class="panel-head">
-          <div>
-            <p class="eyebrow">Receita</p>
-            <h2>Evolucao mensal</h2>
-          </div>
-          <a routerLink="/orders">Pedidos</a>
-        </div>
-
-        @if (hasChartData(revenueByMonthData)) {
-          <div class="chart-box">
-            <canvas baseChart [data]="revenueByMonthData" [options]="revenueByMonthOptions" [type]="'line'"></canvas>
-          </div>
-        } @else {
-          <p class="empty-note">Sem receita nos ultimos meses.</p>
-        }
-      </article>
-
-      <article class="panel chart-panel">
-        <div class="panel-head">
-          <div>
-            <p class="eyebrow">Giro</p>
-            <h2>Produtos com menor saida</h2>
-          </div>
-          <a routerLink="/stock">Estoque</a>
-        </div>
-
-        @if (overview.analytics.slowMovingProducts.length) {
-          <div class="chart-box">
-            <canvas baseChart [data]="slowMovingData" [options]="slowMovingOptions" [type]="'bar'"></canvas>
-          </div>
-        } @else {
-          <p class="empty-note">Nenhum produto cadastrado para analise.</p>
-        }
-      </article>
-
-      <article class="panel chart-panel">
-        <div class="panel-head">
-          <div>
-            <p class="eyebrow">Pedidos</p>
-            <h2>Status da carteira</h2>
-          </div>
-          <a routerLink="/orders">Pedidos</a>
-        </div>
-
-        @if (hasChartData(ordersByStatusData)) {
-          <div class="chart-box chart-box-donut">
-            <canvas baseChart [data]="ordersByStatusData" [options]="doughnutOptions" [type]="'doughnut'"></canvas>
-          </div>
-        } @else {
-          <p class="empty-note">Nenhum pedido cadastrado.</p>
-        }
-      </article>
-
-      <article class="panel chart-panel">
-        <div class="panel-head">
-          <div>
-            <p class="eyebrow">Estoque</p>
-            <h2>Unidades por categoria</h2>
-          </div>
-          <a routerLink="/products">Produtos</a>
-        </div>
-
-        @if (hasChartData(inventoryByCategoryData)) {
-          <div class="chart-box chart-box-donut">
-            <canvas baseChart [data]="inventoryByCategoryData" [options]="doughnutOptions" [type]="'doughnut'"></canvas>
-          </div>
-        } @else {
-          <p class="empty-note">Sem estoque cadastrado por categoria.</p>
         }
       </article>
     </div>
