@@ -12,22 +12,29 @@ import {
   normalizeAddress,
 } from '../_shared/melhor-envio.ts';
 import { jsonResponse, optionsResponse } from '../_shared/cors.ts';
+import { assertRateLimit } from '../_shared/rate-limit.ts';
 
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') {
-    return optionsResponse();
+    return optionsResponse(req);
   }
 
   if (req.method !== 'POST') {
-    return jsonResponse({ message: 'Metodo nao permitido.' }, 405);
+    return jsonResponse({ message: 'Metodo nao permitido.' }, 405, req);
   }
 
   try {
     const authHeader = req.headers.get('Authorization') || '';
     const user = await getAuthenticatedUser(authHeader);
+    const serviceClient = getServiceClient();
+    await assertRateLimit(serviceClient, {
+      scope: 'melhor-envio-checkout',
+      subject: user.id,
+      maxRequests: 5,
+      windowSeconds: 600,
+    });
     const body = await req.json() as { address: DeliveryAddress; selectedServiceId: string };
     const address = normalizeAddress(body.address);
-    const serviceClient = getServiceClient();
     const cart = await loadCartForUser(serviceClient, user);
     const quotes = await calculateQuotes(cart, address);
     const selectedQuote = quotes.find(quote => quote.id === String(body.selectedServiceId));
@@ -142,8 +149,8 @@ Deno.serve(async req => {
       order,
       delivery: deliveryResult.data,
       quote: selectedQuote,
-    });
+    }, 200, req);
   } catch (error) {
-    return jsonResponse({ message: error instanceof Error ? error.message : 'Nao foi possivel finalizar a compra.' }, 400);
+    return jsonResponse({ message: error instanceof Error ? error.message : 'Nao foi possivel finalizar a compra.' }, 400, req);
   }
 });

@@ -13,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { gsap } from 'gsap';
 
-import { supabase } from '@app/core/supabase/supabase.client';
+import { AuthService } from '@app/core/auth/auth.service';
 import { AdminThemeService } from '@app/core/theme/admin-theme.service';
 import { CartServiceService } from '@app/services/cart-service.service';
 
@@ -29,6 +29,7 @@ export class HeaderComponent implements OnInit {
   private readonly ngZone = inject(NgZone);
   private readonly platformId = inject(PLATFORM_ID);
   readonly themeService = inject(AdminThemeService);
+  private readonly authService = inject(AuthService);
 
   cartCount = 0;
   searchTerm = '';
@@ -55,9 +56,9 @@ export class HeaderComponent implements OnInit {
   }
 
   async goToProfile(): Promise<void> {
-    const { data, error } = await supabase.auth.getUser();
+    const user = await this.authService.getCurrentUserAsync();
 
-    if (error || !data.user) {
+    if (!user) {
       this.router.navigate(['/home']);
       return;
     }

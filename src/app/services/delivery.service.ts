@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { from, map, Observable, switchMap } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
+import { AuthService } from '@app/core/auth/auth.service';
 import { Delivery, DeliveryUpdate } from '@app/models/delivery.model';
 import { getSupabaseData, getSupabaseList } from '@app/core/supabase/supabase-response';
 import { TenantContextService } from '@app/core/tenant/tenant-context.service';
@@ -9,7 +10,10 @@ import { TenantContextService } from '@app/core/tenant/tenant-context.service';
   providedIn: 'root'
 })
 export class DeliveryService {
-  constructor(private tenantContext: TenantContextService) {}
+  constructor(
+    private tenantContext: TenantContextService,
+    private authService: AuthService,
+  ) {}
 
   getDeliveries(): Observable<Delivery[]> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
@@ -44,20 +48,12 @@ export class DeliveryService {
   }
 
   private async loadCurrentUserDeliveries(): Promise<Delivery[]> {
-    const { data, error } = await supabase.auth.getUser();
-
-    if (error) {
-      throw error;
-    }
-
-    if (!data.user) {
-      throw new Error('Entre na sua conta para acompanhar entregas.');
-    }
+    const user = await this.authService.requireCurrentUser('Entre na sua conta para acompanhar entregas.');
 
     const result = await supabase
       .from('deliveries')
       .select('*')
-      .eq('user_id', data.user.id)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     return getSupabaseList(result);

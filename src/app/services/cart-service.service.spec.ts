@@ -3,12 +3,20 @@ import { firstValueFrom } from 'rxjs';
 
 import { CartServiceService } from './cart-service.service';
 import { DeliveryAddress } from '@app/models/shipping.model';
+import { AuthService } from '@app/core/auth/auth.service';
 
 describe('CartServiceService', () => {
   let service: CartServiceService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {},
+        },
+      ],
+    });
     service = TestBed.inject(CartServiceService);
   });
 

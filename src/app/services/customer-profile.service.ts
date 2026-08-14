@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
+import { AuthService } from '@app/core/auth/auth.service';
 import { getSupabaseData } from '@app/core/supabase/supabase-response';
 import { AppUser, AppUserUpdate } from '@app/models/app-user.model';
 
@@ -8,6 +9,8 @@ import { AppUser, AppUserUpdate } from '@app/models/app-user.model';
   providedIn: 'root'
 })
 export class CustomerProfileService {
+  constructor(private authService: AuthService) {}
+
   getCurrentProfile(): Observable<AppUser> {
     return from(this.ensureCurrentProfile());
   }
@@ -25,17 +28,7 @@ export class CustomerProfileService {
   }
 
   private async getAuthUser() {
-    const { data, error } = await supabase.auth.getUser();
-
-    if (error) {
-      throw error;
-    }
-
-    if (!data.user) {
-      throw new Error('Entre na sua conta para acessar o perfil.');
-    }
-
-    return data.user;
+    return this.authService.requireCurrentUser('Entre na sua conta para acessar o perfil.');
   }
 
   private async ensureCurrentProfile(): Promise<AppUser> {

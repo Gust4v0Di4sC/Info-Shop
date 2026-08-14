@@ -1,9 +1,18 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { EmailOtpType, User as SupabaseUser } from '@supabase/supabase-js';
-import { BehaviorSubject, catchError, from, map, of } from 'rxjs';
+import { User as SupabaseUser } from '@supabase/supabase-js';
+import { BehaviorSubject, catchError, firstValueFrom, from, map, of, tap } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { Admin, ADMIN_DEFAULT_ROUTE, AdminRole, normalizeAdminRole } from '@app/models/admin.model';
+
+interface AuthUserResponse {
+  user: SupabaseUser | null;
+}
+
+interface AuthRegisterResponse extends AuthUserResponse {
+  needsEmailConfirmation: boolean;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -12,156 +21,93 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<SupabaseUser | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private router: Router) {
-    this.initializeAuth();
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {
+    void this.loadUserFromSession();
   }
 
-  private async initializeAuth(): Promise<void> {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        this.currentUserSubject.next(session.user);
-
-        const currentUrl = this.router.url;
-        if (
-          currentUrl === '/' ||
-          currentUrl === '/home' ||
-          currentUrl.includes('login') ||
-          currentUrl.includes('registro')
-        ) {
-          setTimeout(() => {
-            void this.finishSignIn(session.user);
-          });
-        }
-      }
-
-      if (event === 'SIGNED_OUT') {
-        this.currentUserSubject.next(null);
-        setTimeout(() => {
-          void this.router.navigate(['/home']);
-        });
-      }
-    });
-
-    await this.loadUserFromSession();
-  }
-
-  private async loadUserFromSession(): Promise<void> {
-    const { data, error } = await supabase.auth.getSession();
-
-    if (!error && data.session?.user) {
-      this.currentUserSubject.next(data.session.user);
+  async loadUserFromSession(): Promise<SupabaseUser | null> {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<AuthUserResponse>('/api/auth/session', { withCredentials: true }),
+      );
+      this.currentUserSubject.next(response.user);
+      return response.user;
+    } catch {
+      this.currentUserSubject.next(null);
+      return null;
     }
   }
 
   async signInWithGoogle(): Promise<void> {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: this.getAuthCallbackUrl(),
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'select_account',
-        },
-      },
-    });
+    const response = await firstValueFrom(
+      this.http.get<{ url: string }>('/api/auth/oauth/google', { withCredentials: true }),
+    );
 
-    if (error) {
-      throw new Error(`Erro no login Google: ${error.message}`);
-    }
+    window.location.href = response.url;
   }
 
   register(email: string, password: string, fullName: string) {
-    return from(
-      supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: this.getAuthCallbackUrl(),
-          data: {
-            full_name: fullName,
-            name: fullName,
-          },
-        },
-      }),
-    ).pipe(
-      map(({ data, error }) => {
-        if (error) {
-          throw error;
-        }
-
-        return {
-          user: data.user,
-          session: data.session,
-          needsEmailConfirmation: Boolean(data.user && !data.session),
-        };
-      }),
-    );
+    return this.http
+      .post<AuthRegisterResponse>('/api/auth/register', { email, password, fullName }, { withCredentials: true })
+      .pipe(
+        tap(response => this.currentUserSubject.next(response.user)),
+        map(response => ({
+          user: response.user,
+          session: null,
+          needsEmailConfirmation: response.needsEmailConfirmation,
+        })),
+      );
   }
 
   resendConfirmation(email: string) {
-    return from(
-      supabase.auth.resend({
-        type: 'signup',
-        email,
-        options: {
-          emailRedirectTo: this.getAuthCallbackUrl(),
-        },
-      }),
-    ).pipe(
-      map(({ error }) => {
-        if (error) {
-          throw error;
-        }
-
-        return true;
-      }),
-    );
+    return this.http
+      .post<{ ok: boolean }>('/api/auth/resend-confirmation', { email }, { withCredentials: true })
+      .pipe(map(() => true));
   }
 
   requestPasswordReset(email: string) {
-    return from(
-      supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: this.getAuthCallbackUrl(),
-      }),
-    ).pipe(
-      map(({ error }) => {
-        if (error) {
-          throw error;
-        }
-
-        return true;
-      }),
-    );
+    return this.http
+      .post<{ ok: boolean }>('/api/auth/password-reset', { email }, { withCredentials: true })
+      .pipe(map(() => true));
   }
 
   updatePassword(password: string) {
-    return from(supabase.auth.updateUser({ password })).pipe(
-      map(({ error }) => {
-        if (error) {
-          throw error;
-        }
-
-        return true;
-      }),
-    );
+    return this.http
+      .post<AuthUserResponse>('/api/auth/update-password', { password }, { withCredentials: true })
+      .pipe(
+        tap(response => this.currentUserSubject.next(response.user)),
+        map(() => true),
+      );
   }
 
   login(email: string, password: string) {
-    return from(supabase.auth.signInWithPassword({ email, password })).pipe(
-      map(({ data, error }) => {
-        if (error || !data.user) {
-          return false;
-        }
+    return this.http
+      .post<AuthUserResponse>('/api/auth/login', { email, password }, { withCredentials: true })
+      .pipe(
+        map(response => {
+          if (!response.user) {
+            return false;
+          }
 
-        this.currentUserSubject.next(data.user);
-        return true;
-      }),
-      catchError(() => of(false)),
-    );
+          this.currentUserSubject.next(response.user);
+          return true;
+        }),
+        catchError(() => of(false)),
+      );
   }
 
   async logout(): Promise<void> {
-    await supabase.auth.signOut();
+    try {
+      await firstValueFrom(
+        this.http.post<{ ok: boolean }>('/api/auth/logout', {}, { withCredentials: true }),
+      );
+    } finally {
+      this.currentUserSubject.next(null);
+      await this.router.navigate(['/home']);
+    }
   }
 
   isAuthenticated(): boolean {
@@ -172,12 +118,22 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  async forceSessionRefresh(): Promise<void> {
-    const { data, error } = await supabase.auth.refreshSession();
+  async getCurrentUserAsync(): Promise<SupabaseUser | null> {
+    return this.currentUserSubject.value || this.loadUserFromSession();
+  }
 
-    if (!error && data.user) {
-      this.currentUserSubject.next(data.user);
+  async requireCurrentUser(message = 'Entre na sua conta para continuar.'): Promise<SupabaseUser> {
+    const user = await this.getCurrentUserAsync();
+
+    if (!user) {
+      throw new Error(message);
     }
+
+    return user;
+  }
+
+  async forceSessionRefresh(): Promise<void> {
+    await this.loadUserFromSession();
   }
 
   async handleAuthCallback(): Promise<void> {
@@ -186,64 +142,45 @@ export class AuthService {
       this.getCallbackParam(url, 'error');
     const code = this.getCallbackParam(url, 'code');
     const tokenHash = this.getCallbackParam(url, 'token_hash');
-    const type = this.getCallbackParam(url, 'type') as EmailOtpType | null;
+    const type = this.getCallbackParam(url, 'type');
 
     if (callbackError) {
       throw new Error(callbackError);
     }
 
-    if (tokenHash && type) {
-      const { error } = await supabase.auth.verifyOtp({
-        token_hash: tokenHash,
-        type,
-      });
+    const hasImplicitTokens = Boolean(
+      this.getCallbackParam(url, 'access_token') || this.getCallbackParam(url, 'refresh_token'),
+    );
 
-      if (error) {
-        throw error;
-      }
-    } else if (code) {
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (error) {
-        throw error;
-      }
-    } else {
-      const accessToken = this.getCallbackParam(url, 'access_token');
-      const refreshToken = this.getCallbackParam(url, 'refresh_token');
-
-      if (accessToken && refreshToken) {
-        const { error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-
-        if (error) {
-          throw error;
-        }
-      }
+    if (hasImplicitTokens) {
+      throw new Error('Callback inseguro com token no navegador. Solicite um novo link de acesso.');
     }
 
-    const { data, error } = await supabase.auth.getSession();
+    const response = await firstValueFrom(
+      this.http.post<AuthUserResponse & { type?: string }>(
+        '/api/auth/callback',
+        { code, tokenHash, type },
+        { withCredentials: true },
+      ),
+    );
 
-    if (error) {
-      throw error;
-    }
-
-    if (!data.session?.user) {
+    if (!response.user) {
       throw new Error('Sessao de login nao encontrada.');
     }
 
-    this.currentUserSubject.next(data.session.user);
+    this.currentUserSubject.next(response.user);
+    window.history.replaceState({}, document.title, '/auth/callback');
 
-    if (type === 'recovery') {
+    if (response.type === 'recovery' || type === 'recovery') {
       await this.router.navigate(['/nova-senha']);
       return;
     }
 
-    await this.finishSignIn(data.session.user);
+    await this.redirectAfterSignIn(response.user.id);
   }
 
   async redirectAfterSignIn(userId?: string): Promise<void> {
-    const currentUserId = userId || (await supabase.auth.getUser()).data.user?.id;
+    const currentUserId = userId || (await this.getCurrentUserAsync())?.id;
 
     if (!currentUserId) {
       await this.router.navigate(['/home']);
@@ -265,7 +202,7 @@ export class AuthService {
   }
 
   async getAdminProfile(userId?: string): Promise<Admin | null> {
-    const currentUserId = userId || (await supabase.auth.getUser()).data.user?.id;
+    const currentUserId = userId || (await this.getCurrentUserAsync())?.id;
 
     if (!currentUserId) {
       return null;
@@ -281,37 +218,6 @@ export class AuthService {
     return error ? null : data;
   }
 
-  private async finishSignIn(user: SupabaseUser): Promise<void> {
-    await this.ensurePublicUser(user);
-    await this.redirectAfterSignIn(user.id);
-  }
-
-  private async ensurePublicUser(user: SupabaseUser): Promise<void> {
-    const metadata = user.user_metadata || {};
-    const fullName = this.getMetadataValue(metadata, 'full_name') ||
-      this.getMetadataValue(metadata, 'name');
-    const avatarUrl = this.getMetadataValue(metadata, 'avatar_url') ||
-      this.getMetadataValue(metadata, 'picture');
-
-    const { error } = await supabase
-      .from('users')
-      .upsert({
-        id: user.id,
-        email: user.email || '',
-        full_name: fullName,
-        avatar_url: avatarUrl,
-      }, { onConflict: 'id' });
-
-    if (error) {
-      throw error;
-    }
-  }
-
-  private getMetadataValue(metadata: Record<string, unknown>, key: string): string | null {
-    const value = metadata[key];
-    return typeof value === 'string' && value.trim() ? value : null;
-  }
-
   private getCallbackParam(url: URL, name: string): string | null {
     const queryValue = url.searchParams.get(name);
 
@@ -321,9 +227,5 @@ export class AuthService {
 
     const hashParams = new URLSearchParams(url.hash.replace(/^#/, ''));
     return hashParams.get(name);
-  }
-
-  private getAuthCallbackUrl(): string {
-    return `${window.location.origin}/auth/callback`;
   }
 }

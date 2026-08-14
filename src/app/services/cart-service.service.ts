@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, from, map, Observable } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
+import { AuthService } from '@app/core/auth/auth.service';
 import { getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
 import { CartItemWithProduct } from '@app/models/cart-item.model';
 import {
@@ -15,6 +16,8 @@ import {
 export class CartServiceService {
   private cartCount = new BehaviorSubject<number>(0);
   cartCount$ = this.cartCount.asObservable();
+
+  constructor(private authService: AuthService) {}
 
   refreshCartCount(): Observable<number> {
     return from(this.loadCartCount());
@@ -50,18 +53,9 @@ export class CartServiceService {
   }
 
   private async getUserId(): Promise<string> {
-    const { data, error } = await supabase.auth.getUser();
-
-    if (error) {
-      throw error;
-    }
-
-    if (!data.user) {
-      throw new Error('Entre na sua conta para usar o carrinho.');
-    }
-
-    const userId = data.user.id;
-    await this.ensureUserProfile(userId, data.user.email || '');
+    const user = await this.authService.requireCurrentUser('Entre na sua conta para usar o carrinho.');
+    const userId = user.id;
+    await this.ensureUserProfile(userId, user.email || '');
 
     return userId;
   }
@@ -75,9 +69,9 @@ export class CartServiceService {
   }
 
   private async loadCartCount(): Promise<number> {
-    const { data } = await supabase.auth.getUser();
+    const user = await this.authService.getCurrentUserAsync();
 
-    if (!data.user) {
+    if (!user) {
       this.cartCount.next(0);
       return 0;
     }
@@ -85,7 +79,7 @@ export class CartServiceService {
     const result = await supabase
       .from('cart_items')
       .select('quantity')
-      .eq('user_id', data.user.id);
+      .eq('user_id', user.id);
 
     const total = getSupabaseList(result).reduce((sum, item) => sum + item.quantity, 0);
     this.cartCount.next(total);

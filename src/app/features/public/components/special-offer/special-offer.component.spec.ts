@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AuthService } from '@app/core/auth/auth.service';
+import { of } from 'rxjs';
 
 import { SpecialOfferComponent } from './special-offer.component';
 
@@ -8,7 +10,16 @@ describe('SpecialOfferComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SpecialOfferComponent]
+      imports: [SpecialOfferComponent],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            currentUser$: of(null),
+            getCurrentUserAsync: () => Promise.resolve(null),
+          },
+        },
+      ],
     })
     .compileComponents();
 

@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
-import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { supabase } from '@app/core/supabase/supabase.client';
 import { AuthService } from '@app/core/auth/auth.service';
 import { ADMIN_DEFAULT_ROUTE, AdminRole } from '@app/models/admin.model';
 
@@ -10,19 +7,20 @@ import { ADMIN_DEFAULT_ROUTE, AdminRole } from '@app/models/admin.model';
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
-  canActivate(): Observable<boolean> {
-    return from(supabase.auth.getUser()).pipe(
-      map(({ data, error }) => {
-        if (!error && data.user) {
-          return true;
-        }
+  async canActivate(): Promise<boolean> {
+    const user = await this.authService.getCurrentUserAsync();
 
-        this.router.navigate(['/home']);
-        return false;
-      }),
-    );
+    if (user) {
+      return true;
+    }
+
+    await this.router.navigate(['/home']);
+    return false;
   }
 }
 
@@ -36,13 +34,13 @@ export class GuestGuard implements CanActivate {
   ) {}
 
   async canActivate(): Promise<boolean> {
-    const { data, error } = await supabase.auth.getUser();
+    const user = await this.authService.getCurrentUserAsync();
 
-    if (error || !data.user) {
+    if (!user) {
       return true;
     }
 
-    const adminRole = await this.authService.getAdminRole(data.user.id);
+    const adminRole = await this.authService.getAdminRole(user.id);
 
     await this.router.navigate([adminRole ? ADMIN_DEFAULT_ROUTE[adminRole] : '/perfil']);
     return false;
@@ -59,13 +57,13 @@ export class PublicGuard implements CanActivate {
   ) {}
 
   async canActivate(): Promise<boolean> {
-    const { data, error } = await supabase.auth.getUser();
+    const user = await this.authService.getCurrentUserAsync();
 
-    if (error || !data.user) {
+    if (!user) {
       return true;
     }
 
-    const adminRole = await this.authService.getAdminRole(data.user.id);
+    const adminRole = await this.authService.getAdminRole(user.id);
 
     if (adminRole) {
       await this.router.navigate([ADMIN_DEFAULT_ROUTE[adminRole]]);
@@ -86,14 +84,14 @@ export class AdminGuard implements CanActivate {
   ) {}
 
   async canActivate(route: ActivatedRouteSnapshot): Promise<boolean> {
-    const { data, error } = await supabase.auth.getUser();
+    const user = await this.authService.getCurrentUserAsync();
 
-    if (error || !data.user) {
+    if (!user) {
       await this.router.navigate(['/home']);
       return false;
     }
 
-    const adminRole = await this.authService.getAdminRole(data.user.id);
+    const adminRole = await this.authService.getAdminRole(user.id);
 
     if (!adminRole) {
       await this.router.navigate(['/perfil']);

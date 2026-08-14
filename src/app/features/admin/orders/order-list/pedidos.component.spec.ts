@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AuthService } from '@app/core/auth/auth.service';
 import { OrderService } from '@app/services/order.service';
 import { of } from 'rxjs';
 
@@ -17,6 +18,13 @@ describe('PedidosComponent', () => {
           useValue: {
             getOrders: () => of([]),
             deleteOrder: () => of(undefined),
+          },
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            currentUser$: of(null),
+            getCurrentUserAsync: () => Promise.resolve(null),
           },
         },
       ],

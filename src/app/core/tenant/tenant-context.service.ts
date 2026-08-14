@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, distinctUntilChanged, from, map, of, switchMap, throwError } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
+import { AuthService } from '@app/core/auth/auth.service';
 
 export interface AdminStoreContext {
   id: string;
@@ -27,6 +28,8 @@ export class TenantContextService {
     map(stores => stores.length > 1),
     distinctUntilChanged(),
   );
+
+  constructor(private authService: AuthService) {}
 
   async initialize(): Promise<void> {
     await this.ensureLoaded();
@@ -79,9 +82,9 @@ export class TenantContextService {
   }
 
   private async loadStores(): Promise<void> {
-    const { data: userResult } = await supabase.auth.getUser();
+    const user = await this.authService.getCurrentUserAsync();
 
-    if (!userResult.user) {
+    if (!user) {
       this.resetLoadedState();
       return;
     }

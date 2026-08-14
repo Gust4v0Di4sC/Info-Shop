@@ -5,11 +5,11 @@ type JsonRecord = Record<string, unknown>;
 
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') {
-    return optionsResponse();
+    return optionsResponse(req);
   }
 
   if (req.method !== 'POST') {
-    return jsonResponse({ message: 'Metodo nao permitido.' }, 405);
+    return jsonResponse({ message: 'Metodo nao permitido.' }, 405, req);
   }
 
   let payload: JsonRecord = {};
@@ -17,7 +17,7 @@ Deno.serve(async req => {
   try {
     payload = await req.json() as JsonRecord;
   } catch {
-    return jsonResponse({ message: 'Payload invalido.' }, 400);
+    return jsonResponse({ message: 'Payload invalido.' }, 400, req);
   }
 
   const url = new URL(req.url);
@@ -28,17 +28,17 @@ Deno.serve(async req => {
   const eventType = String(url.searchParams.get('type') || payload['type'] || '');
 
   if (eventType !== 'payment' || !dataId) {
-    return jsonResponse({ ok: true, ignored: true });
+    return jsonResponse({ ok: true, ignored: true }, 200, req);
   }
 
   if (!(await validateMercadoPagoSignature(req, dataId))) {
-    return jsonResponse({ message: 'Assinatura invalida.' }, 401);
+    return jsonResponse({ message: 'Assinatura invalida.' }, 401, req);
   }
 
   try {
     await syncMercadoPagoPayment(dataId, payload);
-    return jsonResponse({ ok: true });
+    return jsonResponse({ ok: true }, 200, req);
   } catch (error) {
-    return jsonResponse({ message: error instanceof Error ? error.message : 'Nao foi possivel processar webhook.' }, 400);
+    return jsonResponse({ message: error instanceof Error ? error.message : 'Nao foi possivel processar webhook.' }, 400, req);
   }
 });

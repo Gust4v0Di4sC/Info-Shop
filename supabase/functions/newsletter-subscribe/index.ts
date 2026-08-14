@@ -1,5 +1,6 @@
 import { getServiceClient } from '../_shared/melhor-envio.ts';
 import { jsonResponse, optionsResponse } from '../_shared/cors.ts';
+import { assertRateLimit, clientIp } from '../_shared/rate-limit.ts';
 
 interface NewsletterRequest {
   email?: string;
@@ -7,18 +8,25 @@ interface NewsletterRequest {
 
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') {
-    return optionsResponse();
+    return optionsResponse(req);
   }
 
   if (req.method !== 'POST') {
-    return jsonResponse({ message: 'Metodo nao permitido.' }, 405);
+    return jsonResponse({ message: 'Metodo nao permitido.' }, 405, req);
   }
 
   try {
     const body = await req.json() as NewsletterRequest;
     const email = normalizeEmail(body.email);
+    const serviceClient = getServiceClient();
+    await assertRateLimit(serviceClient, {
+      scope: 'newsletter-subscribe',
+      subject: `${clientIp(req)}:${email}`,
+      maxRequests: 5,
+      windowSeconds: 3600,
+    });
 
-    const { data, error } = await getServiceClient()
+    const { data, error } = await serviceClient
       .rpc('subscribe_newsletter', { email_value: email });
 
     if (error) {
@@ -27,11 +35,11 @@ Deno.serve(async req => {
 
     await sendWelcomeEmail(email);
 
-    return jsonResponse({ subscriber: data });
+    return jsonResponse({ subscriber: data }, 200, req);
   } catch (error) {
     return jsonResponse({
       message: error instanceof Error ? error.message : 'Nao foi possivel concluir a inscricao.',
-    }, 400);
+    }, 400, req);
   }
 });
 

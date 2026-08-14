@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AuthService } from '@app/core/auth/auth.service';
 
 import { AuthCallbackComponent } from './auth-callback.component';
 
@@ -8,7 +9,15 @@ describe('AuthCallbackComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AuthCallbackComponent]
+      imports: [AuthCallbackComponent],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            handleAuthCallback: () => Promise.resolve(),
+          },
+        },
+      ],
     })
     .compileComponents();
 

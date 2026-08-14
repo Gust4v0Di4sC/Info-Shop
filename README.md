@@ -6,14 +6,14 @@
 ![Status](https://img.shields.io/badge/status-active-success)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**Info-Shop** é uma aplicação web construída com **Angular (v19.1.8)** e **Supabase** que simula um **e-commerce de produtos de informática**.  
+**Info-Shop** é uma aplicação web construída com **Angular 20** e **Supabase** que simula um **e-commerce de produtos de informática**.
 Os usuários podem navegar por categorias, visualizar detalhes.
 
 ---
 
 ## 🚀 Tecnologias
 
-- **Frontend**: Angular 19.1.8  
+- **Frontend**: Angular 20
 - **Backend**: Supabase (autenticação e banco de dados)  
 - **Gerenciador de pacotes**: npm  
 - **Editor**: VS Code (configurações já inclusas)  
@@ -39,7 +39,7 @@ Os usuários podem navegar por categorias, visualizar detalhes.
     ```
 3. Configure o **Supabase**:  
    - Crie um projeto no [Supabase](https://supabase.com/).  
-   - Configure as variáveis de ambiente (`SUPABASE_URL`, `SUPABASE_KEY`) no projeto Angular.  
+   - Configure as variáveis de ambiente públicas do Angular (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
    - Certifique-se de que as tabelas/estruturas necessárias estão configuradas no banco.  
 
 4. Execute o servidor de desenvolvimento:
@@ -75,6 +75,41 @@ Info-Shop/
 │── README.md          # Documentação
 
 ````
+
+---
+
+## Segurança e Variáveis
+
+O bundle Angular deve receber somente dados públicos:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+
+A `SUPABASE_ANON_KEY` é pública por natureza e depende de RLS no Supabase. A `SUPABASE_SERVICE_ROLE_KEY` nunca deve entrar em `src/environments/*`, `.env.local` usado pelo build Angular, variáveis de frontend da Netlify ou qualquer arquivo servido ao navegador. Configure `SUPABASE_SERVICE_ROLE_KEY` apenas como segredo das Supabase Edge Functions.
+
+Edge Functions usam segredos separados:
+
+- `ALLOWED_ORIGINS`: origens permitidas para CORS, separadas por vírgula.
+- `PUBLIC_SITE_URL`: URL pública usada como fallback de CORS e retornos de pagamento.
+- `ENVIRONMENT=production`: ativa falhas fechadas de segurança em produção.
+- `MP_WEBHOOK_SECRET`: obrigatório em produção para validar webhooks Mercado Pago.
+- `MP_ACCESS_TOKEN`, `ME_CLIENT_ID`, `ME_CLIENT_SECRET`, `ME_BASE_URL`, `ME_REDIRECT_URI`, `ME_USER_AGENT`, `GEMINI_API_KEY` e segredos de e-mail devem ficar apenas no ambiente das Edge Functions.
+
+Autenticacao sensivel passa pelo BFF same-origin em `src/server.ts`:
+
+- O Angular chama `/api/auth/*` para login, logout, cadastro, OAuth, callback e reset de senha.
+- Chamadas Supabase de REST, Storage e Edge Functions saem do navegador como `/api/supabase/*`; o servidor injeta o JWT da sessao.
+- Os tokens Supabase ficam em cookies `HttpOnly`, `SameSite=Lax` e `Secure` em producao. O bundle Angular nao deve persistir tokens em `localStorage` nem `sessionStorage`.
+- Rotas `/api` que alteram estado rejeitam `Origin` diferente da origem do proprio site, reduzindo risco de CSRF junto com `SameSite=Lax`.
+
+Esse desenho exige deploy com runtime Node/Express executando `node dist/info-shop-angular/server/server.mjs` ou adaptador equivalente. Um deploy puramente estatico do diretorio `browser/` nao suporta cookies `HttpOnly` nem as rotas `/api`.
+
+Variaveis do BFF Node:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `PUBLIC_SITE_URL`
+- `NODE_ENV=production` ou `ENVIRONMENT=production`
 
 ---
 

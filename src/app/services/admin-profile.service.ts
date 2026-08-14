@@ -5,6 +5,7 @@ import { getSupabaseData } from '@app/core/supabase/supabase-response';
 import { Admin, Store } from '@app/models/admin.model';
 import { AppUser, AppUserUpdate } from '@app/models/app-user.model';
 import { TenantContextService } from '@app/core/tenant/tenant-context.service';
+import { AuthService } from '@app/core/auth/auth.service';
 
 export interface AdminProfile {
   user: AppUser;
@@ -40,7 +41,10 @@ export interface AdminProfileUpdate {
   providedIn: 'root',
 })
 export class AdminProfileService {
-  constructor(private tenantContext: TenantContextService) {}
+  constructor(
+    private tenantContext: TenantContextService,
+    private authService: AuthService,
+  ) {}
 
   getCurrentAdminProfile(): Observable<AdminProfile> {
     return from(this.loadCurrentAdminProfile());
@@ -132,16 +136,6 @@ export class AdminProfileService {
   }
 
   private async getAuthUser() {
-    const { data, error } = await supabase.auth.getUser();
-
-    if (error) {
-      throw error;
-    }
-
-    if (!data.user) {
-      throw new Error('Entre na sua conta administrativa para acessar o perfil.');
-    }
-
-    return data.user;
+    return this.authService.requireCurrentUser('Entre na sua conta administrativa para acessar o perfil.');
   }
 }

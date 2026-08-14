@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient, User } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { createClient, SupabaseClient, User } from 'https://esm.sh/@supabase/supabase-js@2.112.3';
 
 type JsonRecord = Record<string, unknown>;
 

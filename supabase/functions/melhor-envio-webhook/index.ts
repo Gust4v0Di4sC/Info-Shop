@@ -3,15 +3,15 @@ import { jsonResponse, optionsResponse } from '../_shared/cors.ts';
 
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') {
-    return optionsResponse();
+    return optionsResponse(req);
   }
 
   if (req.method === 'GET' || req.method === 'HEAD') {
-    return jsonResponse({ ok: true, service: 'melhor-envio-webhook' });
+    return jsonResponse({ ok: true, service: 'melhor-envio-webhook' }, 200, req);
   }
 
   if (req.method !== 'POST') {
-    return jsonResponse({ message: 'Metodo nao permitido.' }, 405);
+    return jsonResponse({ message: 'Metodo nao permitido.' }, 405, req);
   }
 
   try {
@@ -19,7 +19,7 @@ Deno.serve(async req => {
     const rawBody = await req.text();
 
     if (!rawBody.trim()) {
-      return jsonResponse({ ok: true, ignored: true });
+      return jsonResponse({ ok: true, ignored: true }, 200, req);
     }
 
     const payload = JSON.parse(rawBody);
@@ -27,13 +27,13 @@ Deno.serve(async req => {
     const melhorEnvioOrderId = data.id ? String(data.id) : '';
 
     if (!melhorEnvioOrderId) {
-      return jsonResponse({ ok: true, ignored: true });
+      return jsonResponse({ ok: true, ignored: true }, 200, req);
     }
 
     const expectedSignature = await hmacSha256Base64(rawBody, requiredEnv('ME_CLIENT_SECRET'));
 
     if (signature !== expectedSignature) {
-      return jsonResponse({ message: 'Assinatura invalida.' }, 401);
+      return jsonResponse({ message: 'Assinatura invalida.' }, 401, req);
     }
 
     const status = String(data.status || payload.event || '');
@@ -56,9 +56,9 @@ Deno.serve(async req => {
       throw error;
     }
 
-    return jsonResponse({ ok: true });
+    return jsonResponse({ ok: true }, 200, req);
   } catch (error) {
-    return jsonResponse({ message: error instanceof Error ? error.message : 'Falha no webhook.' }, 400);
+    return jsonResponse({ message: error instanceof Error ? error.message : 'Falha no webhook.' }, 400, req);
   }
 });
 

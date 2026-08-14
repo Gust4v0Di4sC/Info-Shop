@@ -1,4 +1,4 @@
-import { SupabaseClient, User } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { SupabaseClient, User } from 'https://esm.sh/@supabase/supabase-js@2.112.3';
 import {
   DeliveryAddress,
   ShippingQuote,
@@ -298,7 +298,7 @@ export async function syncMercadoPagoPayment(providerPaymentId: string, webhookP
 export async function validateMercadoPagoSignature(req: Request, dataId: string): Promise<boolean> {
   const secret = Deno.env.get('MP_WEBHOOK_SECRET');
   if (!secret) {
-    return true;
+    return (Deno.env.get('ENVIRONMENT') || '').toLowerCase() !== 'production';
   }
 
   const signature = req.headers.get('x-signature') || '';

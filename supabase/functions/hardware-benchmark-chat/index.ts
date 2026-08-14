@@ -1,5 +1,6 @@
-import { createClient, SupabaseClient, User } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { createClient, SupabaseClient, User } from 'https://esm.sh/@supabase/supabase-js@2.112.3';
 import { jsonResponse, optionsResponse } from '../_shared/cors.ts';
+import { assertRateLimit } from '../_shared/rate-limit.ts';
 
 const FALLBACK_ANSWER = 'Nao possuo informacoes a respeito disso.';
 const GEMINI_MODEL = 'gemini-3.6-flash';
@@ -30,25 +31,32 @@ interface ProductRow {
 
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') {
-    return optionsResponse();
+    return optionsResponse(req);
   }
 
   if (req.method !== 'POST') {
-    return jsonResponse({ message: 'Metodo nao permitido.' }, 405);
+    return jsonResponse({ message: 'Metodo nao permitido.' }, 405, req);
   }
 
   try {
     const authHeader = req.headers.get('Authorization') || '';
-    await getAuthenticatedUser(authHeader);
+    const user = await getAuthenticatedUser(authHeader);
 
     const body = normalizeRequest(await req.json());
-    const product = await loadProduct(getServiceClient(), body.productId);
+    const serviceClient = getServiceClient();
+    await assertRateLimit(serviceClient, {
+      scope: 'hardware-benchmark-chat',
+      subject: user.id,
+      maxRequests: 12,
+      windowSeconds: 600,
+    });
+    const product = await loadProduct(serviceClient, body.productId);
     const answer = await askGemini(product, body);
 
-    return jsonResponse({ answer });
+    return jsonResponse({ answer }, 200, req);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Nao foi possivel comparar hardware.';
-    return jsonResponse({ message }, 400);
+    return jsonResponse({ message }, 400, req);
   }
 });
 

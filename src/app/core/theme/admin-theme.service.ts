@@ -1,6 +1,7 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Inject, Injectable, PLATFORM_ID, computed, signal } from '@angular/core';
 import { supabase } from '@app/core/supabase/supabase.client';
+import { AuthService } from '@app/core/auth/auth.service';
 import {
   ADMIN_THEME_OPTIONS,
   AdminPersonalization,
@@ -41,6 +42,7 @@ export class AdminThemeService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(PLATFORM_ID) platformId: object,
+    private authService: AuthService,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
     this.restoreCachedPersonalization();
@@ -52,19 +54,19 @@ export class AdminThemeService {
       return;
     }
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session?.user) {
+    this.authService.currentUser$.subscribe(user => {
+      if (!user) {
         this.setPersonalization(DEFAULT_PERSONALIZATION);
         return;
       }
 
-      void this.loadForUser(session.user.id);
+      void this.loadForUser(user.id);
     });
 
-    const { data } = await supabase.auth.getUser();
+    const user = await this.authService.getCurrentUserAsync();
 
-    if (data.user) {
-      await this.loadForUser(data.user.id);
+    if (user) {
+      await this.loadForUser(user.id);
       return;
     }
 
@@ -103,13 +105,8 @@ export class AdminThemeService {
   }
 
   async uploadStoreLogo(file: File): Promise<string> {
-    const { data, error } = await supabase.auth.getUser();
-
-    if (error || !data.user) {
-      throw new Error('Sessao administrativa nao encontrada.');
-    }
-
-    const filePath = `${data.user.id}/${Date.now()}-${this.sanitizeFileName(file.name)}`;
+    const user = await this.authService.requireCurrentUser('Sessao administrativa nao encontrada.');
+    const filePath = `${user.id}/${Date.now()}-${this.sanitizeFileName(file.name)}`;
     const uploadResult = await supabase.storage
       .from('admin-branding')
       .upload(filePath, file, {

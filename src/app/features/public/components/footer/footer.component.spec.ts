@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { AuthService } from '@app/core/auth/auth.service';
+import { of } from 'rxjs';
 
 import { FooterComponent } from './footer.component';
 
@@ -8,7 +11,17 @@ describe('FooterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FooterComponent]
+      imports: [FooterComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: {
+            currentUser$: of(null),
+            getCurrentUserAsync: () => Promise.resolve(null),
+          },
+        },
+      ],
     })
     .compileComponents();
 

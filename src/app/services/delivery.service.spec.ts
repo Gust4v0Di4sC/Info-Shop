@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { TenantContextService } from '@app/core/tenant/tenant-context.service';
+import { AuthService } from '@app/core/auth/auth.service';
 
 import { DeliveryService } from './delivery.service';
 
@@ -17,6 +18,12 @@ describe('DeliveryService', () => {
           useValue: {
             selectedStoreIdRequired$: () => of('store-1'),
             getSelectedStoreId: () => Promise.resolve('store-1'),
+          },
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            requireCurrentUser: () => Promise.resolve({ id: 'user-1' }),
           },
         },
       ],
@@ -39,10 +46,6 @@ describe('DeliveryService', () => {
         error: null,
       }),
     };
-    spyOn(supabase.auth, 'getUser').and.resolveTo({
-      data: { user: { id: 'user-1' } },
-      error: null,
-    } as any);
     spyOn(supabase, 'from').and.returnValue(query);
 
     const deliveries = await firstValueFrom(service.getCurrentUserDeliveries());
