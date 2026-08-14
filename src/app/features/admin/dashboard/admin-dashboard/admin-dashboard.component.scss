@@ -45,7 +45,8 @@
 
 .state-card,
 .panel,
-.metric-card {
+.metric-card,
+.insight-card {
   background: #ffffff;
   border: 1px solid #dfe5ed;
   border-radius: 8px;
@@ -89,6 +90,73 @@
     font-size: 30px;
     font-weight: 950;
   }
+}
+
+.strategy-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.insight-card {
+  display: grid;
+  gap: 8px;
+  min-height: 126px;
+  padding: 18px;
+
+  span {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  strong {
+    color: #202833;
+    font-size: 28px;
+    font-weight: 950;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  small {
+    color: #4f5967;
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.35;
+  }
+}
+
+.insight-card.warning {
+  border-color: #f3c76a;
+
+  strong {
+    color: #9a3412;
+  }
+}
+
+.charts-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.chart-panel {
+  min-height: 386px;
+}
+
+.chart-panel-wide {
+  grid-column: 1 / -1;
+}
+
+.chart-box {
+  height: 292px;
+  position: relative;
+  width: 100%;
+}
+
+.chart-box-donut {
+  height: 300px;
 }
 
 .content-grid {
@@ -201,6 +269,10 @@
   .metrics-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .strategy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 760px) {
@@ -210,7 +282,18 @@
   }
 
   .metrics-grid,
+  .strategy-grid,
+  .charts-grid,
   .content-grid {
     grid-template-columns: 1fr;
+  }
+
+  .chart-panel-wide {
+    grid-column: auto;
+  }
+
+  .chart-box,
+  .chart-box-donut {
+    height: 260px;
   }
 }

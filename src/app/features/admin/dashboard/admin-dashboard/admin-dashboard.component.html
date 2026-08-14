@@ -2,8 +2,8 @@
   <header class="page-header">
     <div>
       <p class="eyebrow">Painel administrativo</p>
-      <h1>Overview da loja</h1>
-      <span>Produtos, pedidos, clientes, estoque e entregas em uma unica visao.</span>
+      <h1>Dashboard gerencial</h1>
+      <span>Vendas, produtos, estoque e operacao em uma unica visao.</span>
     </div>
 
     <button mat-flat-button class="primary-action" type="button" (click)="loadOverview()">
@@ -47,6 +47,134 @@
         <mat-icon>warehouse</mat-icon>
         <span>Unidades em estoque</span>
         <strong>{{ overview.totals.inventoryUnits }}</strong>
+      </article>
+    </div>
+
+    <div class="strategy-grid">
+      <article class="insight-card">
+        <span>Receita registrada</span>
+        <strong>{{ overview.revenue | brlCurrency }}</strong>
+        <small>Pedidos nao cancelados</small>
+      </article>
+
+      <article class="insight-card">
+        <span>Ticket medio</span>
+        <strong>{{ overview.analytics.averageTicket | brlCurrency }}</strong>
+        <small>Baseado em pedidos nao cancelados</small>
+      </article>
+
+      <article class="insight-card">
+        <span>Produto lider</span>
+        @if (topSellingProduct(); as product) {
+          <strong>{{ product.quantitySold }} un.</strong>
+          <small>{{ product.productName }}</small>
+        } @else {
+          <strong>0 un.</strong>
+          <small>Sem vendas no periodo</small>
+        }
+      </article>
+
+      <article class="insight-card warning">
+        <span>Menor saida</span>
+        @if (leastMovingProduct(); as product) {
+          <strong>{{ product.quantitySold }} un.</strong>
+          <small>{{ product.productName }} - {{ product.stockQuantity }} em estoque</small>
+        } @else {
+          <strong>0 un.</strong>
+          <small>Nenhum produto cadastrado</small>
+        }
+      </article>
+    </div>
+
+    <div class="charts-grid">
+      <article class="panel chart-panel chart-panel-wide">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Vendas</p>
+            <h2>Quantidade de vendas por produto</h2>
+          </div>
+          <a routerLink="/orders">Pedidos</a>
+        </div>
+
+        @if (hasChartData(salesByProductData)) {
+          <div class="chart-box">
+            <canvas baseChart [data]="salesByProductData" [options]="salesByProductOptions" [type]="'bar'"></canvas>
+          </div>
+        } @else {
+          <p class="empty-note">Sem vendas registradas para comparar produtos.</p>
+        }
+      </article>
+
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Receita</p>
+            <h2>Evolucao mensal</h2>
+          </div>
+          <a routerLink="/orders">Pedidos</a>
+        </div>
+
+        @if (hasChartData(revenueByMonthData)) {
+          <div class="chart-box">
+            <canvas baseChart [data]="revenueByMonthData" [options]="revenueByMonthOptions" [type]="'line'"></canvas>
+          </div>
+        } @else {
+          <p class="empty-note">Sem receita nos ultimos meses.</p>
+        }
+      </article>
+
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Giro</p>
+            <h2>Produtos com menor saida</h2>
+          </div>
+          <a routerLink="/stock">Estoque</a>
+        </div>
+
+        @if (overview.analytics.slowMovingProducts.length) {
+          <div class="chart-box">
+            <canvas baseChart [data]="slowMovingData" [options]="slowMovingOptions" [type]="'bar'"></canvas>
+          </div>
+        } @else {
+          <p class="empty-note">Nenhum produto cadastrado para analise.</p>
+        }
+      </article>
+
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Pedidos</p>
+            <h2>Status da carteira</h2>
+          </div>
+          <a routerLink="/orders">Pedidos</a>
+        </div>
+
+        @if (hasChartData(ordersByStatusData)) {
+          <div class="chart-box chart-box-donut">
+            <canvas baseChart [data]="ordersByStatusData" [options]="doughnutOptions" [type]="'doughnut'"></canvas>
+          </div>
+        } @else {
+          <p class="empty-note">Nenhum pedido cadastrado.</p>
+        }
+      </article>
+
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Estoque</p>
+            <h2>Unidades por categoria</h2>
+          </div>
+          <a routerLink="/products">Produtos</a>
+        </div>
+
+        @if (hasChartData(inventoryByCategoryData)) {
+          <div class="chart-box chart-box-donut">
+            <canvas baseChart [data]="inventoryByCategoryData" [options]="doughnutOptions" [type]="'doughnut'"></canvas>
+          </div>
+        } @else {
+          <p class="empty-note">Sem estoque cadastrado por categoria.</p>
+        }
       </article>
     </div>
 
@@ -105,7 +233,7 @@
             <p class="eyebrow">Pedidos</p>
             <h2>Recentes</h2>
           </div>
-          <a routerLink="/products">Produtos</a>
+          <a routerLink="/orders">Pedidos</a>
         </div>
 
         <div class="compact-list">
