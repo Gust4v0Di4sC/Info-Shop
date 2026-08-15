@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -13,7 +14,7 @@ import { DisplayTextPipe } from '@app/shared/pipes/display-text.pipe';
 
 @Component({
   selector: 'app-pedidos',
-  imports: [SharedMaterialModule, AdminSectionTabsComponent, DisplayTextPipe, BrlCurrencyPipe],
+  imports: [SharedMaterialModule, AdminSectionTabsComponent, NgOptimizedImage, DisplayTextPipe, BrlCurrencyPipe],
   templateUrl: './pedidos.component.html',
   styleUrl: './pedidos.component.scss',
 })

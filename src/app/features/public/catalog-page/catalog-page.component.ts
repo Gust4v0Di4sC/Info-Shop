@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { combineLatest } from 'rxjs';
 
@@ -24,9 +25,10 @@ const CATEGORIES: CatalogCategory[] = [
 
 @Component({
   selector: 'app-catalog-page',
-  imports: [HeaderComponent, FooterComponent, RouterLink, BrlCurrencyPipe],
+  imports: [HeaderComponent, FooterComponent, NgOptimizedImage, RouterLink, BrlCurrencyPipe],
   templateUrl: './catalog-page.component.html',
   styleUrl: './catalog-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogPageComponent implements OnInit {
   readonly categories = CATEGORIES;
@@ -39,6 +41,7 @@ export class CatalogPageComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly productService: ProductService,
+    private readonly changeDetectorRef: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +50,7 @@ export class CatalogPageComponent implements OnInit {
       this.selectedCategory = this.categories.find(category => category.slug === categorySlug) || null;
       this.searchTerm = (queryParams.get('q') || '').trim();
       this.loadProducts(this.selectedCategory?.slug || null, this.searchTerm);
+      this.changeDetectorRef.markForCheck();
     });
   }
 
@@ -73,15 +77,18 @@ export class CatalogPageComponent implements OnInit {
   private loadProducts(categorySlug: string | null, searchTerm: string): void {
     this.isLoading = true;
     this.errorMessage = '';
+    this.changeDetectorRef.markForCheck();
 
     this.productService.getPublicCatalog(categorySlug, searchTerm).subscribe({
       next: products => {
         this.products = products;
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Nao foi possivel carregar o catalogo.';
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }

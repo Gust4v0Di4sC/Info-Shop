@@ -11,7 +11,13 @@
   } @else if (product) {
     <section class="product-detail">
       <div class="product-gallery">
-        <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name">
+        <img
+          [ngSrc]="product.imageUrl || '/product1.webp'"
+          width="800"
+          height="600"
+          sizes="(max-width: 860px) 100vw, 55vw"
+          priority
+          [alt]="product.name">
       </div>
 
       <div class="product-summary">
@@ -54,7 +60,11 @@
       </div>
     </section>
 
-    <app-hardware-benchmark-chat [product]="product"></app-hardware-benchmark-chat>
+    @defer (on viewport) {
+      <app-hardware-benchmark-chat [product]="product"></app-hardware-benchmark-chat>
+    } @placeholder {
+      <section class="page-state">Carregando comparador...</section>
+    }
   }
 </main>
 

@@ -22,7 +22,12 @@
     <div class="inventory-list">
       @for (product of pagedProducts(); track product.id) {
         <article class="inventory-row">
-          <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name">
+          <img
+            [ngSrc]="product.imageUrl || '/product1.png'"
+            width="96"
+            height="96"
+            sizes="96px"
+            [alt]="product.name">
 
           <div class="product-info">
             <strong>{{ product.name }}</strong>

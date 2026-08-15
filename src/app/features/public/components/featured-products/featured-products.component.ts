@@ -1,17 +1,17 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { gsap } from 'gsap';
 
-import { CartServiceService } from '@app/services/cart-service.service';
 import { Product } from '@app/models/product.model';
 import { ProductService } from '@app/services/product.service';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 
 @Component({
   selector: 'app-featured-products',
-  imports: [BrlCurrencyPipe, RouterLink],
+  imports: [BrlCurrencyPipe, NgOptimizedImage, RouterLink],
   templateUrl: './featured-products.component.html',
   styleUrls: ['./featured-products.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturedProductsComponent implements OnInit {
   products: Product[] = [];
@@ -21,8 +21,9 @@ export class FeaturedProductsComponent implements OnInit {
   @ViewChild('cartIcon', { static: false }) cartIcon!: ElementRef;
 
   constructor(
-    private cartService: CartServiceService,
     private productService: ProductService,
+    private changeDetectorRef: ChangeDetectorRef,
+    private injector: Injector,
   ) {}
 
   ngOnInit(): void {
@@ -30,10 +31,12 @@ export class FeaturedProductsComponent implements OnInit {
       next: products => {
         this.products = products;
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Nao foi possivel carregar os produtos.';
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }
@@ -43,22 +46,17 @@ export class FeaturedProductsComponent implements OnInit {
     event.stopPropagation();
     const sourceElement = event.currentTarget as HTMLElement;
 
-    this.cartService.addProduct(product.id).subscribe({
-      next: () => {
-        this.animateToCart(sourceElement);
-      },
-      error: () => {
-        this.errorMessage = 'Entre na sua conta para adicionar produtos ao carrinho.';
-      },
-    });
+    void this.addProductToCart(product, sourceElement);
   }
 
-  animateToCart(sourceElement: HTMLElement): void {
+  async animateToCart(sourceElement: HTMLElement): Promise<void> {
     const cartTopElement = document.querySelector<HTMLElement>('.cart-btn');
 
     if (!cartTopElement) {
       return;
     }
+
+    const { gsap } = await import('gsap');
 
     const start = sourceElement.getBoundingClientRect();
     const end = cartTopElement.getBoundingClientRect();
@@ -98,5 +96,19 @@ export class FeaturedProductsComponent implements OnInit {
         clearProps: 'transform',
       },
     );
+  }
+
+  private async addProductToCart(product: Product, sourceElement: HTMLElement): Promise<void> {
+    const { CartServiceService } = await import('@app/services/cart-service.service');
+
+    this.injector.get(CartServiceService).addProduct(product.id).subscribe({
+      next: () => {
+        void this.animateToCart(sourceElement);
+      },
+      error: () => {
+        this.errorMessage = 'Entre na sua conta para adicionar produtos ao carrinho.';
+        this.changeDetectorRef.markForCheck();
+      },
+    });
   }
 }

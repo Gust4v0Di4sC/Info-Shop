@@ -1,7 +1,13 @@
 <footer class="footer-container">
   <div class="footer-content">
     <section class="footer-section logo-section">
-      <img [src]="themeService.footerLogoUrl()" alt="InfoShop Logo" class="logo-image">
+      <img
+        [ngSrc]="themeService.footerLogoUrl()"
+        width="180"
+        height="60"
+        sizes="180px"
+        alt="InfoShop Logo"
+        class="logo-image">
       <p>
         Tecnologia confiavel, entrega rapida e garantia de 12 meses em todos os
         produtos.

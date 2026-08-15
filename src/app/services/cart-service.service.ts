@@ -90,7 +90,7 @@ export class CartServiceService {
     const userId = await this.getUserId();
     const cartResult = await supabase
       .from('cart_items')
-      .select('*')
+      .select('id, user_id, product_id, quantity, created_at, updated_at')
       .eq('user_id', userId)
       .order('created_at', { ascending: true });
 
@@ -104,7 +104,7 @@ export class CartServiceService {
 
     const productsResult = await supabase
       .from('products')
-      .select('*')
+      .select('id, name, model, description, "imageUrl", price, offer_price')
       .in('id', productIds.map(productId => Number(productId)));
 
     const products = getSupabaseList(productsResult);
@@ -137,7 +137,7 @@ export class CartServiceService {
 
     const existingResult = await supabase
       .from('cart_items')
-      .select('*')
+      .select('id, quantity')
       .eq('user_id', userId)
       .eq('product_id', normalizedProductId)
       .maybeSingle();

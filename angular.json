@@ -20,7 +20,7 @@
             "outputPath": "dist/info-shop-angular",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "server": "src/server.ts",
+            "server": "src/main.server.ts",
             "ssr": {
               "entry": "src/server.ts"
             },
@@ -35,6 +35,7 @@
                 "input": "public"
               }
             ],
+            "serviceWorker": "ngsw-config.json",
             "styles": [
               "src/styles.scss"
             ],

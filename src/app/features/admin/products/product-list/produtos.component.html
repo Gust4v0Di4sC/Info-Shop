@@ -30,7 +30,12 @@
       @for (product of pagedProducts(); track product.id) {
         <article class="product-card">
           <button class="product-media" type="button" (click)="openEditForm(product)">
-            <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name | displayText: 'Produto'">
+            <img
+              [ngSrc]="product.imageUrl || '/product1.png'"
+              width="317"
+              height="238"
+              sizes="(max-width: 900px) 100vw, 33vw"
+              [alt]="product.name | displayText: 'Produto'">
             <span class="status-pill">{{ stockStatus(product) }}</span>
           </button>
 

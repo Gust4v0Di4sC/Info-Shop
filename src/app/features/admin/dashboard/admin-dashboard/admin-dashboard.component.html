@@ -190,7 +190,12 @@
 
         @if (overview.activeOffer) {
           <div class="offer-card">
-            <img [src]="overview.activeOffer.imageUrl || '/productCTA.png'" [alt]="overview.activeOffer.name">
+            <img
+              [ngSrc]="overview.activeOffer.imageUrl || '/productCTA.png'"
+              width="120"
+              height="90"
+              sizes="120px"
+              [alt]="overview.activeOffer.name">
             <div>
               <strong>{{ overview.activeOffer.name }}</strong>
               <span>{{ overview.activeOffer.offer_badge }}</span>

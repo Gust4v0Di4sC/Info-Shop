@@ -100,6 +100,8 @@
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 430px;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 

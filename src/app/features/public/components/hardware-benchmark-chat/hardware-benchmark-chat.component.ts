@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -13,12 +13,14 @@ import { HardwareBenchmarkService } from '@app/services/hardware-benchmark.servi
   imports: [ReactiveFormsModule],
   templateUrl: './hardware-benchmark-chat.component.html',
   styleUrl: './hardware-benchmark-chat.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HardwareBenchmarkChatComponent implements OnInit {
   @Input({ required: true }) product!: Product;
 
   private readonly authService = inject(AuthService);
   private readonly benchmarkService = inject(HardwareBenchmarkService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
 
@@ -44,6 +46,7 @@ export class HardwareBenchmarkChatComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(user => {
         this.isAuthenticated = Boolean(user);
+        this.changeDetectorRef.markForCheck();
       });
   }
 
@@ -92,11 +95,13 @@ export class HardwareBenchmarkChatComponent implements OnInit {
         const answer = response.answer?.trim() || this.fallbackAnswer;
         this.messages = [...this.messages, { role: 'model', text: answer }];
         this.isSending = false;
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Nao foi possivel consultar a IA agora.';
         this.messages = [...this.messages, { role: 'model', text: this.fallbackAnswer }];
         this.isSending = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }

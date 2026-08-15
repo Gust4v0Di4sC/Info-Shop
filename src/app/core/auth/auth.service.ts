@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { BehaviorSubject, catchError, firstValueFrom, from, map, of, tap } from 'rxjs';
-import { supabase } from '@app/core/supabase/supabase.client';
 import { Admin, ADMIN_DEFAULT_ROUTE, AdminRole, normalizeAdminRole } from '@app/models/admin.model';
 
 interface AuthUserResponse {
@@ -19,16 +19,23 @@ interface AuthRegisterResponse extends AuthUserResponse {
 })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<SupabaseUser | null>(null);
+  private readonly isBrowser: boolean;
   currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
     private http: HttpClient,
     private router: Router,
+    @Inject(PLATFORM_ID) platformId: object,
   ) {
-    void this.loadUserFromSession();
+    this.isBrowser = isPlatformBrowser(platformId);
   }
 
   async loadUserFromSession(): Promise<SupabaseUser | null> {
+    if (!this.isBrowser) {
+      this.currentUserSubject.next(null);
+      return null;
+    }
+
     try {
       const response = await firstValueFrom(
         this.http.get<AuthUserResponse>('/api/auth/session', { withCredentials: true }),
@@ -208,6 +215,7 @@ export class AuthService {
       return null;
     }
 
+    const { supabase } = await import('@app/core/supabase/supabase.client');
     const { data, error } = await supabase
       .from('admins')
       .select('*')

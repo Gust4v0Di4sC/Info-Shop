@@ -24,7 +24,17 @@ describe('AuthService', () => {
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
-    httpMock.expectOne('/api/auth/session').flush({ user: null });
+  });
+
+  it('should load the current user only when session loading is requested', async () => {
+    const resultPromise = service.loadUserFromSession();
+    const request = httpMock.expectOne('/api/auth/session');
+
+    expect(request.request.method).toBe('GET');
+    expect(request.request.withCredentials).toBeTrue();
+
+    request.flush({ user: null });
+    await expectAsync(resultPromise).toBeResolvedTo(null);
   });
 
   afterEach(() => {

@@ -31,7 +31,12 @@
           @for (item of items; track item.id) {
             <article class="cart-item">
               <a [routerLink]="['/produto', item.product_id]" class="item-media">
-                <img [src]="item.product?.imageUrl || '/product1.png'" [alt]="item.product?.name || 'Produto'">
+                <img
+                  [ngSrc]="item.product?.imageUrl || '/product1.webp'"
+                  width="317"
+                  height="346"
+                  sizes="96px"
+                  [alt]="item.product?.name || 'Produto'">
               </a>
 
               <div class="item-info">

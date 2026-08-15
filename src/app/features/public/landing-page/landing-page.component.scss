@@ -2,6 +2,15 @@
   font-family: "Roboto Flex", sans-serif;
 }
 
+.defer-anchor {
+  min-height: 1px;
+}
+
+.ai-benchmark-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+
 .ai-benchmark-section {
   background: #f6f8fb;
   padding: 70px 0;

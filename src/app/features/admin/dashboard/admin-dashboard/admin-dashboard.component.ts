@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ChartData, ChartOptions } from 'chart.js';
-import { BaseChartDirective } from 'ng2-charts';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import {
   AdminDashboardService,
   AdminOverview,
@@ -14,9 +15,11 @@ import { DELIVERY_STATUS_LABELS } from '@app/models/delivery.model';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [SharedMaterialModule, RouterLink, BrlCurrencyPipe, BaseChartDirective],
+  imports: [SharedMaterialModule, RouterLink, NgOptimizedImage, BrlCurrencyPipe, BaseChartDirective],
+  providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './admin-dashboard.component.html',
-  styleUrl: './admin-dashboard.component.scss'
+  styleUrl: './admin-dashboard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminDashboardComponent implements OnInit {
   overview: AdminOverview | null = null;
@@ -137,7 +140,10 @@ export class AdminDashboardComponent implements OnInit {
 
   private readonly chartColors = ['#0f62cf', '#00a88f', '#f59e0b', '#ef4444', '#7c3aed', '#475569', '#14b8a6', '#f97316'];
 
-  constructor(private dashboardService: AdminDashboardService) {}
+  constructor(
+    private dashboardService: AdminDashboardService,
+    private changeDetectorRef: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.loadOverview();
@@ -152,10 +158,12 @@ export class AdminDashboardComponent implements OnInit {
         this.overview = overview;
         this.buildChartData(overview);
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Nao foi possivel carregar o painel agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }

@@ -74,7 +74,12 @@
             <strong>{{ (offerForm.value.offerPrice || product.price) | brlCurrency }}</strong>
             <small>{{ offerForm.value.offerSoldPercent }}% do estoque promocional vendido</small>
           </div>
-          <img [src]="product.imageUrl || '/productCTA.png'" [alt]="product.name">
+          <img
+            [ngSrc]="product.imageUrl || '/productCTA.png'"
+            width="655"
+            height="368"
+            sizes="(max-width: 900px) 100vw, 50vw"
+            [alt]="product.name">
         } @else {
           <p class="empty-note">Selecione um produto para visualizar a faixa promocional.</p>
         }
@@ -92,7 +97,12 @@
       <div class="featured-grid">
         @for (product of pagedProducts(); track product.id) {
           <article class="featured-card">
-            <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name">
+            <img
+              [ngSrc]="product.imageUrl || '/product1.png'"
+              width="120"
+              height="90"
+              sizes="120px"
+              [alt]="product.name">
             <div>
               <strong>{{ product.name }}</strong>
               <span>{{ product.price | brlCurrency }}</span>

@@ -30,7 +30,12 @@
       </div>
 
       <div class="offer-media">
-        <img [src]="product.imageUrl || '/productCTA.png'" [alt]="product.name">
+        <img
+          [ngSrc]="product.imageUrl || '/productCTA.webp'"
+          width="655"
+          height="368"
+          sizes="(max-width: 900px) 100vw, 50vw"
+          [alt]="product.name">
       </div>
     </div>
   </section>

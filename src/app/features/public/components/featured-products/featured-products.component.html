@@ -23,7 +23,12 @@
         <article class="product-card">
           <a class="product-media" [routerLink]="['/produto', product.id]">
             <span class="product-badge">Destaque</span>
-            <img [src]="product.imageUrl || '/product1.png'" alt="{{ product.name }}">
+            <img
+              [ngSrc]="product.imageUrl || '/product1.webp'"
+              width="317"
+              height="238"
+              sizes="(max-width: 620px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              [alt]="product.name">
           </a>
 
           <div class="product-info">

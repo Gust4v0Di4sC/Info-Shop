@@ -1,7 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Inject, Injectable, PLATFORM_ID, computed, signal } from '@angular/core';
-import { supabase } from '@app/core/supabase/supabase.client';
-import { AuthService } from '@app/core/auth/auth.service';
+import { Inject, Injectable, Injector, PLATFORM_ID, computed, signal } from '@angular/core';
 import {
   ADMIN_THEME_OPTIONS,
   AdminPersonalization,
@@ -42,7 +40,7 @@ export class AdminThemeService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(PLATFORM_ID) platformId: object,
-    private authService: AuthService,
+    private injector: Injector,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
     this.restoreCachedPersonalization();
@@ -54,7 +52,9 @@ export class AdminThemeService {
       return;
     }
 
-    this.authService.currentUser$.subscribe(user => {
+    const authService = await this.authService();
+
+    authService.currentUser$.subscribe(user => {
       if (!user) {
         this.setPersonalization(DEFAULT_PERSONALIZATION);
         return;
@@ -63,7 +63,7 @@ export class AdminThemeService {
       void this.loadForUser(user.id);
     });
 
-    const user = await this.authService.getCurrentUserAsync();
+    const user = await authService.getCurrentUserAsync();
 
     if (user) {
       await this.loadForUser(user.id);
@@ -89,6 +89,7 @@ export class AdminThemeService {
       storeLogoUrl: this.normalizeLogoUrl(storeLogoUrl),
     };
 
+    const { supabase } = await import('@app/core/supabase/supabase.client');
     const { data, error } = await supabase.rpc('update_admin_personalization', {
       theme_id_value: nextPersonalization.themeId,
       store_logo_url_value: nextPersonalization.storeLogoUrl ?? '',
@@ -105,8 +106,10 @@ export class AdminThemeService {
   }
 
   async uploadStoreLogo(file: File): Promise<string> {
-    const user = await this.authService.requireCurrentUser('Sessao administrativa nao encontrada.');
+    const authService = await this.authService();
+    const user = await authService.requireCurrentUser('Sessao administrativa nao encontrada.');
     const filePath = `${user.id}/${Date.now()}-${this.sanitizeFileName(file.name)}`;
+    const { supabase } = await import('@app/core/supabase/supabase.client');
     const uploadResult = await supabase.storage
       .from('admin-branding')
       .upload(filePath, file, {
@@ -122,6 +125,7 @@ export class AdminThemeService {
   }
 
   private async loadForUser(userId: string): Promise<void> {
+    const { supabase } = await import('@app/core/supabase/supabase.client');
     const { data, error } = await supabase
       .from('admins')
       .select('theme_id, store_logo_url')
@@ -203,5 +207,10 @@ export class AdminThemeService {
       .replace(/[^a-zA-Z0-9._-]/g, '-')
       .replace(/-+/g, '-')
       .toLowerCase();
+  }
+
+  private async authService() {
+    const { AuthService } = await import('@app/core/auth/auth.service');
+    return this.injector.get(AuthService);
   }
 }

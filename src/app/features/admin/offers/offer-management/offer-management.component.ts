@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,7 +12,7 @@ import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-offer-management',
-  imports: [SharedMaterialModule, ReactiveFormsModule, AdminSectionTabsComponent, BrlCurrencyPipe],
+  imports: [SharedMaterialModule, ReactiveFormsModule, AdminSectionTabsComponent, NgOptimizedImage, BrlCurrencyPipe],
   templateUrl: './offer-management.component.html',
   styleUrl: './offer-management.component.scss'
 })

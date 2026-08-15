@@ -5,7 +5,13 @@
 
   <div class="main-header">
     <a class="brand" routerLink="/">
-      <img [src]="themeService.publicLogoUrl()" alt="InfoShop Logo" class="logo-image">
+      <img
+        [ngSrc]="themeService.publicLogoUrl()"
+        width="180"
+        height="60"
+        sizes="180px"
+        alt="InfoShop Logo"
+        class="logo-image">
     </a>
 
     <nav class="navigation" aria-label="Navegacao principal">

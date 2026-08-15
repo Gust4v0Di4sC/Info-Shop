@@ -57,7 +57,7 @@ export class PublicGuard implements CanActivate {
   ) {}
 
   async canActivate(): Promise<boolean> {
-    const user = await this.authService.getCurrentUserAsync();
+    const user = this.authService.getCurrentUser();
 
     if (!user) {
       return true;

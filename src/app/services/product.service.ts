@@ -1,30 +1,35 @@
-import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Inject, Injectable, Injector, Optional, REQUEST } from '@angular/core';
 import { from, map, Observable, switchMap } from 'rxjs';
 import { Product } from '@app/models/product.model';
-import { supabase } from '@app/core/supabase/supabase.client';
-import { getSupabaseData, getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
-import { TenantContextService } from '@app/core/tenant/tenant-context.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  constructor(private tenantContext: TenantContextService) {}
+  private readonly publicProductsUrl = '/api/public/products';
+
+  constructor(
+    private http: HttpClient,
+    private injector: Injector,
+    @Optional() @Inject(REQUEST) private request: Request | null,
+  ) {}
 
   /**
    * Busca produtos por nome ou modelo usando Supabase
    */
   searchProducts(term: string): Observable<Product[]> {
-    return this.tenantContext.selectedStoreIdRequired$().pipe(
-      switchMap(storeId => from(
-        supabase
-          .from('products')
-          .select('*')
-          .eq('store_id', storeId)
-          .or(`name.ilike.%${term}%,model.ilike.%${term}%`),
+    return from(this.adminDependencies()).pipe(
+      switchMap(({ tenantContext, supabase, getSupabaseList }) => tenantContext.selectedStoreIdRequired$().pipe(
+        switchMap(storeId => from(
+          supabase
+            .from('products')
+            .select('*')
+            .eq('store_id', storeId)
+            .or(`name.ilike.%${term}%,model.ilike.%${term}%`),
+        )),
+        map(getSupabaseList),
       )),
-      map(getSupabaseList),
-    ).pipe(
       map(products => products.filter(p => p.name && p.price != null && p.cost != null)),
     );
   }
@@ -33,119 +38,93 @@ export class ProductService {
    * Lista todos os produtos
    */
   getProducts(): Observable<Product[]> {
-    return this.tenantContext.selectedStoreIdRequired$().pipe(
-      switchMap(storeId => from(
-        supabase
-          .from('products')
-          .select('*')
-          .eq('store_id', storeId),
+    return from(this.adminDependencies()).pipe(
+      switchMap(({ tenantContext, supabase, getSupabaseList }) => tenantContext.selectedStoreIdRequired$().pipe(
+        switchMap(storeId => from(
+          supabase
+            .from('products')
+            .select('*')
+            .eq('store_id', storeId),
+        )),
+        map(result =>
+          getSupabaseList(result).filter(p => p.name && p.price != null && p.cost != null)
+        ),
       )),
-      map(result =>
-        getSupabaseList(result).filter(p => p.name && p.price != null && p.cost != null)
-      ),
+    );
+  }
+
+  deleteProduct(id: string | number): Observable<void> {
+    return from(this.adminDependencies()).pipe(
+      switchMap(({ tenantContext, supabase, throwSupabaseError }) => tenantContext.selectedStoreIdRequired$().pipe(
+        switchMap(storeId => from(
+          supabase
+            .from('products')
+            .delete()
+            .eq('id', Number(id))
+            .eq('store_id', storeId),
+        )),
+        map(throwSupabaseError),
+        map(() => undefined),
+      )),
     );
   }
 
   getFeaturedProducts(limit = 4): Observable<Product[]> {
-    return from(
-      supabase
-        .from('products')
-        .select('*')
-        .order('is_featured', { ascending: false })
-        .order('created_at', { ascending: false })
-        .limit(limit)
-    ).pipe(
-      map(getSupabaseList)
-    );
+    const params = new HttpParams()
+      .set('featured', 'true')
+      .set('limit', String(limit));
+
+    return this.http.get<Product[]>(this.publicProductsEndpoint(), { params });
   }
 
   getPublicCatalog(category?: string | null, searchTerm = ''): Observable<Product[]> {
-    const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase('pt-BR');
-    let query = supabase
-      .from('products')
-      .select('*')
-      .order('is_featured', { ascending: false })
-      .order('created_at', { ascending: false });
+    let params = new HttpParams().set('limit', '24');
+    const query = searchTerm.trim();
 
     if (category) {
-      query = query.eq('category', category);
+      params = params.set('category', category);
     }
 
-    return from(query).pipe(
-      map(getSupabaseList),
-      map(products => products.filter(product => product.name && product.price != null)),
-      map(products => {
-        if (!normalizedSearchTerm) {
-          return products;
-        }
+    if (query) {
+      params = params.set('q', query);
+    }
 
-        return products.filter(product => {
-          const searchableText = [
-            product.name,
-            product.model,
-            product.description,
-            product.category,
-          ]
-            .filter(Boolean)
-            .join(' ')
-            .toLocaleLowerCase('pt-BR');
-
-          return searchableText.includes(normalizedSearchTerm);
-        });
-      }),
-    );
+    return this.http.get<Product[]>(this.publicProductsEndpoint(), { params });
   }
 
   getOfferProduct(): Observable<Product | null> {
-    return from(
-      supabase
-        .from('products')
-        .select('*')
-        .eq('is_offer', true)
-        .order('updated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
-    ).pipe(
-      map(({ data, error }) => {
-        if (error) {
-          throw error;
-        }
-
-        return data;
-      }),
-    );
+    return this.http.get<Product | null>(this.publicProductsEndpoint('/offer'));
   }
 
   /**
    * Busca um produto por ID
    */
   getProduct(id: string | number): Observable<Product> {
-    return from(
-      supabase
-        .from('products')
-        .select('*')
-        .eq('id', Number(id))
-        .single()
-    ).pipe(
-      map(getSupabaseData)
-    );
+    return this.http.get<Product>(this.publicProductsEndpoint(`/${encodeURIComponent(String(id))}`));
   }
 
-  /**
-   * Deleta um produto por ID
-   */
-  deleteProduct(id: string | number): Observable<void> {
-    return this.tenantContext.selectedStoreIdRequired$().pipe(
-      switchMap(storeId => from(
-        supabase
-          .from('products')
-          .delete()
-          .eq('id', Number(id))
-          .eq('store_id', storeId),
-      )),
-      map(throwSupabaseError),
-    ).pipe(
-      map(() => undefined),
-    );
+  private publicProductsEndpoint(path = ''): string {
+    const endpoint = `${this.publicProductsUrl}${path}`;
+
+    return this.request ? new URL(endpoint, this.request.url).toString() : endpoint;
+  }
+
+  private async adminDependencies() {
+    const [
+      { supabase },
+      { getSupabaseList, throwSupabaseError },
+      { TenantContextService },
+    ] = await Promise.all([
+      import('@app/core/supabase/supabase.client'),
+      import('@app/core/supabase/supabase-response'),
+      import('@app/core/tenant/tenant-context.service'),
+    ]);
+
+    return {
+      supabase,
+      getSupabaseList,
+      throwSupabaseError,
+      tenantContext: this.injector.get(TenantContextService),
+    };
   }
 }

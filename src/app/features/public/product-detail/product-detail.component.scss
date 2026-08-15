@@ -1,6 +1,6 @@
 .product-page {
   background: #f6f8fb;
-  font-family: "Roboto Flex", Roboto, sans-serif;
+  font-family: Arial, "Helvetica Neue", sans-serif;
   min-height: 70vh;
   padding: 54px 24px 72px;
 }
@@ -231,6 +231,10 @@ h1 {
 @media (max-width: 860px) {
   .product-detail {
     grid-template-columns: 1fr;
+  }
+
+  .product-summary {
+    order: -1;
   }
 
   h1,

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HeaderComponent } from '@app/features/public/components/header/header.component';
@@ -11,9 +12,10 @@ import { PaymentService } from '@app/services/payment.service';
 
 @Component({
   selector: 'app-cart-page',
-  imports: [HeaderComponent, FooterComponent, BrlCurrencyPipe, RouterLink, ReactiveFormsModule],
+  imports: [HeaderComponent, FooterComponent, NgOptimizedImage, BrlCurrencyPipe, RouterLink, ReactiveFormsModule],
   templateUrl: './cart-page.component.html',
-  styleUrl: './cart-page.component.scss'
+  styleUrl: './cart-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CartPageComponent implements OnInit {
   shippingForm: FormGroup;
@@ -31,6 +33,7 @@ export class CartPageComponent implements OnInit {
     private cartService: CartServiceService,
     private paymentService: PaymentService,
     private fb: FormBuilder,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.shippingForm = this.fb.group({
       postalCode: ['', [Validators.required, Validators.minLength(8)]],
@@ -69,15 +72,18 @@ export class CartPageComponent implements OnInit {
     this.isLoading = true;
     this.pageErrorMessage = '';
     this.actionErrorMessage = '';
+    this.changeDetectorRef.markForCheck();
 
     this.cartService.getCartItems().subscribe({
       next: items => {
         this.items = items;
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.pageErrorMessage = 'Nao foi possivel carregar seu carrinho agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }
@@ -88,6 +94,7 @@ export class CartPageComponent implements OnInit {
       next: () => this.loadCart(),
       error: () => {
         this.actionErrorMessage = 'Nao foi possivel atualizar este item agora. Tente novamente.';
+        this.changeDetectorRef.markForCheck();
       },
     });
   }
@@ -98,6 +105,7 @@ export class CartPageComponent implements OnInit {
       next: () => this.loadCart(),
       error: () => {
         this.actionErrorMessage = 'Nao foi possivel remover este item agora. Tente novamente.';
+        this.changeDetectorRef.markForCheck();
       },
     });
   }
@@ -111,9 +119,11 @@ export class CartPageComponent implements OnInit {
         this.selectedServiceId = '';
         this.actionErrorMessage = '';
         this.feedbackMessage = 'Carrinho limpo.';
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.actionErrorMessage = 'Nao foi possivel limpar o carrinho agora. Tente novamente.';
+        this.changeDetectorRef.markForCheck();
       },
     });
   }
@@ -129,6 +139,7 @@ export class CartPageComponent implements OnInit {
     this.feedbackMessage = '';
     this.shippingQuotes = [];
     this.selectedServiceId = '';
+    this.changeDetectorRef.markForCheck();
 
     this.cartService.calculateShipping(this.deliveryAddress()).subscribe({
       next: quotes => {
@@ -138,12 +149,14 @@ export class CartPageComponent implements OnInit {
         if (quotes.length === 0) {
           this.actionErrorMessage = 'Nao encontramos frete disponivel para este endereco.';
         }
+        this.changeDetectorRef.markForCheck();
       },
       error: error => {
         this.actionErrorMessage = error instanceof Error && error.message
           ? error.message
           : 'Nao foi possivel calcular o frete agora. Confira o endereco e tente novamente.';
         this.isQuoting = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }
@@ -164,10 +177,12 @@ export class CartPageComponent implements OnInit {
       next: result => {
         this.redirectToPayment(result.initPoint);
         this.isCheckingOut = false;
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.actionErrorMessage = 'Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.';
         this.isCheckingOut = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }

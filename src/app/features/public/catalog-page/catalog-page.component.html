@@ -35,13 +35,28 @@
     <section class="catalog-state">{{ emptyMessage() }}</section>
   } @else {
     <section class="products-grid" aria-label="Produtos do catalogo">
-      @for (product of products; track product.id) {
+      @for (product of products; track product.id; let index = $index) {
         <article class="product-card">
           <a class="product-media" [routerLink]="['/produto', product.id]">
             @if (product.is_featured) {
               <span class="product-badge">Destaque</span>
             }
-            <img [src]="product.imageUrl || '/product1.png'" [alt]="product.name">
+            @if (index === 0) {
+              <img
+                [ngSrc]="product.imageUrl || '/product1.webp'"
+                width="317"
+                height="238"
+                sizes="(max-width: 620px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                priority
+                [alt]="product.name">
+            } @else {
+              <img
+                [ngSrc]="product.imageUrl || '/product1.webp'"
+                width="317"
+                height="238"
+                sizes="(max-width: 620px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                [alt]="product.name">
+            }
           </a>
 
           <div class="product-info">

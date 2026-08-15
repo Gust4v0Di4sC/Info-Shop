@@ -1,16 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { gsap } from 'gsap';
 import { Product } from '@app/models/product.model';
-import { CartServiceService } from '@app/services/cart-service.service';
 import { ProductService } from '@app/services/product.service';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 
 @Component({
   selector: 'app-special-offer',
-  imports: [BrlCurrencyPipe, RouterLink],
+  imports: [BrlCurrencyPipe, NgOptimizedImage, RouterLink],
   templateUrl: './special-offer.component.html',
-  styleUrls: ['./special-offer.component.scss']
+  styleUrls: ['./special-offer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpecialOfferComponent implements OnInit, OnDestroy {
   countdown: string = '';
@@ -21,7 +21,8 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
 
   constructor(
     private productService: ProductService,
-    private cartService: CartServiceService,
+    private changeDetectorRef: ChangeDetectorRef,
+    private injector: Injector,
   ) {}
 
   ngOnInit(): void {
@@ -38,10 +39,13 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
           this.updateCountdown(targetTime);
           this.intervalId = setInterval(() => this.updateCountdown(targetTime), 1000);
         }
+
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Nao foi possivel carregar a oferta.';
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }
@@ -53,6 +57,7 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
     if (distance <= 0) {
       this.countdown = "00:00:00";
       clearInterval(this.intervalId);
+      this.changeDetectorRef.markForCheck();
       return;
     }
 
@@ -60,6 +65,7 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
     this.countdown = `00:${this.pad(minutes)}:${this.pad(seconds)}`;
+    this.changeDetectorRef.markForCheck();
   }
 
   pad(num: number): string {
@@ -77,12 +83,7 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
 
     const sourceElement = event.currentTarget as HTMLElement;
 
-    this.cartService.addProduct(this.product.id).subscribe({
-      next: () => this.animateToCart(sourceElement),
-      error: () => {
-        this.errorMessage = 'Entre na sua conta para adicionar produtos ao carrinho.';
-      },
-    });
+    void this.addProductToCart(this.product, sourceElement);
   }
 
   offerPrice(): number {
@@ -97,12 +98,14 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
     return Math.max(0, Number(this.product.price || 0) - this.product.offer_price);
   }
 
-  private animateToCart(sourceElement: HTMLElement): void {
+  private async animateToCart(sourceElement: HTMLElement): Promise<void> {
     const cartTopElement = document.querySelector<HTMLElement>('.cart-btn');
 
     if (!cartTopElement) {
       return;
     }
+
+    const { gsap } = await import('gsap');
 
     const start = sourceElement.getBoundingClientRect();
     const end = cartTopElement.getBoundingClientRect();
@@ -142,5 +145,17 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
         clearProps: 'transform',
       },
     );
+  }
+
+  private async addProductToCart(product: Product, sourceElement: HTMLElement): Promise<void> {
+    const { CartServiceService } = await import('@app/services/cart-service.service');
+
+    this.injector.get(CartServiceService).addProduct(product.id).subscribe({
+      next: () => void this.animateToCart(sourceElement),
+      error: () => {
+        this.errorMessage = 'Entre na sua conta para adicionar produtos ao carrinho.';
+        this.changeDetectorRef.markForCheck();
+      },
+    });
   }
 }

@@ -3,7 +3,11 @@
     <app-hero></app-hero>
     <app-categories></app-categories>
     <app-featured-products></app-featured-products>
-    <app-special-offer></app-special-offer>
+    @defer (on viewport) {
+        <app-special-offer></app-special-offer>
+    } @placeholder {
+        <div class="defer-anchor" aria-hidden="true"></div>
+    }
     <section class="ai-benchmark-section" aria-labelledby="ai-benchmark-title">
         <div class="ai-benchmark-container">
             <div class="ai-benchmark-copy">
@@ -29,6 +33,10 @@
             </a>
         </div>
     </section>
-    <app-contact></app-contact>
-    <app-footer></app-footer>
+    @defer (on viewport) {
+        <app-contact></app-contact>
+        <app-footer></app-footer>
+    } @placeholder {
+        <div class="defer-anchor" aria-hidden="true"></div>
+    }
 </div>

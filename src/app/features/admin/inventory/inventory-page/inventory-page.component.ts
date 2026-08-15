@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,7 +12,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-inventory-page',
-  imports: [SharedMaterialModule, ReactiveFormsModule, AdminSectionTabsComponent],
+  imports: [SharedMaterialModule, ReactiveFormsModule, AdminSectionTabsComponent, NgOptimizedImage],
   templateUrl: './inventory-page.component.html',
   styleUrl: './inventory-page.component.scss'
 })

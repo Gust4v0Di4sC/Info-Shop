@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { NewsletterService } from '@app/services/newsletter.service';
@@ -7,7 +7,8 @@ import { NewsletterService } from '@app/services/newsletter.service';
   selector: 'app-contact',
   imports: [ReactiveFormsModule],
   templateUrl: './contact.component.html',
-  styleUrl: './contact.component.scss'
+  styleUrl: './contact.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactComponent {
   newsletterForm: FormGroup;
@@ -18,6 +19,7 @@ export class ContactComponent {
   constructor(
     private readonly fb: FormBuilder,
     private readonly newsletterService: NewsletterService,
+    private readonly changeDetectorRef: ChangeDetectorRef,
   ) {
     this.newsletterForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -41,10 +43,12 @@ export class ContactComponent {
         this.feedbackMessage = 'Inscricao realizada. Voce recebera nossas ofertas por e-mail.';
         this.newsletterForm.reset();
         this.isSubmitting = false;
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Nao foi possivel concluir sua inscricao agora. Tente novamente em alguns instantes.';
         this.isSubmitting = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }

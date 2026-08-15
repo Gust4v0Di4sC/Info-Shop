@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
@@ -16,7 +17,7 @@ import { ProdutoFormComponent } from '@app/features/admin/products/product-form/
 
 @Component({
   selector: 'app-produtos',
-  imports: [SharedMaterialModule, ReactiveFormsModule, AdminSectionTabsComponent, BrlCurrencyPipe, DisplayTextPipe],
+  imports: [SharedMaterialModule, ReactiveFormsModule, AdminSectionTabsComponent, NgOptimizedImage, BrlCurrencyPipe, DisplayTextPipe],
   templateUrl: './produtos.component.html',
   styleUrl: './produtos.component.scss',
 })
