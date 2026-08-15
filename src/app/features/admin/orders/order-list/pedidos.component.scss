@@ -175,4 +175,13 @@
   .order-metrics {
     grid-template-columns: 1fr;
   }
+
+  .primary-action {
+    width: 100%;
+  }
+
+  :host ::ng-deep mat-paginator .mat-mdc-paginator-container {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }

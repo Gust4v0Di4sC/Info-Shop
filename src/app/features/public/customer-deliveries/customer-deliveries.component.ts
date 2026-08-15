@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { HeaderComponent } from '@app/features/public/components/header/header.component';
-import { FooterComponent } from '@app/features/public/components/footer/footer.component';
 import { Delivery, DELIVERY_STATUS_LABELS } from '@app/models/delivery.model';
 import { DeliveryService } from '@app/services/delivery.service';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 
 @Component({
   selector: 'app-customer-deliveries',
-  imports: [HeaderComponent, FooterComponent, RouterLink, BrlCurrencyPipe],
+  imports: [RouterLink, BrlCurrencyPipe],
   templateUrl: './customer-deliveries.component.html',
   styleUrl: './customer-deliveries.component.scss',
 })

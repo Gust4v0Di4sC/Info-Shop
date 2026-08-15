@@ -105,7 +105,7 @@
 .clients-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
 }
 
 .client-card {
@@ -202,5 +202,14 @@
   .search-field {
     min-width: 0;
     width: 100%;
+  }
+
+  .primary-action {
+    width: 100%;
+  }
+
+  :host ::ng-deep mat-paginator .mat-mdc-paginator-container {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

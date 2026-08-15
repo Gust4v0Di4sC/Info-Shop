@@ -1,11 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { FooterComponent } from '@app/features/public/components/footer/footer.component';
-import { HeaderComponent } from '@app/features/public/components/header/header.component';
 
 @Component({
   selector: 'app-payment-return',
-  imports: [HeaderComponent, FooterComponent, RouterLink],
+  imports: [RouterLink],
   templateUrl: './payment-return.component.html',
   styleUrl: './payment-return.component.scss',
 })

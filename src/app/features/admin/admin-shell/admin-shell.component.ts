@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { MatSidenav } from '@angular/material/sidenav';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
+import { ResponsiveLayoutService } from '@app/core/layout/responsive-layout.service';
 import { ADMIN_DEFAULT_ROUTE, ADMIN_ROLE_ACCESS, ADMIN_ROLE_LABELS, AdminRole } from '@app/models/admin.model';
 import { AdminStoreContext, TenantContextService } from '@app/core/tenant/tenant-context.service';
 import { AdminThemeService } from '@app/core/theme/admin-theme.service';
@@ -34,6 +36,7 @@ export class AdminShellComponent implements OnInit, OnDestroy {
   private adminProfileService = inject(AdminProfileService);
   private router = inject(Router);
   readonly themeService = inject(AdminThemeService);
+  readonly layout = inject(ResponsiveLayoutService);
   private subscriptions = new Subscription();
 
   isExpanded = false;
@@ -135,6 +138,14 @@ export class AdminShellComponent implements OnInit, OnDestroy {
 
   collapseSidebar(): void {
     this.isExpanded = false;
+  }
+
+  closeDrawerAfterNavigation(drawer: MatSidenav): void {
+    this.collapseSidebar();
+
+    if (this.layout.isCompact()) {
+      void drawer.close();
+    }
   }
 
   logout(): void {

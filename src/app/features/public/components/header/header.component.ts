@@ -3,23 +3,28 @@ import {
   Component,
   OnInit,
   inject,
+  output,
 } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '@app/core/auth/auth.service';
+import { ResponsiveLayoutService } from '@app/core/layout/responsive-layout.service';
 import { AdminThemeService } from '@app/core/theme/admin-theme.service';
+import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 
 @Component({
   selector: 'app-header',
-  imports: [FormsModule, NgOptimizedImage, RouterLink],
+  imports: [FormsModule, NgOptimizedImage, RouterLink, SharedMaterialModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements OnInit {
   readonly themeService = inject(AdminThemeService);
+  readonly layout = inject(ResponsiveLayoutService);
+  readonly menuRequested = output<void>();
   private readonly authService = inject(AuthService);
 
   cartCount = 0;
@@ -46,6 +51,10 @@ export class HeaderComponent implements OnInit {
 
   goToCart(): void {
     this.router.navigate(['/carrinho']);
+  }
+
+  requestMenu(): void {
+    this.menuRequested.emit();
   }
 
   submitSearch(): void {

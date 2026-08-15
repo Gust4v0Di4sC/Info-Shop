@@ -4,27 +4,39 @@
   </div>
 
   <div class="main-header">
+    @if (layout.isCompact()) {
+      <button
+        mat-icon-button
+        class="menu-toggle"
+        type="button"
+        (click)="requestMenu()"
+        aria-label="Abrir menu de navegacao">
+        <mat-icon>menu</mat-icon>
+      </button>
+    }
+
     <a class="brand" routerLink="/">
       <img
         [ngSrc]="themeService.publicLogoUrl()"
         width="180"
         height="60"
-        sizes="180px"
         alt="InfoShop Logo"
         class="logo-image">
     </a>
 
-    <nav class="navigation" aria-label="Navegacao principal">
-      <a routerLink="/" fragment="inicio" class="nav-link">Inicio</a>
-      <a routerLink="/" fragment="categorias" class="nav-link">Categorias</a>
-      <a routerLink="/" fragment="produtos" class="nav-link">Produtos</a>
-      <a routerLink="/" fragment="ofertas" class="nav-link">Ofertas</a>
-      <a routerLink="/" fragment="contato" class="nav-link">Contato</a>
-    </nav>
+    @if (!layout.isCompact()) {
+      <nav class="navigation" aria-label="Navegacao principal">
+        <a routerLink="/" fragment="inicio" class="nav-link">Inicio</a>
+        <a routerLink="/" fragment="categorias" class="nav-link">Categorias</a>
+        <a routerLink="/" fragment="produtos" class="nav-link">Produtos</a>
+        <a routerLink="/" fragment="ofertas" class="nav-link">Ofertas</a>
+        <a routerLink="/" fragment="contato" class="nav-link">Contato</a>
+      </nav>
+    }
 
     <div class="header-actions">
       <form class="search-container" role="search" (ngSubmit)="submitSearch()">
-        <i class="fas fa-search"></i>
+        <mat-icon aria-hidden="true">search</mat-icon>
         <input
           type="search"
           class="search-input"
@@ -34,20 +46,21 @@
           [(ngModel)]="searchTerm"
         >
         <button class="search-btn" type="submit" aria-label="Buscar">
-          <i class="fas fa-arrow-right"></i>
+          <mat-icon>arrow_forward</mat-icon>
         </button>
       </form>
 
       <div class="user-actions">
-        <button class="icon-btn" (click)="goToProfile()" type="button" aria-label="Perfil">
-          <i class="far fa-user"></i>
+        <button mat-icon-button class="icon-btn" (click)="goToProfile()" type="button" aria-label="Perfil">
+          <mat-icon>person</mat-icon>
         </button>
         <button
+          mat-icon-button
           class="icon-btn cart-btn"
           (click)="goToCart()"
           type="button"
           [attr.aria-label]="cartCount > 0 ? 'Carrinho com ' + cartCount + ' itens' : 'Carrinho vazio'">
-          <i class="fas fa-shopping-bag cart-top-icon"></i>
+          <mat-icon>shopping_bag</mat-icon>
           @if (cartCount > 0) {
             <span class="cart-badge">{{ cartCount }}</span>
           }

@@ -2,7 +2,7 @@
   background: #f6f8fb;
   font-family: "Roboto Flex", Roboto, sans-serif;
   min-height: 70vh;
-  padding: 54px 24px 72px;
+  padding: clamp(36px, 6vw, 54px) clamp(16px, 4vw, 24px) clamp(56px, 7vw, 72px);
 }
 
 .cart-shell {
@@ -107,14 +107,14 @@ h2 {
 
 .quantity-control {
   display: grid;
-  grid-template-columns: 36px 44px 36px;
+  grid-template-columns: 48px 52px 48px;
 
   button,
   span {
     align-items: center;
     border: 1px solid #d8dee8;
     display: flex;
-    height: 38px;
+    min-height: 48px;
     justify-content: center;
   }
 
@@ -140,9 +140,9 @@ h2 {
   color: #be123c;
   cursor: pointer;
   display: flex;
-  height: 40px;
+  height: 48px;
   justify-content: center;
-  width: 40px;
+  width: 48px;
 }
 
 .summary {
@@ -249,7 +249,7 @@ h2 {
   border: 1px solid #bfdbfe;
   color: #0f62cf;
   cursor: pointer;
-  height: 42px;
+  min-height: 48px;
   width: 100%;
 }
 
@@ -304,7 +304,7 @@ h2 {
   border: 0;
   color: #ffffff;
   cursor: pointer;
-  height: 46px;
+  min-height: 48px;
   margin-top: 20px;
   width: 100%;
 }
@@ -395,7 +395,7 @@ h2 {
   }
 
   .cart-item {
-    grid-template-columns: 86px minmax(0, 1fr) 42px;
+    grid-template-columns: 86px minmax(0, 1fr) 48px;
   }
 
   .quantity-control {

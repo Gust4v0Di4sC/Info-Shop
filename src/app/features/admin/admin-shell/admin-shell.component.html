@@ -1,13 +1,16 @@
 <mat-sidenav-container
+  #adminContainer
   class="admin-shell admin-theme"
   [class.admin-theme-corporate]="themeService.currentThemeId() === 'corporate'"
   [class.admin-theme-graphite]="themeService.currentThemeId() === 'graphite'"
   [class.admin-theme-emerald]="themeService.currentThemeId() === 'emerald'">
   <mat-sidenav
+    #adminDrawer
     class="admin-sidebar"
-    mode="side"
-    opened
-    fixedInViewport="true">
+    [mode]="layout.isCompact() ? 'over' : 'side'"
+    [opened]="!layout.isCompact()"
+    [autoFocus]="layout.isCompact()"
+    [fixedInViewport]="!layout.isCompact()">
     <div class="sidebar-panel">
       <button class="brand" type="button" aria-label="Voltar para o inicio administrativo" (click)="goToAdminHome()">
         <img class="brand-icon" [src]="themeService.adminIconUrl()" alt="InfoShop">
@@ -21,7 +24,7 @@
             class="nav-link"
             [routerLink]="navItemRoute(item)"
             [class.active]="isNavItemActive(item)"
-            (click)="collapseSidebar()">
+            (click)="closeDrawerAfterNavigation(adminDrawer)">
             <span class="nav-link-content">
               <mat-icon>{{ item.icon }}</mat-icon>
               <span class="nav-label">{{ item.label }}</span>
@@ -40,6 +43,19 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="admin-content" appGsapPageMotion appGsapInteractiveMotion>
+    @if (layout.isCompact()) {
+      <div class="admin-mobile-bar">
+        <button
+          mat-icon-button
+          type="button"
+          (click)="adminDrawer.toggle()"
+          aria-label="Abrir menu administrativo">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span>Admin InfoShop</span>
+      </div>
+    }
+
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 

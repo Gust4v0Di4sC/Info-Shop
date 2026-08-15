@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
+import { ProductService } from '@app/services/product.service';
 import { of } from 'rxjs';
 
 import LandingPageComponent from './landing-page.component';
@@ -19,6 +20,13 @@ describe('LandingPageComponent', () => {
           useValue: {
             currentUser$: of(null),
             getCurrentUserAsync: () => Promise.resolve(null),
+          },
+        },
+        {
+          provide: ProductService,
+          useValue: {
+            getFeaturedProducts: () => of([]),
+            getOfferProduct: () => of(null),
           },
         },
       ],

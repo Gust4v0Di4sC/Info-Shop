@@ -2,8 +2,6 @@ import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { HeaderComponent } from '@app/features/public/components/header/header.component';
-import { FooterComponent } from '@app/features/public/components/footer/footer.component';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { Product } from '@app/models/product.model';
 import { ProductService } from '@app/services/product.service';
@@ -11,7 +9,7 @@ import { HardwareBenchmarkChatComponent } from '@app/features/public/components/
 
 @Component({
   selector: 'app-product-detail',
-  imports: [HeaderComponent, FooterComponent, NgOptimizedImage, BrlCurrencyPipe, RouterLink, HardwareBenchmarkChatComponent],
+  imports: [NgOptimizedImage, BrlCurrencyPipe, RouterLink, HardwareBenchmarkChatComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

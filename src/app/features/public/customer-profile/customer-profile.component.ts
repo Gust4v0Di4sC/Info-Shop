@@ -3,8 +3,6 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { RouterLink } from '@angular/router';
 import { of, switchMap } from 'rxjs';
 import { AuthService } from '@app/core/auth/auth.service';
-import { HeaderComponent } from '@app/features/public/components/header/header.component';
-import { FooterComponent } from '@app/features/public/components/footer/footer.component';
 import { CustomerProfileService } from '@app/services/customer-profile.service';
 import { AppUser } from '@app/models/app-user.model';
 
@@ -18,7 +16,7 @@ interface ProfileAddressForm {
 
 @Component({
   selector: 'app-customer-profile',
-  imports: [HeaderComponent, FooterComponent, ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './customer-profile.component.html',
   styleUrl: './customer-profile.component.scss'
 })

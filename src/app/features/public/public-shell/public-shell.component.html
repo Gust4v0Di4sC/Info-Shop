@@ -1,0 +1,37 @@
+<mat-sidenav-container class="public-shell">
+  <mat-sidenav
+    #drawer
+    class="public-drawer"
+    [mode]="layout.isCompact() ? 'over' : 'side'"
+    [opened]="false"
+    [autoFocus]="layout.isCompact()"
+    aria-label="Menu de navegacao principal">
+    <nav class="drawer-nav" aria-label="Navegacao principal mobile">
+      <a class="drawer-brand" routerLink="/" (click)="closeDrawerOnCompact(drawer)">
+        InfoShop
+      </a>
+
+      <mat-nav-list>
+        @for (item of navItems; track item.label) {
+          <a
+            mat-list-item
+            [routerLink]="item.link"
+            [fragment]="item.fragment"
+            (click)="closeDrawerOnCompact(drawer)">
+            {{ item.label }}
+          </a>
+        }
+      </mat-nav-list>
+    </nav>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="public-content">
+    <app-header (menuRequested)="drawer.toggle()"></app-header>
+
+    <main class="public-main">
+      <router-outlet />
+    </main>
+
+    <app-footer></app-footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

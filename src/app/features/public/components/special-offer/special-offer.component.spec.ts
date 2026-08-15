@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { provideRouter } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
+import { ProductService } from '@app/services/product.service';
 import { of } from 'rxjs';
 
 import { SpecialOfferComponent } from './special-offer.component';
@@ -13,11 +15,18 @@ describe('SpecialOfferComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SpecialOfferComponent],
       providers: [
+        provideRouter([]),
         {
           provide: AuthService,
           useValue: {
             currentUser$: of(null),
             getCurrentUserAsync: () => Promise.resolve(null),
+          },
+        },
+        {
+          provide: ProductService,
+          useValue: {
+            getOfferProduct: () => of(null),
           },
         },
         { provide: MatSnackBar, useValue: { open: jasmine.createSpy('open') } },

@@ -26,7 +26,11 @@
   gap: 28px;
   grid-template-columns: auto 1fr auto;
   min-height: 70px;
-  padding: 0 9.5vw;
+  padding: 0 clamp(24px, 9.5vw, 136px);
+}
+
+.menu-toggle {
+  color: #1f2937;
 }
 
 .brand {
@@ -74,7 +78,7 @@
   color: #6b7280;
   display: grid;
   gap: 10px;
-  grid-template-columns: auto minmax(180px, 300px) auto;
+  grid-template-columns: 24px minmax(180px, 300px) 32px;
   height: 44px;
   padding: 0 12px;
 
@@ -108,6 +112,12 @@
   justify-content: center;
   padding: 0;
   width: 30px;
+
+  mat-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+  }
 }
 
 .user-actions {
@@ -158,14 +168,8 @@
 @media (max-width: 1024px) {
   .main-header {
     gap: 18px;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto auto 1fr;
     padding: 12px 24px;
-  }
-
-  .navigation {
-    grid-column: 1 / -1;
-    justify-content: center;
-    order: 3;
   }
 
   .header-actions {
@@ -181,14 +185,13 @@
   }
 
   .navigation {
-    gap: 16px;
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    width: 100%;
+    display: none;
   }
 
   .header-actions {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(0, 1fr) auto;
     width: 100%;
   }
 

@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { FooterComponent } from '@app/features/public/components/footer/footer.component';
-import { HeaderComponent } from '@app/features/public/components/header/header.component';
-
 interface SupportTopic {
   title: string;
   slug: string;
@@ -66,7 +63,7 @@ const SUPPORT_TOPICS: SupportTopic[] = [
 
 @Component({
   selector: 'app-support-page',
-  imports: [HeaderComponent, FooterComponent, RouterLink],
+  imports: [RouterLink],
   templateUrl: './support-page.component.html',
   styleUrl: './support-page.component.scss',
 })

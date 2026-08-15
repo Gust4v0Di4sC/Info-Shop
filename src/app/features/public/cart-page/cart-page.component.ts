@@ -3,8 +3,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
-import { HeaderComponent } from '@app/features/public/components/header/header.component';
-import { FooterComponent } from '@app/features/public/components/footer/footer.component';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { CartItemWithProduct } from '@app/models/cart-item.model';
 import { CartServiceService } from '@app/services/cart-service.service';
@@ -13,7 +11,7 @@ import { PaymentService } from '@app/services/payment.service';
 
 @Component({
   selector: 'app-cart-page',
-  imports: [HeaderComponent, FooterComponent, NgOptimizedImage, BrlCurrencyPipe, RouterLink, ReactiveFormsModule],
+  imports: [NgOptimizedImage, BrlCurrencyPipe, RouterLink, ReactiveFormsModule],
   templateUrl: './cart-page.component.html',
   styleUrl: './cart-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

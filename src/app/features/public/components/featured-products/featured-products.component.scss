@@ -7,8 +7,8 @@
 
 .products-container {
   margin: 0 auto;
-  max-width: 1220px;
-  padding: 0 24px;
+  max-width: 1440px;
+  padding: 0 clamp(16px, 4vw, 24px);
 }
 
 .products-head {
@@ -59,7 +59,7 @@ h1 {
 .products-grid {
   display: grid;
   gap: 22px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
 }
 
 .products-state {
@@ -188,12 +188,6 @@ h2 {
   }
 }
 
-@media (max-width: 1024px) {
-  .products-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 620px) {
   .products-section {
     padding: 54px 0;
@@ -210,9 +204,5 @@ h2 {
 
   .catalog-button {
     justify-content: center;
-  }
-
-  .products-grid {
-    grid-template-columns: 1fr;
   }
 }

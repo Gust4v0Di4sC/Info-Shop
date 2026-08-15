@@ -4,9 +4,81 @@ import { AdminGuard, AuthGuard, GuestGuard, PublicGuard } from '@app/core/auth/a
 export const routes: Routes = [
   {
     path: '',
-    pathMatch: 'full',
-    loadComponent: () => import('@app/features/public/landing-page/landing-page.component'),
-    canActivate: [PublicGuard],
+    loadComponent: () => import('@app/features/public/public-shell/public-shell.component').then(
+      m => m.PublicShellComponent,
+    ),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('@app/features/public/landing-page/landing-page.component'),
+        canActivate: [PublicGuard],
+      },
+      {
+        path: 'produto/:id',
+        loadComponent: () => import('@app/features/public/product-detail/product-detail.component').then(
+          m => m.ProductDetailComponent,
+        ),
+        data: { animation: 'product-detail' },
+        canActivate: [PublicGuard],
+      },
+      {
+        path: 'catalogo',
+        loadComponent: () => import('@app/features/public/catalog-page/catalog-page.component').then(
+          m => m.CatalogPageComponent,
+        ),
+        data: { animation: 'catalog' },
+        canActivate: [PublicGuard],
+      },
+      {
+        path: 'catalogo/:category',
+        loadComponent: () => import('@app/features/public/catalog-page/catalog-page.component').then(
+          m => m.CatalogPageComponent,
+        ),
+        data: { animation: 'catalog-category' },
+        canActivate: [PublicGuard],
+      },
+      {
+        path: 'suporte/:topic',
+        loadComponent: () => import('@app/features/public/support-page/support-page.component').then(
+          m => m.SupportPageComponent,
+        ),
+        data: { animation: 'support' },
+        canActivate: [PublicGuard],
+      },
+      {
+        path: 'carrinho',
+        loadComponent: () => import('@app/features/public/cart-page/cart-page.component').then(
+          m => m.CartPageComponent,
+        ),
+        data: { animation: 'cart' },
+        canActivate: [PublicGuard],
+      },
+      {
+        path: 'perfil',
+        loadComponent: () => import('@app/features/public/customer-profile/customer-profile.component').then(
+          m => m.CustomerProfileComponent,
+        ),
+        data: { animation: 'profile' },
+        canActivate: [AuthGuard, PublicGuard],
+      },
+      {
+        path: 'minhas-entregas',
+        loadComponent: () => import('@app/features/public/customer-deliveries/customer-deliveries.component').then(
+          m => m.CustomerDeliveriesComponent,
+        ),
+        data: { animation: 'customer-deliveries' },
+        canActivate: [AuthGuard, PublicGuard],
+      },
+      {
+        path: 'pagamento/retorno',
+        loadComponent: () => import('@app/features/public/payment-return/payment-return.component').then(
+          m => m.PaymentReturnComponent,
+        ),
+        data: { animation: 'payment-return' },
+        canActivate: [AuthGuard, PublicGuard],
+      },
+    ],
   },
   {
     path: 'home',
@@ -44,70 +116,6 @@ export const routes: Routes = [
       m => m.AuthCallbackComponent,
     ),
     data: { animation: 'auth-callback' },
-  },
-  {
-    path: 'produto/:id',
-    loadComponent: () => import('@app/features/public/product-detail/product-detail.component').then(
-      m => m.ProductDetailComponent,
-    ),
-    data: { animation: 'product-detail' },
-    canActivate: [PublicGuard],
-  },
-  {
-    path: 'catalogo',
-    loadComponent: () => import('@app/features/public/catalog-page/catalog-page.component').then(
-      m => m.CatalogPageComponent,
-    ),
-    data: { animation: 'catalog' },
-    canActivate: [PublicGuard],
-  },
-  {
-    path: 'catalogo/:category',
-    loadComponent: () => import('@app/features/public/catalog-page/catalog-page.component').then(
-      m => m.CatalogPageComponent,
-    ),
-    data: { animation: 'catalog-category' },
-    canActivate: [PublicGuard],
-  },
-  {
-    path: 'suporte/:topic',
-    loadComponent: () => import('@app/features/public/support-page/support-page.component').then(
-      m => m.SupportPageComponent,
-    ),
-    data: { animation: 'support' },
-    canActivate: [PublicGuard],
-  },
-  {
-    path: 'carrinho',
-    loadComponent: () => import('@app/features/public/cart-page/cart-page.component').then(
-      m => m.CartPageComponent,
-    ),
-    data: { animation: 'cart' },
-    canActivate: [PublicGuard],
-  },
-  {
-    path: 'perfil',
-    loadComponent: () => import('@app/features/public/customer-profile/customer-profile.component').then(
-      m => m.CustomerProfileComponent,
-    ),
-    data: { animation: 'profile' },
-    canActivate: [AuthGuard, PublicGuard],
-  },
-  {
-    path: 'minhas-entregas',
-    loadComponent: () => import('@app/features/public/customer-deliveries/customer-deliveries.component').then(
-      m => m.CustomerDeliveriesComponent,
-    ),
-    data: { animation: 'customer-deliveries' },
-    canActivate: [AuthGuard, PublicGuard],
-  },
-  {
-    path: 'pagamento/retorno',
-    loadComponent: () => import('@app/features/public/payment-return/payment-return.component').then(
-      m => m.PaymentReturnComponent,
-    ),
-    data: { animation: 'payment-return' },
-    canActivate: [AuthGuard, PublicGuard],
   },
   {
     path: '',

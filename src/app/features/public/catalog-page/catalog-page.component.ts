@@ -3,8 +3,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { combineLatest } from 'rxjs';
 
-import { FooterComponent } from '@app/features/public/components/footer/footer.component';
-import { HeaderComponent } from '@app/features/public/components/header/header.component';
 import { Product } from '@app/models/product.model';
 import { ProductService } from '@app/services/product.service';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
@@ -25,7 +23,7 @@ const CATEGORIES: CatalogCategory[] = [
 
 @Component({
   selector: 'app-catalog-page',
-  imports: [HeaderComponent, FooterComponent, NgOptimizedImage, RouterLink, BrlCurrencyPipe],
+  imports: [NgOptimizedImage, RouterLink, BrlCurrencyPipe],
   templateUrl: './catalog-page.component.html',
   styleUrl: './catalog-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,45 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.public-shell {
+  background: #f6f8fb;
+  min-height: 100vh;
+}
+
+.public-content {
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.public-main {
+  min-width: 0;
+}
+
+.public-drawer {
+  width: min(320px, 86vw);
+}
+
+.drawer-nav {
+  display: grid;
+  gap: 12px;
+  padding: 20px 14px;
+}
+
+.drawer-brand {
+  align-items: center;
+  border-radius: 8px;
+  color: #0f62cf;
+  display: inline-flex;
+  font-size: 20px;
+  font-weight: 900;
+  min-height: 48px;
+  padding: 0 16px;
+  text-decoration: none;
+}
+
+:host ::ng-deep .public-drawer .mat-mdc-list-item {
+  border-radius: 8px;
+  min-height: 48px;
+}

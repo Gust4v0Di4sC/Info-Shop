@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ResponsiveDialogService } from '@app/core/layout/responsive-dialog.service';
 import { Product } from '@app/models/product.model';
 import { ProductService } from '@app/services/product.service';
 import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
@@ -38,6 +39,7 @@ export default class ProdutosComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
+    private responsiveDialog: ResponsiveDialogService,
     private productService: ProductService,
     private snackBar: MatSnackBar,
   ) {}
@@ -83,17 +85,15 @@ export default class ProdutosComponent implements OnInit {
   }
 
   openProductForm(product?: Product): void {
-    const dialogRef = this.dialog.open(ProdutoFormComponent, {
-      width: '760px',
-      maxWidth: '96vw',
-      maxHeight: '92vh',
+    const dialogRef = this.dialog.open(ProdutoFormComponent, this.responsiveDialog.buildConfig({
+      desktopWidth: '760px',
       autoFocus: 'first-tabbable',
       restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: product ? { product } : {},
       panelClass: 'admin-form-dialog',
-    });
+    }));
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -103,10 +103,8 @@ export default class ProdutosComponent implements OnInit {
   }
 
   openEditForm(produto: Product): void {
-    const dialogRef = this.dialog.open(ProdutoFormComponent, {
-      width: '760px',
-      maxWidth: '96vw',
-      maxHeight: '92vh',
+    const dialogRef = this.dialog.open(ProdutoFormComponent, this.responsiveDialog.buildConfig({
+      desktopWidth: '760px',
       autoFocus: 'first-tabbable',
       restoreFocus: true,
       enterAnimationDuration: '400ms',
@@ -115,7 +113,7 @@ export default class ProdutosComponent implements OnInit {
         product: produto,
       },
       panelClass: 'admin-form-dialog',
-    });
+    }));
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -147,14 +145,14 @@ export default class ProdutosComponent implements OnInit {
   }
 
   deleteProduct(id: string | number): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, this.responsiveDialog.buildConfig({
+      desktopWidth: '350px',
       panelClass: 'custom-modal',
       restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: { message: 'Tem certeza que deseja excluir este item?' },
-    });
+    }));
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {

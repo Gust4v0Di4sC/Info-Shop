@@ -3,6 +3,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ResponsiveDialogService } from '@app/core/layout/responsive-dialog.service';
 import { PedidoFormComponent } from '@app/features/admin/orders/order-form/pedido-form.component';
 import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { Order } from '@app/models/order.model';
@@ -36,6 +37,7 @@ export default class PedidosComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
+    private responsiveDialog: ResponsiveDialogService,
     private orderService: OrderService,
     private snackBar: MatSnackBar,
   ) {}
@@ -76,17 +78,15 @@ export default class PedidosComponent implements OnInit {
   }
 
   openOrderForm(order?: Order): void {
-    const dialogRef = this.dialog.open(PedidoFormComponent, {
-      width: '720px',
-      maxWidth: '96vw',
-      maxHeight: '92vh',
+    const dialogRef = this.dialog.open(PedidoFormComponent, this.responsiveDialog.buildConfig({
+      desktopWidth: '720px',
       autoFocus: 'first-tabbable',
       restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: order ? { order } : {},
       panelClass: 'admin-form-dialog',
-    });
+    }));
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -96,10 +96,8 @@ export default class PedidosComponent implements OnInit {
   }
 
   openEditForm(order: Order): void {
-    const dialogRef = this.dialog.open(PedidoFormComponent, {
-      width: '720px',
-      maxWidth: '96vw',
-      maxHeight: '92vh',
+    const dialogRef = this.dialog.open(PedidoFormComponent, this.responsiveDialog.buildConfig({
+      desktopWidth: '720px',
       autoFocus: 'first-tabbable',
       restoreFocus: true,
       enterAnimationDuration: '400ms',
@@ -108,7 +106,7 @@ export default class PedidosComponent implements OnInit {
         order: order,
       },
       panelClass: 'admin-form-dialog',
-    });
+    }));
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -143,14 +141,14 @@ export default class PedidosComponent implements OnInit {
   }
 
   deleteOrder(id: string | number): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, this.responsiveDialog.buildConfig({
+      desktopWidth: '350px',
       panelClass: 'custom-modal',
       restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: { message: 'Tem certeza que deseja excluir este item?' },
-    });
+    }));
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
