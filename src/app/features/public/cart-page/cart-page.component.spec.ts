@@ -1,14 +1,22 @@
+import { ChangeDetectorRef } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { CartPageComponent } from './cart-page.component';
 import { CartServiceService } from '@app/services/cart-service.service';
 import { PaymentService } from '@app/services/payment.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 describe('CartPageComponent', () => {
   it('should create a Mercado Pago preference and redirect to its init point', () => {
     const cartService = cartServiceMock();
     const paymentService = paymentServiceMock();
-    const component = new CartPageComponent(cartService, paymentService, new FormBuilder());
+    const component = new CartPageComponent(
+      cartService,
+      paymentService,
+      new FormBuilder(),
+      changeDetectorRefMock(),
+      snackBarMock(),
+    );
     const redirectSpy = spyOn(component, 'redirectToPayment');
 
     component.selectedServiceId = '1';
@@ -36,20 +44,37 @@ describe('CartPageComponent', () => {
     const paymentService = {
       createPreference: jasmine.createSpy().and.returnValue(throwError(() => new Error('Falha MP'))),
     } as unknown as PaymentService;
-    const component = new CartPageComponent(cartService, paymentService, new FormBuilder());
+    const snackBar = snackBarMock();
+    const component = new CartPageComponent(
+      cartService,
+      paymentService,
+      new FormBuilder(),
+      changeDetectorRefMock(),
+      snackBar,
+    );
 
     component.selectedServiceId = '1';
     fillAddress(component);
     component.checkout();
 
-    expect(component.actionErrorMessage).toBe('Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.');
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.',
+      'Fechar',
+      jasmine.objectContaining({ duration: 3000 }),
+    );
     expect(component.isCheckingOut).toBeFalse();
   });
 
   it('should keep shipping errors inline when no quotes are returned', () => {
     const cartService = cartServiceMock();
     const paymentService = paymentServiceMock();
-    const component = new CartPageComponent(cartService, paymentService, new FormBuilder());
+    const component = new CartPageComponent(
+      cartService,
+      paymentService,
+      new FormBuilder(),
+      changeDetectorRefMock(),
+      snackBarMock(),
+    );
     (cartService.calculateShipping as jasmine.Spy).and.returnValue(of([]));
 
     fillAddress(component);
@@ -65,7 +90,13 @@ describe('CartPageComponent', () => {
   it('should select the first shipping quote returned', () => {
     const cartService = cartServiceMock();
     const paymentService = paymentServiceMock();
-    const component = new CartPageComponent(cartService, paymentService, new FormBuilder());
+    const component = new CartPageComponent(
+      cartService,
+      paymentService,
+      new FormBuilder(),
+      changeDetectorRefMock(),
+      snackBarMock(),
+    );
     (cartService.calculateShipping as jasmine.Spy).and.returnValue(of([
       { id: '2', name: 'SEDEX', company: 'Correios', price: 29.9, deliveryTime: 2 },
     ]));
@@ -98,6 +129,22 @@ function paymentServiceMock(): PaymentService {
       sandboxInitPoint: 'https://sandbox.mercadopago.test/checkout',
     })),
   } as unknown as PaymentService;
+}
+
+function snackBarMock(): MatSnackBar {
+  return {
+    open: jasmine.createSpy('open'),
+  } as unknown as MatSnackBar;
+}
+
+function changeDetectorRefMock(): ChangeDetectorRef {
+  return {
+    checkNoChanges: jasmine.createSpy('checkNoChanges'),
+    detach: jasmine.createSpy('detach'),
+    detectChanges: jasmine.createSpy('detectChanges'),
+    markForCheck: jasmine.createSpy('markForCheck'),
+    reattach: jasmine.createSpy('reattach'),
+  } as unknown as ChangeDetectorRef;
 }
 
 function fillAddress(component: CartPageComponent): void {

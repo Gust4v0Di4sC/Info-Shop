@@ -87,7 +87,8 @@ export default class ProdutosComponent implements OnInit {
       width: '760px',
       maxWidth: '96vw',
       maxHeight: '92vh',
-      autoFocus: false,
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: product ? { product } : {},
@@ -106,7 +107,8 @@ export default class ProdutosComponent implements OnInit {
       width: '760px',
       maxWidth: '96vw',
       maxHeight: '92vh',
-      autoFocus: false,
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: {
@@ -148,6 +150,7 @@ export default class ProdutosComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       panelClass: 'custom-modal',
+      restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: { message: 'Tem certeza que deseja excluir este item?' },

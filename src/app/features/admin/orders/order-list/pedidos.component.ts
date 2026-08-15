@@ -80,7 +80,8 @@ export default class PedidosComponent implements OnInit {
       width: '720px',
       maxWidth: '96vw',
       maxHeight: '92vh',
-      autoFocus: false,
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: order ? { order } : {},
@@ -99,7 +100,8 @@ export default class PedidosComponent implements OnInit {
       width: '720px',
       maxWidth: '96vw',
       maxHeight: '92vh',
-      autoFocus: false,
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: {
@@ -144,6 +146,7 @@ export default class PedidosComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       panelClass: 'custom-modal',
+      restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
       data: { message: 'Tem certeza que deseja excluir este item?' },

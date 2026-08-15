@@ -21,14 +21,17 @@
       <div class="products-grid">
       @for (product of products; track product.id) {
         <article class="product-card">
-          <a class="product-media" [routerLink]="['/produto', product.id]">
+          <a
+            class="product-media"
+            [routerLink]="['/produto', product.id]"
+            [attr.aria-label]="'Ver detalhes de ' + product.name">
             <span class="product-badge">Destaque</span>
             <img
               [ngSrc]="product.imageUrl || '/product1.webp'"
               width="317"
               height="238"
               sizes="(max-width: 620px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              [alt]="product.name">
+              [alt]="'Imagem de ' + product.name">
           </a>
 
           <div class="product-info">
@@ -40,7 +43,11 @@
             </p>
             <strong class="product-price">{{ product.price | brlCurrency }}</strong>
             <p class="installments">Em ate 12x sem juros</p>
-            <button (click)="addToCart($event, product)" class="product-cart" type="button">
+            <button
+              (click)="addToCart($event, product)"
+              class="product-cart"
+              type="button"
+              [attr.aria-label]="'Adicionar ' + product.name + ' ao carrinho'">
               Adicionar ao carrinho
             </button>
           </div>

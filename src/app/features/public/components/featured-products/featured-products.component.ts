@@ -1,5 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 
 import { Product } from '@app/models/product.model';
@@ -24,6 +25,7 @@ export class FeaturedProductsComponent implements OnInit {
     private productService: ProductService,
     private changeDetectorRef: ChangeDetectorRef,
     private injector: Injector,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -103,12 +105,21 @@ export class FeaturedProductsComponent implements OnInit {
 
     this.injector.get(CartServiceService).addProduct(product.id).subscribe({
       next: () => {
+        this.showSnackbar(`${product.name} foi adicionado ao carrinho.`);
         void this.animateToCart(sourceElement);
       },
       error: () => {
-        this.errorMessage = 'Entre na sua conta para adicionar produtos ao carrinho.';
+        this.showSnackbar('Entre na sua conta para adicionar produtos ao carrinho.');
         this.changeDetectorRef.markForCheck();
       },
+    });
+  }
+
+  private showSnackbar(message: string): void {
+    this.snackBar.open(message, 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
     });
   }
 }

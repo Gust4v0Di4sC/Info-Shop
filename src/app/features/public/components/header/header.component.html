@@ -29,6 +29,7 @@
           type="search"
           class="search-input"
           name="publicSearch"
+          aria-label="Buscar produtos"
           placeholder="Buscar notebooks, celulares..."
           [(ngModel)]="searchTerm"
         >
@@ -41,7 +42,11 @@
         <button class="icon-btn" (click)="goToProfile()" type="button" aria-label="Perfil">
           <i class="far fa-user"></i>
         </button>
-        <button class="icon-btn cart-btn" (click)="goToCart()" type="button" aria-label="Carrinho">
+        <button
+          class="icon-btn cart-btn"
+          (click)="goToCart()"
+          type="button"
+          [attr.aria-label]="cartCount > 0 ? 'Carrinho com ' + cartCount + ' itens' : 'Carrinho vazio'">
           <i class="fas fa-shopping-bag cart-top-icon"></i>
           @if (cartCount > 0) {
             <span class="cart-badge">{{ cartCount }}</span>

@@ -16,7 +16,8 @@
         class="image-upload"
         type="button"
         [class.has-image]="imagePreview"
-        (click)="fileInput.click()">
+        (click)="fileInput.click()"
+        [attr.aria-label]="imagePreview ? 'Trocar imagem do produto' : 'Adicionar imagem do produto'">
         <input
           #fileInput
           type="file"
@@ -39,7 +40,7 @@
     <div class="form-grid">
       <mat-form-field appearance="outline" class="wide">
         <mat-label>Nome</mat-label>
-        <input matInput formControlName="name" placeholder="Nome do produto">
+        <input matInput cdkFocusInitial formControlName="name" placeholder="Nome do produto">
         @if (productForm.get('name')?.invalid) {
           <mat-error>{{ getErrorMessage('name') }}</mat-error>
         }

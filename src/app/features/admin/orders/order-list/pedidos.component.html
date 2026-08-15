@@ -48,11 +48,20 @@
           </div>
 
           <div class="card-actions">
-            <button mat-stroked-button type="button" (click)="openEditForm(order)">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="openEditForm(order)"
+              [attr.aria-label]="'Editar pedido de ' + (order.name | displayText: 'cliente nao informado')">
               <mat-icon>edit</mat-icon>
               Editar
             </button>
-            <button mat-icon-button class="danger-action" type="button" (click)="order.id ? deleteOrder(order.id) : null" aria-label="Excluir pedido">
+            <button
+              mat-icon-button
+              class="danger-action"
+              type="button"
+              (click)="order.id ? deleteOrder(order.id) : null"
+              [attr.aria-label]="'Excluir pedido de ' + (order.name | displayText: 'cliente nao informado')">
               <mat-icon>delete</mat-icon>
             </button>
           </div>

@@ -29,7 +29,11 @@
     <div class="products-grid">
       @for (product of pagedProducts(); track product.id) {
         <article class="product-card">
-          <button class="product-media" type="button" (click)="openEditForm(product)">
+          <button
+            class="product-media"
+            type="button"
+            (click)="openEditForm(product)"
+            [attr.aria-label]="'Editar produto ' + (product.name | displayText: 'sem nome')">
             <img
               [ngSrc]="product.imageUrl || '/product1.png'"
               width="317"
@@ -61,11 +65,20 @@
             </div>
 
             <div class="card-actions">
-              <button mat-stroked-button type="button" (click)="openEditForm(product)">
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="openEditForm(product)"
+                [attr.aria-label]="'Editar produto ' + (product.name | displayText: 'sem nome')">
                 <mat-icon>edit</mat-icon>
                 Editar
               </button>
-              <button mat-icon-button class="danger-action" type="button" (click)="product.id ? deleteProduct(product.id) : null" aria-label="Excluir produto">
+              <button
+                mat-icon-button
+                class="danger-action"
+                type="button"
+                (click)="product.id ? deleteProduct(product.id) : null"
+                [attr.aria-label]="'Excluir produto ' + (product.name | displayText: 'sem nome')">
                 <mat-icon>delete</mat-icon>
               </button>
             </div>

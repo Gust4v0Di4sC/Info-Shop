@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { A11yModule } from '@angular/cdk/a11y';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -18,6 +19,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 const MATERIAL_MODULES = [
+  A11yModule,
   MatButtonModule,
   MatButtonToggleModule,
   MatCardModule,

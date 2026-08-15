@@ -53,6 +53,35 @@ body {
   color: var(--mat-sys-on-surface);
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible,
+.mat-mdc-button-base:focus-visible,
+.mat-mdc-card:focus-visible,
+.mat-mdc-list-item:focus-visible,
+.mat-mdc-menu-item:focus-visible {
+  outline: 3px solid #0f62cf !important;
+  outline-offset: 3px !important;
+}
+
+.admin-theme {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible,
+  .mat-mdc-button-base:focus-visible,
+  .mat-mdc-card:focus-visible,
+  .mat-mdc-list-item:focus-visible,
+  .mat-mdc-menu-item:focus-visible {
+    outline-color: var(--ring) !important;
+  }
+}
+
 .admin-theme {
   --background: oklch(0.972 0.006 250);
   --surface: oklch(0.95 0.008 250);

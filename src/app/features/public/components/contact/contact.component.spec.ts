@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { ContactComponent } from './contact.component';
 
@@ -8,7 +9,10 @@ describe('ContactComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ContactComponent]
+      imports: [ContactComponent],
+      providers: [
+        { provide: MatSnackBar, useValue: { open: jasmine.createSpy('open') } },
+      ],
     })
     .compileComponents();
 

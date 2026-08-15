@@ -17,7 +17,7 @@
           height="600"
           sizes="(max-width: 860px) 100vw, 55vw"
           priority
-          [alt]="product.name">
+          [alt]="'Imagem de ' + product.name">
       </div>
 
       <div class="product-summary">
@@ -36,11 +36,11 @@
             type="button"
             (click)="decreaseQuantity()"
             [disabled]="quantity <= 1"
-            aria-label="Diminuir quantidade">
+            [attr.aria-label]="'Diminuir quantidade de ' + product.name">
             <i class="fas fa-minus"></i>
           </button>
           <span aria-live="polite">{{ quantity }}</span>
-          <button type="button" (click)="increaseQuantity()" aria-label="Aumentar quantidade">
+          <button type="button" (click)="increaseQuantity()" [attr.aria-label]="'Aumentar quantidade de ' + product.name">
             <i class="fas fa-plus"></i>
           </button>
         </div>
@@ -49,10 +49,6 @@
           <i class="fas fa-shopping-bag"></i>
           Adicionar ao carrinho
         </button>
-
-        @if (feedbackMessage) {
-          <p class="feedback">{{ feedbackMessage }}</p>
-        }
 
         @if (errorMessage) {
           <p class="feedback error-text">{{ errorMessage }}</p>

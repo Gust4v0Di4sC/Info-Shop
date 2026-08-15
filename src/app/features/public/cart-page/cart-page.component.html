@@ -30,34 +30,47 @@
         <div class="items-list">
           @for (item of items; track item.id) {
             <article class="cart-item">
-              <a [routerLink]="['/produto', item.product_id]" class="item-media">
+              <a
+                [routerLink]="['/produto', item.product_id]"
+                class="item-media"
+                [attr.aria-label]="'Ver detalhes de ' + itemName(item)">
                 <img
                   [ngSrc]="item.product?.imageUrl || '/product1.webp'"
                   width="317"
                   height="346"
                   sizes="96px"
-                  [alt]="item.product?.name || 'Produto'">
+                  [alt]="'Imagem de ' + itemName(item)">
               </a>
 
               <div class="item-info">
                 <a [routerLink]="['/produto', item.product_id]" class="item-title">
-                  {{ item.product?.name || 'Produto indisponivel' }}
+                  {{ itemName(item) }}
                 </a>
                 <p>{{ item.product?.model || item.product?.description || 'Detalhes indisponiveis' }}</p>
                 <strong>{{ itemPrice(item) | brlCurrency }}</strong>
               </div>
 
               <div class="quantity-control">
-                <button type="button" (click)="changeQuantity(item, item.quantity - 1)" aria-label="Diminuir quantidade">
+                <button
+                  type="button"
+                  (click)="changeQuantity(item, item.quantity - 1)"
+                  [attr.aria-label]="'Diminuir quantidade de ' + itemName(item)">
                   <i class="fas fa-minus"></i>
                 </button>
-                <span>{{ item.quantity }}</span>
-                <button type="button" (click)="changeQuantity(item, item.quantity + 1)" aria-label="Aumentar quantidade">
+                <span aria-live="polite">{{ item.quantity }}</span>
+                <button
+                  type="button"
+                  (click)="changeQuantity(item, item.quantity + 1)"
+                  [attr.aria-label]="'Aumentar quantidade de ' + itemName(item)">
                   <i class="fas fa-plus"></i>
                 </button>
               </div>
 
-              <button class="remove-btn" type="button" (click)="removeItem(item)" aria-label="Remover item">
+              <button
+                class="remove-btn"
+                type="button"
+                (click)="removeItem(item)"
+                [attr.aria-label]="'Remover ' + itemName(item) + ' do carrinho'">
                 <i class="fas fa-trash"></i>
               </button>
             </article>
@@ -82,36 +95,97 @@
           <form class="shipping-form" [formGroup]="shippingForm" (ngSubmit)="calculateShipping()">
             <h3>Entrega</h3>
             <div class="shipping-grid">
-              <label>
+              <label for="shipping-postal-code">
                 CEP
-                <input formControlName="postalCode" inputmode="numeric" placeholder="00000000">
+                <input
+                  id="shipping-postal-code"
+                  formControlName="postalCode"
+                  inputmode="numeric"
+                  maxlength="8"
+                  autocomplete="postal-code"
+                  placeholder="00000000"
+                  [attr.aria-invalid]="fieldInvalid('postalCode')"
+                  aria-describedby="shipping-postal-code-error">
+                @if (fieldInvalid('postalCode')) {
+                  <p id="shipping-postal-code-error" class="error-text">{{ fieldErrorMessage('postalCode') }}</p>
+                }
               </label>
-              <label>
+              <label for="shipping-state">
                 UF
-                <input formControlName="state" maxlength="2" placeholder="SP">
+                <input
+                  id="shipping-state"
+                  formControlName="state"
+                  maxlength="2"
+                  autocomplete="address-level1"
+                  placeholder="SP"
+                  [attr.aria-invalid]="fieldInvalid('state')"
+                  aria-describedby="shipping-state-error">
+                @if (fieldInvalid('state')) {
+                  <p id="shipping-state-error" class="error-text">{{ fieldErrorMessage('state') }}</p>
+                }
               </label>
             </div>
-            <label>
+            <label for="shipping-street">
               Rua
-              <input formControlName="street" placeholder="Endereco">
+              <input
+                id="shipping-street"
+                formControlName="street"
+                autocomplete="address-line1"
+                placeholder="Endereco"
+                [attr.aria-invalid]="fieldInvalid('street')"
+                aria-describedby="shipping-street-error">
+              @if (fieldInvalid('street')) {
+                <p id="shipping-street-error" class="error-text">{{ fieldErrorMessage('street') }}</p>
+              }
             </label>
             <div class="shipping-grid">
-              <label>
+              <label for="shipping-number">
                 Numero
-                <input formControlName="number" placeholder="123">
+                <input
+                  id="shipping-number"
+                  formControlName="number"
+                  autocomplete="address-line2"
+                  placeholder="123"
+                  [attr.aria-invalid]="fieldInvalid('number')"
+                  aria-describedby="shipping-number-error">
+                @if (fieldInvalid('number')) {
+                  <p id="shipping-number-error" class="error-text">{{ fieldErrorMessage('number') }}</p>
+                }
               </label>
-              <label>
+              <label for="shipping-district">
                 Bairro
-                <input formControlName="district" placeholder="Centro">
+                <input
+                  id="shipping-district"
+                  formControlName="district"
+                  autocomplete="address-level3"
+                  placeholder="Centro"
+                  [attr.aria-invalid]="fieldInvalid('district')"
+                  aria-describedby="shipping-district-error">
+                @if (fieldInvalid('district')) {
+                  <p id="shipping-district-error" class="error-text">{{ fieldErrorMessage('district') }}</p>
+                }
               </label>
             </div>
-            <label>
+            <label for="shipping-city">
               Cidade
-              <input formControlName="city" placeholder="Cidade">
+              <input
+                id="shipping-city"
+                formControlName="city"
+                autocomplete="address-level2"
+                placeholder="Cidade"
+                [attr.aria-invalid]="fieldInvalid('city')"
+                aria-describedby="shipping-city-error">
+              @if (fieldInvalid('city')) {
+                <p id="shipping-city-error" class="error-text">{{ fieldErrorMessage('city') }}</p>
+              }
             </label>
-            <label>
+            <label for="shipping-complement">
               Complemento
-              <input formControlName="complement" placeholder="Opcional">
+              <input
+                id="shipping-complement"
+                formControlName="complement"
+                autocomplete="address-line3"
+                placeholder="Opcional">
             </label>
 
             @if (shippingForm.touched && shippingForm.invalid) {
@@ -124,7 +198,7 @@
           </form>
 
           @if (actionErrorMessage) {
-            <p class="error-text action-error">{{ actionErrorMessage }}</p>
+            <p class="error-text action-error" role="alert">{{ actionErrorMessage }}</p>
           }
 
           @if (shippingQuotes.length > 0) {
@@ -153,13 +227,6 @@
           <button class="clear-btn" type="button" (click)="clearCart()">
             Limpar carrinho
           </button>
-
-          @if (feedbackMessage) {
-            <p class="feedback">{{ feedbackMessage }}</p>
-            <a routerLink="/minhas-entregas" class="primary-link delivery-link">
-              Acompanhar entrega
-            </a>
-          }
         </aside>
       </div>
     }

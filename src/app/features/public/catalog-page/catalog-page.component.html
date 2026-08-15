@@ -37,7 +37,10 @@
     <section class="products-grid" aria-label="Produtos do catalogo">
       @for (product of products; track product.id; let index = $index) {
         <article class="product-card">
-          <a class="product-media" [routerLink]="['/produto', product.id]">
+          <a
+            class="product-media"
+            [routerLink]="['/produto', product.id]"
+            [attr.aria-label]="'Ver detalhes de ' + product.name">
             @if (product.is_featured) {
               <span class="product-badge">Destaque</span>
             }
@@ -48,14 +51,14 @@
                 height="238"
                 sizes="(max-width: 620px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 priority
-                [alt]="product.name">
+                [alt]="'Imagem de ' + product.name">
             } @else {
               <img
                 [ngSrc]="product.imageUrl || '/product1.webp'"
                 width="317"
                 height="238"
                 sizes="(max-width: 620px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                [alt]="product.name">
+                [alt]="'Imagem de ' + product.name">
             }
           </a>
 

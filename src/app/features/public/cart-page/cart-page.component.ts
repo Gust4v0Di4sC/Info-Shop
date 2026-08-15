@@ -1,6 +1,7 @@
 import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { HeaderComponent } from '@app/features/public/components/header/header.component';
 import { FooterComponent } from '@app/features/public/components/footer/footer.component';
@@ -25,7 +26,6 @@ export class CartPageComponent implements OnInit {
   isLoading = true;
   pageErrorMessage = '';
   actionErrorMessage = '';
-  feedbackMessage = '';
   isQuoting = false;
   isCheckingOut = false;
 
@@ -34,14 +34,15 @@ export class CartPageComponent implements OnInit {
     private paymentService: PaymentService,
     private fb: FormBuilder,
     private changeDetectorRef: ChangeDetectorRef,
+    private snackBar: MatSnackBar,
   ) {
     this.shippingForm = this.fb.group({
-      postalCode: ['', [Validators.required, Validators.minLength(8)]],
+      postalCode: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
       street: ['', [Validators.required]],
       number: ['', [Validators.required]],
       district: ['', [Validators.required]],
       city: ['', [Validators.required]],
-      state: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(2)]],
+      state: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
       complement: [''],
     });
   }
@@ -93,7 +94,7 @@ export class CartPageComponent implements OnInit {
     this.cartService.updateQuantity(item.id, quantity).subscribe({
       next: () => this.loadCart(),
       error: () => {
-        this.actionErrorMessage = 'Nao foi possivel atualizar este item agora. Tente novamente.';
+        this.showSnackbar('Nao foi possivel atualizar este item agora. Tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
     });
@@ -102,9 +103,12 @@ export class CartPageComponent implements OnInit {
   removeItem(item: CartItemWithProduct): void {
     this.actionErrorMessage = '';
     this.cartService.removeItem(item.id).subscribe({
-      next: () => this.loadCart(),
+      next: () => {
+        this.showSnackbar(`${this.itemName(item)} foi removido do carrinho.`);
+        this.loadCart();
+      },
       error: () => {
-        this.actionErrorMessage = 'Nao foi possivel remover este item agora. Tente novamente.';
+        this.showSnackbar('Nao foi possivel remover este item agora. Tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
     });
@@ -118,11 +122,11 @@ export class CartPageComponent implements OnInit {
         this.shippingQuotes = [];
         this.selectedServiceId = '';
         this.actionErrorMessage = '';
-        this.feedbackMessage = 'Carrinho limpo.';
+        this.showSnackbar('Carrinho limpo.');
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.actionErrorMessage = 'Nao foi possivel limpar o carrinho agora. Tente novamente.';
+        this.showSnackbar('Nao foi possivel limpar o carrinho agora. Tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
     });
@@ -136,7 +140,6 @@ export class CartPageComponent implements OnInit {
 
     this.isQuoting = true;
     this.actionErrorMessage = '';
-    this.feedbackMessage = '';
     this.shippingQuotes = [];
     this.selectedServiceId = '';
     this.changeDetectorRef.markForCheck();
@@ -163,7 +166,7 @@ export class CartPageComponent implements OnInit {
 
   checkout(): void {
     if (!this.selectedServiceId) {
-      this.actionErrorMessage = 'Escolha uma opcao de frete antes de finalizar.';
+      this.showSnackbar('Escolha uma opcao de frete antes de finalizar.');
       return;
     }
 
@@ -180,11 +183,42 @@ export class CartPageComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.actionErrorMessage = 'Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.';
+        this.showSnackbar('Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.');
         this.isCheckingOut = false;
         this.changeDetectorRef.markForCheck();
       },
     });
+  }
+
+  itemName(item: CartItemWithProduct): string {
+    return item.product?.name || 'Produto';
+  }
+
+  fieldInvalid(fieldName: string): boolean {
+    const control = this.shippingForm.get(fieldName);
+    return Boolean(control && control.touched && control.invalid);
+  }
+
+  fieldErrorMessage(fieldName: string): string {
+    const control = this.shippingForm.get(fieldName);
+
+    if (!control || !control.errors) {
+      return '';
+    }
+
+    if (control.hasError('required')) {
+      return this.requiredFieldMessage(fieldName);
+    }
+
+    if (fieldName === 'postalCode' && control.hasError('pattern')) {
+      return 'Digite um CEP valido com 8 numeros.';
+    }
+
+    if (fieldName === 'state' && control.hasError('pattern')) {
+      return 'Digite a UF com 2 letras.';
+    }
+
+    return 'Confira este campo.';
   }
 
   private deliveryAddress(): DeliveryAddress {
@@ -206,6 +240,27 @@ export class CartPageComponent implements OnInit {
 
   redirectToPayment(url: string): void {
     window.location.href = url;
+  }
+
+  private requiredFieldMessage(fieldName: string): string {
+    const messages: Record<string, string> = {
+      postalCode: 'O CEP e obrigatorio para calcular o frete.',
+      state: 'A UF e obrigatoria.',
+      street: 'A rua e obrigatoria.',
+      number: 'O numero e obrigatorio.',
+      district: 'O bairro e obrigatorio.',
+      city: 'A cidade e obrigatoria.',
+    };
+
+    return messages[fieldName] || 'Campo obrigatorio.';
+  }
+
+  private showSnackbar(message: string): void {
+    this.snackBar.open(message, 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
+    });
   }
 
 }

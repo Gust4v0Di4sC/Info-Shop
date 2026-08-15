@@ -6,7 +6,13 @@
         <h1>{{ product.name }}</h1>
         <p>{{ product.description }}</p>
 
-        <div class="progress-bar" aria-label="Estoque promocional vendido">
+        <div
+          class="progress-bar"
+          role="progressbar"
+          aria-label="Estoque promocional vendido"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="product.offer_sold_percent">
           <div class="progress-fill" [style.width.%]="product.offer_sold_percent"></div>
         </div>
         <span class="stock-note">{{ product.offer_sold_percent }}% do estoque promocional ja foi vendido</span>
@@ -25,7 +31,13 @@
 
         <div class="buttons">
           <a class="buy-now" [routerLink]="['/produto', product.id]">Comprar agora</a>
-          <button class="add-to-cart" type="button" (click)="addToCart($event)">Adicionar ao carrinho</button>
+          <button
+            class="add-to-cart"
+            type="button"
+            (click)="addToCart($event)"
+            [attr.aria-label]="'Adicionar ' + product.name + ' ao carrinho'">
+            Adicionar ao carrinho
+          </button>
         </div>
       </div>
 
@@ -35,7 +47,7 @@
           width="655"
           height="368"
           sizes="(max-width: 900px) 100vw, 50vw"
-          [alt]="product.name">
+          [alt]="'Imagem de ' + product.name">
       </div>
     </div>
   </section>

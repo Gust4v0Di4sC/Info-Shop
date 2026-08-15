@@ -14,7 +14,7 @@
     <div class="form-grid">
       <mat-form-field appearance="outline" class="wide">
         <mat-label>Cliente</mat-label>
-        <mat-select formControlName="clientId" (selectionChange)="onClientChange($event.value)">
+        <mat-select cdkFocusInitial formControlName="clientId" (selectionChange)="onClientChange($event.value)">
           @for (client of clients; track client.id) {
             <mat-option [value]="client.id">{{ client.name }}</mat-option>
           }

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideRouter } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
 import { of } from 'rxjs';
@@ -21,6 +22,7 @@ describe('FeaturedProductsComponent', () => {
             getCurrentUserAsync: () => Promise.resolve(null),
           },
         },
+        { provide: MatSnackBar, useValue: { open: jasmine.createSpy('open') } },
       ],
     })
     .compileComponents();

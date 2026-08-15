@@ -27,7 +27,11 @@
     <div class="clients-grid">
       @for (client of pagedClients(); track client.id) {
         <article class="client-card">
-          <button class="client-media" type="button" (click)="openEditForm(client)">
+          <button
+            class="client-media"
+            type="button"
+            (click)="openEditForm(client)"
+            [attr.aria-label]="'Editar cliente ' + (client.name | displayText: 'sem nome')">
             @if (client.imageUrl) {
               <img loading="lazy" [src]="client.imageUrl" [alt]="client.name | displayText: 'Cliente'">
             } @else {
@@ -45,11 +49,20 @@
           </div>
 
           <div class="card-actions">
-            <button mat-stroked-button type="button" (click)="openEditForm(client)">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="openEditForm(client)"
+              [attr.aria-label]="'Editar cliente ' + (client.name | displayText: 'sem nome')">
               <mat-icon>edit</mat-icon>
               Editar
             </button>
-            <button mat-icon-button class="danger-action" type="button" (click)="client.id ? deleteClient(client.id) : null" aria-label="Excluir cliente">
+            <button
+              mat-icon-button
+              class="danger-action"
+              type="button"
+              (click)="client.id ? deleteClient(client.id) : null"
+              [attr.aria-label]="'Excluir cliente ' + (client.name | displayText: 'sem nome')">
               <mat-icon>delete</mat-icon>
             </button>
           </div>

@@ -1,5 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HeaderComponent } from '@app/features/public/components/header/header.component';
 import { FooterComponent } from '@app/features/public/components/footer/footer.component';
@@ -20,13 +21,13 @@ export class ProductDetailComponent implements OnInit {
   quantity = 1;
   isLoading = true;
   errorMessage = '';
-  feedbackMessage = '';
 
   constructor(
     private route: ActivatedRoute,
     private productService: ProductService,
     private changeDetectorRef: ChangeDetectorRef,
     private injector: Injector,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -66,7 +67,6 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
-    this.feedbackMessage = '';
     void this.addProductToCart(this.product);
   }
 
@@ -79,13 +79,21 @@ export class ProductDetailComponent implements OnInit {
 
     this.injector.get(CartServiceService).addProduct(product.id, this.quantity).subscribe({
       next: () => {
-        this.feedbackMessage = 'Produto adicionado ao carrinho.';
+        this.showSnackbar(`${product.name} foi adicionado ao carrinho.`);
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel adicionar este produto ao carrinho. Entre na sua conta e tente novamente.';
+        this.showSnackbar('Nao foi possivel adicionar este produto ao carrinho. Entre na sua conta e tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
+    });
+  }
+
+  private showSnackbar(message: string): void {
+    this.snackBar.open(message, 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
     });
   }
 }
