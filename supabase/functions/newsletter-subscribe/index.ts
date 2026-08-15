@@ -1,6 +1,7 @@
 import { getServiceClient } from '../_shared/melhor-envio.ts';
 import { jsonResponse, optionsResponse } from '../_shared/cors.ts';
 import { assertRateLimit, clientIp } from '../_shared/rate-limit.ts';
+import { createLogContext, logCompleted, logError, logInfo, logWarn, type LogContext } from '../_shared/observability.ts';
 
 interface NewsletterRequest {
   email?: string;
@@ -11,7 +12,10 @@ Deno.serve(async req => {
     return optionsResponse(req);
   }
 
+  const logContext = createLogContext(req, 'newsletter-subscribe');
+
   if (req.method !== 'POST') {
+    logCompleted(logContext, 'METHOD_NOT_ALLOWED', 405, { method: req.method, provider: 'brevo' });
     return jsonResponse({ message: 'Metodo nao permitido.' }, 405, req);
   }
 
@@ -33,10 +37,16 @@ Deno.serve(async req => {
       throw error;
     }
 
-    await sendWelcomeEmail(email);
+    logInfo(logContext, 'NEWSLETTER_SUBSCRIBED', { provider: 'supabase' });
+    await sendWelcomeEmail(email, logContext);
 
+    logCompleted(logContext, 'NEWSLETTER_SUBSCRIBE_COMPLETED', 200, { provider: 'brevo' });
     return jsonResponse({ subscriber: data }, 200, req);
   } catch (error) {
+    logError(logContext, 'NEWSLETTER_SUBSCRIBE_FAILED', error, {
+      status: 400,
+      provider: 'supabase',
+    });
     return jsonResponse({
       message: error instanceof Error ? error.message : 'Nao foi possivel concluir a inscricao.',
     }, 400, req);
@@ -53,7 +63,7 @@ function normalizeEmail(email: string | undefined): string {
   return normalized;
 }
 
-async function sendWelcomeEmail(email: string): Promise<void> {
+async function sendWelcomeEmail(email: string, logContext: LogContext): Promise<void> {
   const apiKey = Deno.env.get('BREVO_API_KEY');
   const templateId = Number(Deno.env.get('BREVO_NEWSLETTER_TEMPLATE_ID') || 0);
 
@@ -79,6 +89,9 @@ async function sendWelcomeEmail(email: string): Promise<void> {
   });
 
   if (!response.ok) {
-    console.error('Newsletter email was not sent.', await response.text());
+    logWarn(logContext, 'NEWSLETTER_WELCOME_EMAIL_FAILED', {
+      status: response.status,
+      provider: 'brevo',
+    });
   }
 }

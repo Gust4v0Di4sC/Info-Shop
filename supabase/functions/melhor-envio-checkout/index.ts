@@ -13,19 +13,27 @@ import {
 } from '../_shared/melhor-envio.ts';
 import { jsonResponse, optionsResponse } from '../_shared/cors.ts';
 import { assertRateLimit } from '../_shared/rate-limit.ts';
+import { createLogContext, logCompleted, logError, logInfo } from '../_shared/observability.ts';
 
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') {
     return optionsResponse(req);
   }
 
+  const logContext = createLogContext(req, 'melhor-envio-checkout');
+
   if (req.method !== 'POST') {
+    logCompleted(logContext, 'METHOD_NOT_ALLOWED', 405, { method: req.method, provider: 'melhor-envio' });
     return jsonResponse({ message: 'Metodo nao permitido.' }, 405, req);
   }
+
+  let userId = '';
+  let orderId = '';
 
   try {
     const authHeader = req.headers.get('Authorization') || '';
     const user = await getAuthenticatedUser(authHeader);
+    userId = user.id;
     const serviceClient = getServiceClient();
     await assertRateLimit(serviceClient, {
       scope: 'melhor-envio-checkout',
@@ -44,6 +52,7 @@ Deno.serve(async req => {
     }
 
     const cartPayload = buildCartPayload(cart, address, selectedQuote);
+    logInfo(logContext, 'SHIPPING_CHECKOUT_STARTED', { userId, provider: 'melhor-envio' });
     const addToCartResponse = await melhorEnvioRequest('/api/v2/me/cart', {
       method: 'POST',
       body: JSON.stringify(cartPayload),
@@ -92,6 +101,7 @@ Deno.serve(async req => {
     if (orderError) {
       throw orderError;
     }
+    orderId = String(order.id);
 
     for (const item of cart.items) {
       const product = productById.get(String(item.product_id));
@@ -145,12 +155,25 @@ Deno.serve(async req => {
       throw clearError;
     }
 
+    logCompleted(logContext, 'SHIPPING_CHECKOUT_COMPLETED', 200, {
+      userId,
+      orderId,
+      provider: 'melhor-envio',
+      melhorEnvioOrderId,
+    });
+
     return jsonResponse({
       order,
       delivery: deliveryResult.data,
       quote: selectedQuote,
     }, 200, req);
   } catch (error) {
+    logError(logContext, 'SHIPPING_CHECKOUT_FAILED', error, {
+      userId,
+      orderId,
+      status: 400,
+      provider: 'melhor-envio',
+    });
     return jsonResponse({ message: error instanceof Error ? error.message : 'Nao foi possivel finalizar a compra.' }, 400, req);
   }
 });

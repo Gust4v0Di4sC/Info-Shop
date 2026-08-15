@@ -11,6 +11,8 @@ const ALLOWED_HEADERS = [
   'x-me-signature',
   'x-signature',
   'x-request-id',
+  'sentry-trace',
+  'baggage',
 ].join(', ');
 
 const ALLOWED_METHODS = 'GET, POST, OPTIONS';
@@ -33,10 +35,13 @@ export function isCorsAllowed(req: Request): boolean {
 }
 
 export function jsonResponse(body: unknown, status = 200, req?: Request): Response {
+  const requestId = req?.headers.get('x-request-id');
+
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       ...corsHeadersForRequest(req),
+      ...(requestId ? { 'X-Request-ID': requestId } : {}),
       'Content-Type': 'application/json',
     },
   });

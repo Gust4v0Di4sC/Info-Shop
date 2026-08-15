@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient, User } from 'https://esm.sh/@supabase/supabase-js@2.112.3';
 import { jsonResponse, optionsResponse } from '../_shared/cors.ts';
 import { assertRateLimit } from '../_shared/rate-limit.ts';
+import { createLogContext, logCompleted, logError, logInfo } from '../_shared/observability.ts';
 
 const FALLBACK_ANSWER = 'Nao possuo informacoes a respeito disso.';
 const GEMINI_MODEL = 'gemini-3.6-flash';
@@ -34,15 +35,23 @@ Deno.serve(async req => {
     return optionsResponse(req);
   }
 
+  const logContext = createLogContext(req, 'hardware-benchmark-chat');
+
   if (req.method !== 'POST') {
+    logCompleted(logContext, 'METHOD_NOT_ALLOWED', 405, { method: req.method, provider: 'gemini' });
     return jsonResponse({ message: 'Metodo nao permitido.' }, 405, req);
   }
+
+  let userId = '';
+  let productId = 0;
 
   try {
     const authHeader = req.headers.get('Authorization') || '';
     const user = await getAuthenticatedUser(authHeader);
+    userId = user.id;
 
     const body = normalizeRequest(await req.json());
+    productId = body.productId;
     const serviceClient = getServiceClient();
     await assertRateLimit(serviceClient, {
       scope: 'hardware-benchmark-chat',
@@ -51,11 +60,25 @@ Deno.serve(async req => {
       windowSeconds: 600,
     });
     const product = await loadProduct(serviceClient, body.productId);
+    logInfo(logContext, 'HARDWARE_BENCHMARK_STARTED', { userId, productId, provider: 'gemini' });
     const answer = await askGemini(product, body);
+
+    logCompleted(logContext, 'HARDWARE_BENCHMARK_COMPLETED', 200, {
+      userId,
+      productId,
+      provider: 'gemini',
+      fallbackAnswer: answer === FALLBACK_ANSWER,
+    });
 
     return jsonResponse({ answer }, 200, req);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Nao foi possivel comparar hardware.';
+    logError(logContext, 'HARDWARE_BENCHMARK_FAILED', error, {
+      userId,
+      productId,
+      status: 400,
+      provider: 'gemini',
+    });
     return jsonResponse({ message }, 400, req);
   }
 });
