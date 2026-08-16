@@ -7,6 +7,8 @@ import { environment } from './environments/environment';
 if (environment.sentryDsn) {
   Sentry.init({
     dsn: environment.sentryDsn,
+    dataCollection: {
+    },
     environment: environment.sentryEnvironment,
     release: environment.sentryRelease || undefined,
     integrations: [

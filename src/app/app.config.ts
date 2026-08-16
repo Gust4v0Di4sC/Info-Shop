@@ -1,6 +1,6 @@
 import { IMAGE_LOADER } from '@angular/common';
-import { ApplicationConfig, ErrorHandler, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { APP_INITIALIZER, ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import * as Sentry from '@sentry/angular';
 import { routes } from './app.routes';
@@ -23,10 +23,16 @@ export const appConfig: ApplicationConfig = {
       provide: ErrorHandler,
       useValue: Sentry.createErrorHandler(),
     },
-    Sentry.TraceService,
-    provideAppInitializer(() => {
-      inject(Sentry.TraceService);
-    }),
+    {
+      provide: Sentry.TraceService,
+      deps: [Router],
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => () => {},
+      deps: [Sentry.TraceService],
+      multi: true,
+    },
     { provide: IMAGE_LOADER, useValue: supabaseImageLoader },
     provideServiceWorker('ngsw-worker.js', {
       enabled: environment.production,
