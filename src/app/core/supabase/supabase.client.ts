@@ -10,6 +10,8 @@ const isBrowser = typeof window !== 'undefined';
 const runtimeSupabaseUrl = supabaseUrl || (isBrowser ? '' : 'https://example.supabase.co');
 const runtimeSupabaseAnonKey = supabaseAnonKey || (isBrowser ? '' : 'anon-key');
 const SLOW_SUPABASE_REQUEST_THRESHOLD_MS = 2000;
+const RETRYABLE_SUPABASE_STATUSES = new Set([502, 503, 504]);
+const SUPABASE_RETRY_DELAYS_MS = [500, 1500, 3000];
 
 if (isBrowser && (!runtimeSupabaseUrl || !runtimeSupabaseAnonKey)) {
   throw new Error('Supabase URL e anon key precisam estar configuradas no environment.');
@@ -31,7 +33,7 @@ export const supabase: SupabaseClient<Database> = createClient<Database>(
   },
 );
 
-function proxiedSupabaseFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+async function proxiedSupabaseFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   if (typeof window === 'undefined') {
     return fetch(input, init);
   }
@@ -57,15 +59,51 @@ function proxiedSupabaseFetch(input: RequestInfo | URL, init?: RequestInit): Pro
   headers.delete('apikey');
   headers.set(REQUEST_ID_HEADER, requestId);
 
+  const requestBody = ['GET', 'HEAD'].includes(originalRequest.method)
+    ? undefined
+    : await originalRequest.arrayBuffer();
   const proxiedRequest = new Request(`/api/supabase${url.pathname}${url.search}`, {
     method: originalRequest.method,
     headers,
-    body: ['GET', 'HEAD'].includes(originalRequest.method) ? undefined : originalRequest.body,
+    body: requestBody,
     credentials: 'same-origin',
-    duplex: 'half',
-  } as RequestInit & { duplex: 'half' });
+  });
 
-  return observedSupabaseFetch(proxiedRequest, requestId);
+  return fetchSupabaseWithRetry(proxiedRequest, requestId);
+}
+
+async function fetchSupabaseWithRetry(request: Request, requestId: string): Promise<Response> {
+  for (let attempt = 0; attempt <= SUPABASE_RETRY_DELAYS_MS.length; attempt++) {
+    let response: Response;
+
+    try {
+      response = await observedSupabaseFetch(request.clone(), requestId);
+    } catch (error) {
+      const retryDelay = SUPABASE_RETRY_DELAYS_MS[attempt];
+
+      if (!isRetryableSupabaseRequest(request) || retryDelay === undefined) {
+        throw error;
+      }
+
+      await delay(retryDelay);
+      continue;
+    }
+
+    if (!isRetryableSupabaseResponse(request, response)) {
+      return response;
+    }
+
+    const retryDelay = SUPABASE_RETRY_DELAYS_MS[attempt];
+
+    if (retryDelay === undefined) {
+      return response;
+    }
+
+    await response.arrayBuffer();
+    await delay(retryDelay);
+  }
+
+  return observedSupabaseFetch(request, requestId);
 }
 
 async function observedSupabaseFetch(request: Request, requestId: string): Promise<Response> {
@@ -129,7 +167,30 @@ function recordSupabaseFetchTelemetry(
   }
 }
 
+function isRetryableSupabaseResponse(request: Request, response: Response): boolean {
+  return RETRYABLE_SUPABASE_STATUSES.has(response.status) && isRetryableSupabaseRequest(request);
+}
+
+function isRetryableSupabaseRequest(request: Request): boolean {
+  if (request.method === 'GET' || request.method === 'HEAD') {
+    return true;
+  }
+
+  const url = new URL(request.url, window.location.origin);
+  const isIdempotentStorageUpload =
+    request.method === 'POST' &&
+    url.pathname.includes('/storage/v1/object/') &&
+    request.headers.get('x-upsert') === 'true';
+
+  return isIdempotentStorageUpload ||
+    (request.method === 'POST' && url.pathname.endsWith('/rpc/get_current_admin_stores'));
+}
+
 function sanitizedUrl(value: string): string {
   const url = new URL(value, window.location.origin);
   return `${url.origin}${url.pathname}`;
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
 }

@@ -33,7 +33,21 @@ export class CustomerProfileService {
 
   private async ensureCurrentProfile(): Promise<AppUser> {
     const user = await this.getAuthUser();
-    const result = await supabase
+    const existingResult = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (existingResult.error) {
+      throw existingResult.error;
+    }
+
+    if (existingResult.data) {
+      return existingResult.data;
+    }
+
+    const createResult = await supabase
       .from('users')
       .upsert({
         id: user.id,
@@ -46,7 +60,7 @@ export class CustomerProfileService {
       .select()
       .single();
 
-    return getSupabaseData(result);
+    return getSupabaseData(createResult);
   }
 
   private async updateProfile(profile: AppUserUpdate): Promise<AppUser> {

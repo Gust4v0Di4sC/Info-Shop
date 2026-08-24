@@ -10,6 +10,7 @@ export interface AdminStoreContext {
 }
 
 const STORAGE_KEY = 'infoshop-admin-current-store';
+const STORE_LOAD_RETRY_DELAYS_MS = [500, 1500, 3000];
 
 @Injectable({
   providedIn: 'root',
@@ -37,7 +38,10 @@ export class TenantContextService {
 
   async ensureLoaded(): Promise<void> {
     if (!this.loadPromise) {
-      this.loadPromise = this.loadStores();
+      this.loadPromise = this.loadStoresWithRetry().catch(error => {
+        this.loadPromise = null;
+        throw error;
+      });
     }
 
     await this.loadPromise;
@@ -89,13 +93,15 @@ export class TenantContextService {
       return;
     }
 
-    const { data, error } = await supabase.rpc('get_current_admin_stores');
+    const { data, error } = await supabase
+      .from('admin_store_accesses')
+      .select('stores(id, name, region)');
 
     if (error) {
       throw error;
     }
 
-    const stores = (data || []) as AdminStoreContext[];
+    const stores = normalizeStoresFromAccessRows(data || []);
     const persistedStoreId = localStorage.getItem(STORAGE_KEY);
     const selectedStore = stores.find(store => store.id === persistedStoreId) || stores[0] || null;
 
@@ -109,9 +115,47 @@ export class TenantContextService {
     }
   }
 
+  private async loadStoresWithRetry(): Promise<void> {
+    for (let attempt = 0; attempt <= STORE_LOAD_RETRY_DELAYS_MS.length; attempt++) {
+      try {
+        await this.loadStores();
+        return;
+      } catch (error) {
+        const retryDelay = STORE_LOAD_RETRY_DELAYS_MS[attempt];
+
+        if (retryDelay === undefined) {
+          throw error;
+        }
+
+        await delay(retryDelay);
+      }
+    }
+  }
+
   private resetLoadedState(): void {
     this.storesSubject.next([]);
     this.selectedStoreIdSubject.next(null);
     localStorage.removeItem(STORAGE_KEY);
   }
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+function normalizeStoresFromAccessRows(rows: unknown[]): AdminStoreContext[] {
+  const stores = new Map<string, AdminStoreContext>();
+
+  rows.forEach(row => {
+    const store = (row as { stores?: AdminStoreContext | AdminStoreContext[] | null }).stores;
+    const normalizedStore = Array.isArray(store) ? store[0] : store;
+
+    if (normalizedStore?.id && normalizedStore.name && normalizedStore.region) {
+      stores.set(normalizedStore.id, normalizedStore);
+    }
+  });
+
+  return Array.from(stores.values()).sort((a, b) =>
+    a.region.localeCompare(b.region) || a.name.localeCompare(b.name),
+  );
 }

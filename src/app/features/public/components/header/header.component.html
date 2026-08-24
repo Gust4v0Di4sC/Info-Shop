@@ -19,7 +19,7 @@
       <img
         [ngSrc]="themeService.publicLogoUrl()"
         width="180"
-        height="60"
+        height="45"
         alt="InfoShop Logo"
         class="logo-image">
     </a>
@@ -59,10 +59,10 @@
           class="icon-btn cart-btn"
           (click)="goToCart()"
           type="button"
-          [attr.aria-label]="cartCount > 0 ? 'Carrinho com ' + cartCount + ' itens' : 'Carrinho vazio'">
+          [attr.aria-label]="cartCount() > 0 ? 'Carrinho com ' + cartCount() + ' itens' : 'Carrinho vazio'">
           <mat-icon>shopping_bag</mat-icon>
-          @if (cartCount > 0) {
-            <span class="cart-badge">{{ cartCount }}</span>
+          @if (cartCount() > 0) {
+            <span class="cart-badge">{{ cartCount() }}</span>
           }
         </button>
       </div>

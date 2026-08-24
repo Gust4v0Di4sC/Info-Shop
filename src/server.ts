@@ -58,22 +58,7 @@ app.use((_req, res, next) => {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   }
 
-  res.setHeader(
-    'Content-Security-Policy',
-    [
-      "default-src 'self'",
-      "base-uri 'self'",
-      "object-src 'none'",
-      "frame-ancestors 'none'",
-      "script-src 'self' https://cdnjs.cloudflare.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
-      "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
-      "img-src 'self' data: blob: https://*.supabase.co",
-      "connect-src 'self' https://*.supabase.co",
-      "form-action 'self'",
-      'upgrade-insecure-requests',
-    ].join('; '),
-  );
+  res.setHeader('Content-Security-Policy', contentSecurityPolicy());
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
@@ -397,16 +382,38 @@ app.use('/api/supabase', async (req, res) => {
     headers.set('apikey', supabaseAnonKey);
     headers.set('Authorization', `Bearer ${session?.access_token || supabaseAnonKey}`);
 
+    const requestBody = ['GET', 'HEAD'].includes(req.method)
+      ? undefined
+      : await readProxyRequestBody(req);
+    const upstreamBody = requestBody
+      ? requestBody.buffer.slice(
+          requestBody.byteOffset,
+          requestBody.byteOffset + requestBody.byteLength,
+        ) as ArrayBuffer
+      : undefined;
     const upstream = await fetch(target, {
       method: req.method,
       headers,
-      body: ['GET', 'HEAD'].includes(req.method) ? undefined : req,
-      duplex: 'half',
-    } as RequestInit & { duplex: 'half' });
+      body: upstreamBody,
+    });
 
     res.status(upstream.status);
     upstream.headers.forEach((value, key) => {
-      if (!['content-encoding', 'content-length', 'transfer-encoding', 'set-cookie'].includes(key.toLowerCase())) {
+      if (![
+        'alt-svc',
+        'connection',
+        'content-encoding',
+        'content-length',
+        'keep-alive',
+        'proxy-authenticate',
+        'proxy-authorization',
+        'strict-transport-security',
+        'set-cookie',
+        'te',
+        'trailer',
+        'transfer-encoding',
+        'upgrade',
+      ].includes(key.toLowerCase())) {
         res.setHeader(key, value);
       }
     });
@@ -453,7 +460,13 @@ app.use(async (req, res, next) => {
 
 if (isMainModule(import.meta.url) || isBundledServerEntrypoint()) {
   const port = process.env['PORT'] || 4000;
-  app.listen(port, () => {
+  app.listen(port, (error?: Error) => {
+    if (error) {
+      console.error(`Failed to start Node Express server on port ${port}:`, error.message);
+      process.exitCode = 1;
+      return;
+    }
+
     console.log(`Node Express server listening on http://localhost:${port}`);
   });
 }
@@ -500,6 +513,49 @@ function angularAllowedHosts(): string[] {
   }
 
   return Array.from(hosts);
+}
+
+function contentSecurityPolicy(): string {
+  const scriptSources = ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com'];
+  const workerSources = ["'self'", 'blob:'];
+  const connectSources = ["'self'", 'https://*.supabase.co'];
+
+  const sentryOrigin = sentryDsnOrigin();
+  if (sentryOrigin) {
+    connectSources.push(sentryOrigin, 'https://*.sentry.io');
+  }
+
+  const directives = [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    `script-src ${scriptSources.join(' ')}`,
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+    "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
+    "img-src 'self' data: blob: https://*.supabase.co",
+    `connect-src ${connectSources.join(' ')}`,
+    `worker-src ${workerSources.join(' ')}`,
+    "form-action 'self'",
+  ];
+
+  if (isProduction) {
+    directives.push('upgrade-insecure-requests');
+  }
+
+  return directives.join('; ');
+}
+
+function sentryDsnOrigin(): string | null {
+  if (!environment.sentryDsn) {
+    return null;
+  }
+
+  try {
+    return new URL(environment.sentryDsn).origin;
+  } catch {
+    return null;
+  }
 }
 
 function createRequestSupabaseClient(req: Request, res: Response) {
@@ -608,6 +664,24 @@ function parseCookies(header: string): { name: string; value: string }[] {
         value: decodeURIComponent(value),
       };
     });
+}
+
+async function readProxyRequestBody(req: Request, maxBytes = 12 * 1024 * 1024): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  let totalBytes = 0;
+
+  for await (const chunk of req) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    totalBytes += buffer.length;
+
+    if (totalBytes > maxBytes) {
+      throw new Error('Corpo da requisicao excede o limite permitido.');
+    }
+
+    chunks.push(buffer);
+  }
+
+  return Buffer.concat(chunks, totalBytes);
 }
 
 function requestOrigin(req: Request): string {

@@ -76,7 +76,7 @@
           maxlength="600"
           placeholder="Pergunte como este produto se compara ao seu setup"></textarea>
       </label>
-      <button class="primary-action" type="submit" [disabled]="isSending">
+      <button class="primary-action" type="button" (click)="sendMessage()" [disabled]="isSending">
         <i class="fas fa-paper-plane"></i>
         {{ isSending ? 'Analisando...' : 'Analisar' }}
       </button>

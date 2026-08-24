@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { of, switchMap } from 'rxjs';
@@ -35,6 +35,7 @@ export class CustomerProfileComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private customerProfileService: CustomerProfileService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.profileForm = this.fb.group({
       email: [{ value: '', disabled: true }],
@@ -63,10 +64,12 @@ export class CustomerProfileComponent implements OnInit {
         this.patchProfile(profile);
         this.isLoading = false;
         this.loadAdminStatus();
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Nao foi possivel carregar seu perfil agora. Atualize a pagina ou tente novamente mais tarde.';
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }
@@ -98,10 +101,12 @@ export class CustomerProfileComponent implements OnInit {
         this.patchProfile(profile);
         this.feedbackMessage = 'Perfil atualizado.';
         this.isSaving = false;
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Nao foi possivel salvar seu perfil agora. Confira os dados e tente novamente.';
         this.isSaving = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }
@@ -126,6 +131,7 @@ export class CustomerProfileComponent implements OnInit {
     const reader = new FileReader();
     reader.onload = () => {
       this.avatarPreviewUrl = reader.result as string;
+      this.changeDetectorRef.markForCheck();
     };
     reader.readAsDataURL(file);
   }
@@ -144,9 +150,11 @@ export class CustomerProfileComponent implements OnInit {
     this.customerProfileService.isCurrentUserAdmin().subscribe({
       next: isAdmin => {
         this.isAdmin = isAdmin;
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.isAdmin = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }

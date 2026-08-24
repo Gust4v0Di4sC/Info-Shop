@@ -9,6 +9,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideServiceWorker } from '@angular/service-worker';
 import { supabaseImageLoader } from '@app/core/images/supabase-image-loader';
 import { telemetryInterceptor } from '@app/core/observability/telemetry.interceptor';
+import { AuthService } from '@app/core/auth/auth.service';
 import { environment } from '@environments/environment';
 
 
@@ -31,6 +32,12 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: () => () => {},
       deps: [Sentry.TraceService],
+      multi: true,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (authService: AuthService) => () => authService.loadUserFromSession(),
+      deps: [AuthService],
       multi: true,
     },
     { provide: IMAGE_LOADER, useValue: supabaseImageLoader },

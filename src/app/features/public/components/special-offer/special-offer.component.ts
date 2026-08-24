@@ -1,5 +1,14 @@
-import { NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, OnInit, OnDestroy } from '@angular/core';
+import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  Injector,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+} from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { Product } from '@app/models/product.model';
@@ -19,13 +28,17 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
   isLoading = true;
   errorMessage = '';
   private intervalId: any;
+  private readonly isBrowser: boolean;
 
   constructor(
     private productService: ProductService,
     private changeDetectorRef: ChangeDetectorRef,
     private injector: Injector,
     private snackBar: MatSnackBar,
-  ) {}
+    @Inject(PLATFORM_ID) platformId: object,
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {
     this.productService.getOfferProduct().subscribe({
@@ -39,7 +52,10 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
             : new Date().getTime() + 1000 * 60 * 50;
 
           this.updateCountdown(targetTime);
-          this.intervalId = setInterval(() => this.updateCountdown(targetTime), 1000);
+
+          if (this.isBrowser) {
+            this.intervalId = setInterval(() => this.updateCountdown(targetTime), 1000);
+          }
         }
 
         this.changeDetectorRef.markForCheck();

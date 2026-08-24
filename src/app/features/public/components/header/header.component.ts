@@ -8,11 +8,13 @@ import {
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { AuthService } from '@app/core/auth/auth.service';
 import { ResponsiveLayoutService } from '@app/core/layout/responsive-layout.service';
 import { AdminThemeService } from '@app/core/theme/admin-theme.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
+import { CartServiceService } from '@app/services/cart-service.service';
 
 @Component({
   selector: 'app-header',
@@ -26,13 +28,16 @@ export class HeaderComponent implements OnInit {
   readonly layout = inject(ResponsiveLayoutService);
   readonly menuRequested = output<void>();
   private readonly authService = inject(AuthService);
+  private readonly cartService = inject(CartServiceService);
+  readonly cartCount = toSignal(this.cartService.cartCount$, { initialValue: 0 });
 
-  cartCount = 0;
   searchTerm = '';
 
   constructor(private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.cartService.refreshCartCount().subscribe({ error: () => undefined });
+  }
 
   goToHome(): void {
     this.router.navigate(['/home']);
