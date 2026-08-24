@@ -3,7 +3,7 @@
     <div>
       <p class="eyebrow">Meu perfil</p>
       <h1>Perfil do administrador</h1>
-      <span>Dados pessoais, regiao operacional e loja vinculada ao seu usuario.</span>
+      <span>Dados pessoais, região operacional e loja vinculada ao seu usuário.</span>
     </div>
 
     <button mat-flat-button class="primary-action" type="button" (click)="saveProfile()" [disabled]="isSaving || isLoading">
@@ -32,11 +32,11 @@
           </span>
           <span>
             <mat-icon>storefront</mat-icon>
-            {{ profileForm.value.store_name || 'Loja nao informada' }}
+            {{ profileForm.value.store_name || 'Loja não informada' }}
           </span>
           <span>
             <mat-icon>map</mat-icon>
-            {{ profileForm.value.region || 'Regiao nao informada' }}
+            {{ profileForm.value.region || 'Região não informada' }}
           </span>
         </div>
       </aside>
@@ -44,12 +44,12 @@
       <section class="form-panel">
         <div class="section-title">
           <p class="eyebrow">Dados pessoais</p>
-          <h2>Informacoes do usuario</h2>
+          <h2>Informações do usuário</h2>
         </div>
 
         <div class="field-row">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Email</mat-label>
+            <mat-label>E-mail</mat-label>
             <mat-icon matPrefix>mail_outline</mat-icon>
             <input matInput formControlName="email" type="email">
           </mat-form-field>
@@ -76,19 +76,19 @@
         </div>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Endereco</mat-label>
+          <mat-label>Endereço</mat-label>
           <mat-icon matPrefix>home_pin</mat-icon>
           <textarea matInput formControlName="address" rows="3"></textarea>
         </mat-form-field>
 
         <div class="section-title operational-title">
-          <p class="eyebrow">Operacao</p>
+          <p class="eyebrow">Operação</p>
           <h2>Localidade administrativa</h2>
         </div>
 
         <div class="field-row">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Regiao</mat-label>
+            <mat-label>Região</mat-label>
             <mat-icon matPrefix>map</mat-icon>
             <input matInput formControlName="region" type="text" placeholder="Ex.: Sul, SP Interior, Nordeste">
           </mat-form-field>
@@ -113,7 +113,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Email de envio</mat-label>
+            <mat-label>E-mail de envio</mat-label>
             <mat-icon matPrefix>alternate_email</mat-icon>
             <input matInput formControlName="sender_email" type="email">
           </mat-form-field>
@@ -135,13 +135,13 @@
 
         <div class="field-row">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Endereco</mat-label>
+            <mat-label>Endereço</mat-label>
             <mat-icon matPrefix>home_pin</mat-icon>
             <input matInput formControlName="sender_address" type="text">
           </mat-form-field>
 
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Numero</mat-label>
+            <mat-label>Número</mat-label>
             <mat-icon matPrefix>tag</mat-icon>
             <input matInput formControlName="sender_number" type="text">
           </mat-form-field>
@@ -177,7 +177,7 @@
 
         <div class="section-title operational-title">
           <p class="eyebrow">Fallback</p>
-          <h2>Pacote padrao da loja</h2>
+          <h2>Pacote padrão da loja</h2>
         </div>
 
         <div class="field-row package-row">
@@ -207,7 +207,7 @@
         </div>
 
         @if (profileForm.touched && profileForm.invalid) {
-          <p class="error-text">Preencha nome, regiao e loja para salvar.</p>
+          <p class="error-text">Preencha nome, região e loja para salvar.</p>
         }
 
         @if (errorMessage) {

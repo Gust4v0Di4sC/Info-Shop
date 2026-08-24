@@ -61,7 +61,7 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar a oferta.';
+        this.errorMessage = 'Não foi possível carregar a oferta.';
         this.isLoading = false;
         this.changeDetectorRef.markForCheck();
       },

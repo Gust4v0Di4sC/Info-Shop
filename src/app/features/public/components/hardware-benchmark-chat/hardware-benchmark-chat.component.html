@@ -13,7 +13,7 @@
   @if (!isAuthenticated) {
     <div class="login-state">
       <strong>Entre para usar o comparador</strong>
-      <p>Usuarios logados podem comparar este produto com o computador, notebook ou setup atual.</p>
+      <p>Usuários logados podem comparar este produto com o computador, notebook ou setup atual.</p>
       <button class="secondary-action" type="button" (click)="goToLogin()">
         <i class="far fa-user"></i>
         Entrar na conta
@@ -36,19 +36,19 @@
       <button type="button" (click)="usePrompt('Qual gargalo esse produto pode resolver no meu setup?')">
         Gargalos
       </button>
-      <button type="button" (click)="usePrompt('O custo-beneficio compensa comparado ao meu hardware atual?')">
-        Custo-beneficio
+      <button type="button" (click)="usePrompt('O custo-benefício compensa comparado ao meu hardware atual?')">
+        Custo-benefício
       </button>
     </div>
 
     <div class="messages" aria-live="polite">
       @for (message of messages; track $index) {
         <article class="message" [class.model-message]="message.role === 'model'">
-          <span>{{ message.role === 'user' ? 'Voce' : 'InfoShop IA' }}</span>
+          <span>{{ message.role === 'user' ? 'Você' : 'InfoShop IA' }}</span>
           <p>{{ message.text }}</p>
         </article>
       } @empty {
-        <p class="empty-state">Pergunte sobre desempenho, gargalos, compatibilidade ou custo-beneficio.</p>
+        <p class="empty-state">Pergunte sobre desempenho, gargalos, compatibilidade ou custo-benefício.</p>
       }
 
       @if (isSending) {

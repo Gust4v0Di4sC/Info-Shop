@@ -3,7 +3,7 @@
     <div>
       <p class="eyebrow">Painel administrativo</p>
       <h1>Dashboard gerencial</h1>
-      <span>Vendas, produtos, estoque e operacao em uma unica visao.</span>
+      <span>Vendas, produtos, estoque e operação em uma única visão.</span>
     </div>
 
     <button mat-flat-button class="primary-action" type="button" (click)="loadOverview()">
@@ -40,7 +40,7 @@
       </div>
       <div class="summary-item">
         <mat-icon>people</mat-icon>
-        <span>Usuarios</span>
+        <span>Usuários</span>
         <strong>{{ overview.totals.users }}</strong>
       </div>
       <div class="summary-item">
@@ -91,7 +91,7 @@
         <div class="panel-head">
           <div>
             <p class="eyebrow">Receita</p>
-            <h2>Evolucao mensal</h2>
+            <h2>Evolução mensal</h2>
           </div>
           <a routerLink="/orders">Pedidos</a>
         </div>
@@ -101,7 +101,7 @@
             <canvas baseChart [data]="revenueByMonthData" [options]="revenueByMonthOptions" [type]="'line'"></canvas>
           </div>
         } @else {
-          <p class="empty-note">Sem receita nos ultimos meses.</p>
+          <p class="empty-note">Sem receita nos últimos meses.</p>
         }
       </article>
 
@@ -137,7 +137,7 @@
             <canvas baseChart [data]="slowMovingData" [options]="slowMovingOptions" [type]="'bar'"></canvas>
           </div>
         } @else {
-          <p class="empty-note">Nenhum produto cadastrado para analise.</p>
+          <p class="empty-note">Nenhum produto cadastrado para análise.</p>
         }
       </article>
     </div>
@@ -146,13 +146,13 @@
       <article class="insight-card">
         <span>Receita registrada</span>
         <strong>{{ overview.revenue | brlCurrency }}</strong>
-        <small>Pedidos nao cancelados</small>
+        <small>Pedidos não cancelados</small>
       </article>
 
       <article class="insight-card">
         <span>Ticket medio</span>
         <strong>{{ overview.analytics.averageTicket | brlCurrency }}</strong>
-        <small>Baseado em pedidos nao cancelados</small>
+        <small>Baseado em pedidos não cancelados</small>
       </article>
 
       <article class="insight-card">
@@ -162,7 +162,7 @@
           <small>{{ product.productName }}</small>
         } @else {
           <strong>0 un.</strong>
-          <small>Sem vendas no periodo</small>
+          <small>Sem vendas no período</small>
         }
       </article>
 
@@ -227,7 +227,7 @@
             }
           </div>
         } @else {
-          <p class="empty-note">Nenhum produto abaixo do minimo.</p>
+          <p class="empty-note">Nenhum produto abaixo do mínimo.</p>
         }
       </article>
 

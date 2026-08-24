@@ -6,7 +6,7 @@
     <div>
       <p class="eyebrow">Pedidos</p>
       <h2>{{ isEditMode ? 'Editar pedido' : 'Novo pedido' }}</h2>
-      <span>Selecione cliente e produto; os dados de entrega sao preenchidos automaticamente.</span>
+      <span>Selecione o cliente e o produto; os dados de entrega são preenchidos automaticamente.</span>
     </div>
   </header>
 
@@ -25,7 +25,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>ID do usuario</mat-label>
+        <mat-label>ID do usuário</mat-label>
         <input matInput formControlName="userId" placeholder="Gerado pelo cliente">
         @if (orderForm.get('userId')?.invalid) {
           <mat-error>{{ getErrorMessage('userId') }}</mat-error>
@@ -45,8 +45,8 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="wide">
-        <mat-label>Endereco de entrega</mat-label>
-        <textarea matInput formControlName="address" placeholder="Endereco do cliente" rows="3"></textarea>
+        <mat-label>Endereço de entrega</mat-label>
+        <textarea matInput formControlName="address" placeholder="Endereço do cliente" rows="3"></textarea>
         @if (orderForm.get('address')?.invalid) {
           <mat-error>{{ getErrorMessage('address') }}</mat-error>
         }
@@ -55,7 +55,7 @@
 
     <div class="helper-panel">
       <mat-icon>info</mat-icon>
-      <span>Para alterar endereco ou dados do cliente, atualize o cadastro na base de clientes.</span>
+      <span>Para alterar endereço ou dados do cliente, atualize o cadastro na base de clientes.</span>
     </div>
   </mat-dialog-content>
 

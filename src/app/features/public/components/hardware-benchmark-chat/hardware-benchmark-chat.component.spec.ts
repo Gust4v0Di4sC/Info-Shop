@@ -94,7 +94,7 @@ describe('HardwareBenchmarkChatComponent', () => {
 
     component.sendMessage();
 
-    expect(component.errorMessage).toBe('Nao foi possivel consultar a IA agora.');
+    expect(component.errorMessage).toBe('Não foi possível consultar a IA agora.');
     expect(component.messages.at(-1)?.text).toBe(component.fallbackAnswer);
   });
 });

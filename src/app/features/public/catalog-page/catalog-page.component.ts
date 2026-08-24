@@ -18,7 +18,7 @@ const CATEGORIES: CatalogCategory[] = [
   { label: 'Tablets', slug: 'tablets' },
   { label: 'Games', slug: 'games' },
   { label: 'Hardware', slug: 'hardware' },
-  { label: 'Perifericos', slug: 'perifericos' },
+  { label: 'Periféricos', slug: 'perifericos' },
 ];
 
 @Component({
@@ -84,7 +84,7 @@ export class CatalogPageComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar o catalogo.';
+        this.errorMessage = 'Não foi possível carregar o catálogo.';
         this.isLoading = false;
         this.changeDetectorRef.markForCheck();
       },

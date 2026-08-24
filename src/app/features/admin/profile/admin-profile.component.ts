@@ -15,7 +15,7 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
 export class AdminProfileComponent implements OnInit {
   readonly profileTabs: AdminSectionTab[] = [
     { label: 'Perfil', icon: 'account_circle', route: '/admin-profile' },
-    { label: 'Personalizacao', icon: 'palette', route: '/customization' },
+    { label: 'Personalização', icon: 'palette', route: '/customization' },
   ];
 
   profileForm: FormGroup;
@@ -93,7 +93,7 @@ export class AdminProfileComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar o perfil agora. Tente novamente em alguns instantes.';
+        this.errorMessage = 'Não foi possível carregar o perfil agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });
@@ -165,7 +165,7 @@ export class AdminProfileComponent implements OnInit {
         this.showFeedback('Perfil administrativo atualizado.');
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel salvar o perfil agora. Confira os dados e tente novamente.';
+        this.errorMessage = 'Não foi possível salvar o perfil agora. Confira os dados e tente novamente.';
         this.isSaving = false;
       },
     });

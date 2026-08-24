@@ -6,14 +6,14 @@
 
     <button mat-stroked-button class="store-button" type="button" (click)="goToHome()">
       <mat-icon>arrow_back</mat-icon>
-      Voltar a loja
+      Voltar à loja
     </button>
   </header>
 
   <main class="login-main">
     <section class="login-intro">
       <h1>Entrar na sua conta</h1>
-      <p>Acompanhe pedidos, salve favoritos e finalize compras mais rapido.</p>
+      <p>Acompanhe pedidos, salve favoritos e finalize compras mais rápido.</p>
     </section>
 
     <mat-button-toggle-group
@@ -42,7 +42,7 @@
               <mat-error>Informe seu e-mail</mat-error>
             }
             @if (loginForm.get('email')?.hasError('email')) {
-              <mat-error>Informe um e-mail valido</mat-error>
+              <mat-error>Informe um e-mail válido</mat-error>
             }
           </mat-form-field>
 
@@ -63,12 +63,12 @@
               <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
             </button>
             @if (loginForm.get('password')?.hasError('required')) {
-              <mat-error>Senha e obrigatoria</mat-error>
+              <mat-error>Senha é obrigatória</mat-error>
             }
           </mat-form-field>
 
           <div class="form-options">
-            <span class="session-note">Sessao encerrada ao fechar o navegador.</span>
+            <span class="session-note">Sessão encerrada ao fechar o navegador.</span>
             <button class="text-link" type="button" (click)="goToPasswordRecovery()">Esqueci minha senha</button>
           </div>
 
@@ -83,8 +83,8 @@
 
         @if (!isAdminView) {
           <div class="create-account">
-            Ainda nao tem conta?
-            <button class="text-link" type="button" (click)="goToRegister()">Criar conta gratis</button>
+            Ainda não tem conta?
+            <button class="text-link" type="button" (click)="goToRegister()">Criar conta grátis</button>
           </div>
 
           <div class="social-login">
@@ -94,13 +94,13 @@
             </button>
           </div>
         } @else {
-          <p class="admin-access-note">Acesso administrativo permitido apenas para usuarios autorizados.</p>
+          <p class="admin-access-note">Acesso administrativo permitido apenas para usuários autorizados.</p>
         }
       </mat-card-content>
     </mat-card>
 
     <p class="terms">
-      Ao entrar, voce concorda com os termos de uso e a politica de privacidade da InfoShop.
+      Ao entrar, você concorda com os termos de uso e a política de privacidade da InfoShop.
     </p>
   </main>
 </div>

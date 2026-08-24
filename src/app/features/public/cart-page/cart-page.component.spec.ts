@@ -58,7 +58,7 @@ describe('CartPageComponent', () => {
     component.checkout();
 
     expect(snackBar.open).toHaveBeenCalledWith(
-      'Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.',
+      'Não foi possível iniciar o pagamento agora. Tente novamente em alguns instantes.',
       'Fechar',
       jasmine.objectContaining({ duration: 3000 }),
     );
@@ -81,7 +81,7 @@ describe('CartPageComponent', () => {
     component.calculateShipping();
 
     expect(component.pageErrorMessage).toBe('');
-    expect(component.actionErrorMessage).toBe('Nao encontramos frete disponivel para este endereco.');
+    expect(component.actionErrorMessage).toBe('Não encontramos frete disponível para este endereço.');
     expect(component.shippingQuotes).toEqual([]);
     expect(component.selectedServiceId).toBe('');
     expect(component.isQuoting).toBeFalse();

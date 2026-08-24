@@ -132,7 +132,7 @@ export class CartServiceService {
     }
 
     if (!productResult.data) {
-      throw new Error('Produto nao encontrado para adicionar ao carrinho.');
+      throw new Error('Produto não encontrado para adicionar ao carrinho.');
     }
 
     const existingResult = await supabase

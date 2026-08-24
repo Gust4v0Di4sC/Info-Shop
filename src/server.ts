@@ -78,7 +78,7 @@ app.use('/api', (req, res, next) => {
     return;
   }
 
-  res.status(403).json({ message: 'Origem nao autorizada.' });
+  res.status(403).json({ message: 'Origem não autorizada.' });
 });
 
 app.use('/api/auth', express.json({ limit: '16kb' }));
@@ -101,7 +101,7 @@ app.post('/api/auth/login', async (req, res) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error || !data.user) {
-      throw error || new Error('Nao foi possivel autenticar.');
+      throw error || new Error('Não foi possível autenticar.');
     }
 
     await ensurePublicUser(supabase, data.user);
@@ -225,7 +225,7 @@ app.get('/api/auth/oauth/google', async (req, res) => {
     });
 
     if (error || !data.url) {
-      throw error || new Error('Nao foi possivel iniciar login Google.');
+      throw error || new Error('Não foi possível iniciar o login com o Google.');
     }
 
     noStore(res).json({ url: data.url });
@@ -256,12 +256,12 @@ app.post('/api/auth/callback', async (req, res) => {
         throw error;
       }
     } else {
-      throw new Error('Callback sem codigo de autenticacao.');
+      throw new Error('Retorno sem código de autenticação.');
     }
 
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) {
-      throw error || new Error('Sessao de login nao encontrada.');
+      throw error || new Error('Sessão de login não encontrada.');
     }
 
     await ensurePublicUser(supabase, data.user);
@@ -297,7 +297,7 @@ app.get('/api/public/products/:id', async (req, res) => {
     const productId = Number(req.params.id);
 
     if (!Number.isInteger(productId) || productId <= 0) {
-      res.status(400).json({ message: 'Produto invalido.' });
+      res.status(400).json({ message: 'Produto inválido.' });
       return;
     }
 
@@ -363,7 +363,7 @@ app.get('/api/public/products', async (req, res) => {
 app.use('/api/supabase', async (req, res) => {
   try {
     if (!allowedProxyPrefixes.some(prefix => req.path.startsWith(prefix))) {
-      res.status(404).json({ message: 'Rota Supabase nao permitida.' });
+      res.status(404).json({ message: 'Rota do Supabase não permitida.' });
       return;
     }
 
@@ -560,7 +560,7 @@ function sentryDsnOrigin(): string | null {
 
 function createRequestSupabaseClient(req: Request, res: Response) {
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase URL e anon key precisam estar configuradas no servidor.');
+    throw new Error('A URL e a chave anônima do Supabase precisam estar configuradas no servidor.');
   }
 
   return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
@@ -675,7 +675,7 @@ async function readProxyRequestBody(req: Request, maxBytes = 12 * 1024 * 1024): 
     totalBytes += buffer.length;
 
     if (totalBytes > maxBytes) {
-      throw new Error('Corpo da requisicao excede o limite permitido.');
+      throw new Error('O corpo da requisição excede o limite permitido.');
     }
 
     chunks.push(buffer);
@@ -765,7 +765,7 @@ function normalizeSearchQuery(value: unknown): string {
 }
 
 function errorResponse(res: Response, error: unknown, fallbackStatus: number): void {
-  const message = error instanceof Error ? error.message : 'Falha ao processar requisicao.';
+  const message = error instanceof Error ? error.message : 'Falha ao processar a requisição.';
   res.status(fallbackStatus).json({ message });
 }
 
@@ -773,7 +773,7 @@ function normalizeEmail(value: string | undefined): string {
   const email = (value || '').trim().toLowerCase();
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    throw new Error('Informe um e-mail valido.');
+    throw new Error('Informe um e-mail válido.');
   }
 
   return email;
@@ -783,7 +783,7 @@ function normalizePassword(value: string | undefined): string {
   const password = value || '';
 
   if (password.length < 6 || password.length > 256) {
-    throw new Error('Senha invalida.');
+    throw new Error('Senha inválida.');
   }
 
   return password;
@@ -793,7 +793,7 @@ function normalizeDisplayName(value: string | undefined): string {
   const name = (value || '').trim();
 
   if (name.length < 3 || name.length > 120) {
-    throw new Error('Nome invalido.');
+    throw new Error('Nome inválido.');
   }
 
   return name;

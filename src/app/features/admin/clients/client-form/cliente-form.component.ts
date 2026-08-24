@@ -120,7 +120,7 @@ export class ClienteFormComponent implements OnInit {
           },
           error: (error) => {
             console.error('Erro ao atualizar Cliente:', error);
-            this.showSnackbar('Nao foi possivel atualizar o cliente agora. Tente novamente.');
+            this.showSnackbar('Não foi possível atualizar o cliente agora. Tente novamente.');
           },
         });
       } else {
@@ -133,7 +133,7 @@ export class ClienteFormComponent implements OnInit {
           },
           error: (error) => {
             console.error('Erro ao criar Cliente:', error);
-            this.showSnackbar('Nao foi possivel criar o cliente agora. Tente novamente.');
+            this.showSnackbar('Não foi possível criar o cliente agora. Tente novamente.');
           },
         });
       }
@@ -141,7 +141,7 @@ export class ClienteFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.clientForm.valid) {
-      console.log('Formulario valido:', this.clientForm.value);
+      console.log('Formulário válido:', this.clientForm.value);
   
       if (this.selectedFile) {
         // Caso um arquivo tenha sido selecionado
@@ -161,7 +161,7 @@ export class ClienteFormComponent implements OnInit {
           },
           error: (error) => {
             console.error('Erro no upload da imagem:', error);
-            this.showSnackbar('Nao foi possivel enviar a imagem agora. Tente novamente.');
+            this.showSnackbar('Não foi possível enviar a imagem agora. Tente novamente.');
           },
         });
       } else {
@@ -170,11 +170,11 @@ export class ClienteFormComponent implements OnInit {
         this.saveClient(this.clientForm.get('imageUrl')?.value || null);
       }
     } else {
-      console.error('Formulario invalido:', this.clientForm.value);
+      console.error('Formulário inválido:', this.clientForm.value);
   
       // Marca os campos como "tocados" para exibir mensagens de erro no template
       this.markFormGroupTouched(this.clientForm);
-      this.showSnackbar('Preencha os campos obrigatorios antes de continuar.');
+      this.showSnackbar('Preencha os campos obrigatórios antes de continuar.');
     }
   } 
 
@@ -197,10 +197,10 @@ export class ClienteFormComponent implements OnInit {
       this.clientForm.get(controlName);
 
     if (control?.hasError('required')) {
-      return 'Campo obrigatorio';
+      return 'Campo obrigatório';
     }
     if (control?.hasError('email')) {
-      return 'Informe um e-mail valido';
+      return 'Informe um e-mail válido';
     }
     return '';
   }

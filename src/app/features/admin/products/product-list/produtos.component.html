@@ -1,7 +1,7 @@
 <section class="admin-page">
   <header class="page-header">
     <div>
-      <p class="eyebrow">Catalogo</p>
+      <p class="eyebrow">Catálogo</p>
       <h1>Produtos</h1>
       <span>Cadastre produtos que aparecem na landing e no fluxo de compra do cliente.</span>
     </div>
@@ -30,7 +30,7 @@
       @for (product of pagedProducts(); track product.id) {
         <article class="product-card">
           <button
-            class="product-media"
+            class="product-média"
             type="button"
             (click)="openEditForm(product)"
             [attr.aria-label]="'Editar produto ' + (product.name | displayText: 'sem nome')">
@@ -47,12 +47,12 @@
             <div class="product-head">
               <div>
                 <h2>{{ product.name | displayText: 'Produto sem nome' }}</h2>
-                <p>{{ product.model | displayText: 'Modelo nao informado' }}</p>
+                <p>{{ product.model | displayText: 'Modelo não informado' }}</p>
               </div>
               <strong>{{ product.price | brlCurrency }}</strong>
             </div>
 
-            <p class="description">{{ product.description | displayText: 'Descricao nao informada' }}</p>
+            <p class="description">{{ product.description | displayText: 'Descrição não informada' }}</p>
 
             <div class="meta-row">
               <span>{{ product.stock_quantity }} un.</span>
@@ -93,7 +93,7 @@
       [pageSize]="pageSize"
       [pageSizeOptions]="pageSizeOptions"
       (page)="onPageChange($event)"
-      aria-label="Paginacao de produtos">
+      aria-label="Paginação de produtos">
     </mat-paginator>
   }
 </section>

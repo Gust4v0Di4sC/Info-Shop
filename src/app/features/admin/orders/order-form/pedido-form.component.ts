@@ -61,7 +61,7 @@ export class PedidoFormComponent implements OnInit {
       },
       error: error => {
         console.error('Error loading clients or products:', error);
-        this.showSnackbar('Nao foi possivel carregar clientes ou produtos agora.');
+        this.showSnackbar('Não foi possível carregar clientes ou produtos agora.');
       },
     });
   }
@@ -83,7 +83,7 @@ export class PedidoFormComponent implements OnInit {
     }
 
     this.markFormGroupTouched(this.orderForm);
-    this.showSnackbar('Preencha os campos obrigatorios antes de continuar.');
+    this.showSnackbar('Preencha os campos obrigatórios antes de continuar.');
   }
 
   onCancel(): void {
@@ -93,7 +93,7 @@ export class PedidoFormComponent implements OnInit {
   getErrorMessage(controlName: string): string {
     const control = this.orderForm.get(controlName);
     if (control?.hasError('required')) {
-      return 'Campo obrigatorio';
+      return 'Campo obrigatório';
     }
     return '';
   }
@@ -142,7 +142,7 @@ export class PedidoFormComponent implements OnInit {
         },
         error: error => {
           console.error('Erro ao atualizar Pedido:', error);
-          this.showSnackbar('Nao foi possivel atualizar o pedido agora. Tente novamente.');
+          this.showSnackbar('Não foi possível atualizar o pedido agora. Tente novamente.');
         },
       });
       return;
@@ -155,7 +155,7 @@ export class PedidoFormComponent implements OnInit {
       },
       error: error => {
         console.error('Erro ao criar Pedido:', error);
-        this.showSnackbar('Nao foi possivel criar o pedido agora. Tente novamente.');
+        this.showSnackbar('Não foi possível criar o pedido agora. Tente novamente.');
       },
     });
   }

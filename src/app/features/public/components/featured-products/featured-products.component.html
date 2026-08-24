@@ -3,10 +3,10 @@
     <div class="products-head">
       <div>
         <h1>Produtos em destaque</h1>
-        <p>Selecionados pela nossa equipe tecnica nesta semana.</p>
+        <p>Selecionados pela nossa equipe técnica nesta semana.</p>
       </div>
       <a class="catalog-button" routerLink="/catalogo">
-        Ver catalogo completo
+        Ver catálogo completo
         <i class="fas fa-arrow-right"></i>
       </a>
     </div>
@@ -22,7 +22,7 @@
       @for (product of products; track product.id) {
         <article class="product-card">
           <a
-            class="product-media"
+            class="product-média"
             [routerLink]="['/produto', product.id]"
             [attr.aria-label]="'Ver detalhes de ' + product.name">
             <span class="product-badge">Destaque</span>
@@ -42,7 +42,7 @@
               Produto selecionado
             </p>
             <strong class="product-price">{{ product.price | brlCurrency }}</strong>
-            <p class="installments">Em ate 12x sem juros</p>
+            <p class="installments">Em até 12x sem juros</p>
             <button
               (click)="addToCart($event, product)"
               class="product-cart"

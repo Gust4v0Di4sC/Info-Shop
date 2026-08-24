@@ -71,7 +71,7 @@ export default class PedidosComponent implements OnInit {
       },
       error: error => {
         console.error('Error loading orders:', error);
-        this.showSnackbar('Nao foi possivel carregar os pedidos agora.');
+        this.showSnackbar('Não foi possível carregar os pedidos agora.');
         this.isLoading = false;
       },
     });
@@ -119,7 +119,7 @@ export default class PedidosComponent implements OnInit {
     const labels: Record<string, string> = {
       open: 'Aberto',
       payment_pending: 'Aguardando pagamento',
-      payment_failed: 'Pagamento nao aprovado',
+      payment_failed: 'Pagamento não aprovado',
       confirmed: 'Confirmado',
       preparing: 'Em preparo',
       shipped: 'Enviado',
@@ -159,7 +159,7 @@ export default class PedidosComponent implements OnInit {
           },
           error: error => {
             console.error('Error deleting order:', error);
-            this.showSnackbar('Nao foi possivel excluir o pedido agora. Tente novamente.');
+            this.showSnackbar('Não foi possível excluir o pedido agora. Tente novamente.');
           },
         });
       }

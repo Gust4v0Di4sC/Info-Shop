@@ -53,7 +53,7 @@ export class NewPasswordComponent {
       },
       error: () => {
         this.isLoading = false;
-        this.snackBar.open('Nao foi possivel atualizar a senha agora. Tente novamente em alguns instantes.', 'Fechar', {
+        this.snackBar.open('Não foi possível atualizar a senha agora. Tente novamente em alguns instantes.', 'Fechar', {
           duration: 5000,
           horizontalPosition: 'center',
           verticalPosition: 'bottom',

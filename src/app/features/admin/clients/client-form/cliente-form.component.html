@@ -33,7 +33,7 @@
 
       <div class="media-copy">
         <strong>Foto do cliente</strong>
-        <span>Opcional, mas ajuda na identificacao rapida.</span>
+        <span>Opcional, mas ajuda na identificação rápida.</span>
       </div>
     </section>
 
@@ -71,8 +71,8 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="wide">
-        <mat-label>Endereco</mat-label>
-        <input matInput formControlName="address" placeholder="Rua, numero, bairro e cidade">
+        <mat-label>Endereço</mat-label>
+        <input matInput formControlName="address" placeholder="Rua, número, bairro e cidade">
         @if (clientForm.get('address')?.invalid) {
           <mat-error>{{ getErrorMessage('address') }}</mat-error>
         }

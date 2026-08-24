@@ -30,9 +30,9 @@
 
           <div class="order-info">
             <span class="status-pill">{{ statusLabel(order.status) }}</span>
-            <h2>{{ order.product | displayText: 'Produto nao informado' }}</h2>
-            <p>{{ order.name | displayText: 'Cliente nao informado' }}</p>
-            <small>{{ order.address | displayText: 'Endereco nao informado' }}</small>
+            <h2>{{ order.product | displayText: 'Produto não informado' }}</h2>
+            <p>{{ order.name | displayText: 'Cliente não informado' }}</p>
+            <small>{{ order.address | displayText: 'Endereço não informado' }}</small>
           </div>
 
           <div class="order-metrics">
@@ -51,7 +51,7 @@
               mat-stroked-button
               type="button"
               (click)="openEditForm(order)"
-              [attr.aria-label]="'Editar pedido de ' + (order.name | displayText: 'cliente nao informado')">
+              [attr.aria-label]="'Editar pedido de ' + (order.name | displayText: 'cliente não informado')">
               <mat-icon>edit</mat-icon>
               Editar
             </button>
@@ -60,7 +60,7 @@
               class="danger-action"
               type="button"
               (click)="order.id ? deleteOrder(order.id) : null"
-              [attr.aria-label]="'Excluir pedido de ' + (order.name | displayText: 'cliente nao informado')">
+              [attr.aria-label]="'Excluir pedido de ' + (order.name | displayText: 'cliente não informado')">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
@@ -74,7 +74,7 @@
       [pageSize]="pageSize"
       [pageSizeOptions]="pageSizeOptions"
       (page)="onPageChange($event)"
-      aria-label="Paginacao de pedidos">
+      aria-label="Paginação de pedidos">
     </mat-paginator>
   }
 </section>

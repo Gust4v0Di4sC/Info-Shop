@@ -67,7 +67,7 @@ export class CustomerProfileComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar seu perfil agora. Atualize a pagina ou tente novamente mais tarde.';
+        this.errorMessage = 'Não foi possível carregar seu perfil agora. Atualize a página ou tente novamente mais tarde.';
         this.isLoading = false;
         this.changeDetectorRef.markForCheck();
       },
@@ -104,7 +104,7 @@ export class CustomerProfileComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel salvar seu perfil agora. Confira os dados e tente novamente.';
+        this.errorMessage = 'Não foi possível salvar seu perfil agora. Confira os dados e tente novamente.';
         this.isSaving = false;
         this.changeDetectorRef.markForCheck();
       },
@@ -121,7 +121,7 @@ export class CustomerProfileComponent implements OnInit {
     }
 
     if (!this.isAcceptedAvatar(file)) {
-      this.errorMessage = 'Use uma imagem PNG, JPG ou WEBP de ate 2 MB.';
+      this.errorMessage = 'Use uma imagem PNG, JPG ou WEBP de até 2 MB.';
       return;
     }
 
@@ -186,7 +186,7 @@ export class CustomerProfileComponent implements OnInit {
       ['Rua', address.street],
       ['CEP', address.postalCode],
       ['Bairro', address.district],
-      ['Numero', address.number],
+      ['Número', address.number],
       ['Estado', address.state],
     ];
 

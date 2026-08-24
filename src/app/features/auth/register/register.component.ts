@@ -56,7 +56,7 @@ export class RegisterComponent {
       next: result => {
         if (result.needsEmailConfirmation) {
           this.pendingConfirmationEmail = email;
-          this.snackBar.open('Confira seu email para confirmar a conta.', 'Fechar', {
+          this.snackBar.open('Confira seu e-mail para confirmar a conta.', 'Fechar', {
             duration: 6000,
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
@@ -67,7 +67,7 @@ export class RegisterComponent {
         this.authService.redirectAfterSignIn(result.user?.id);
       },
       error: () => {
-        this.snackBar.open('Nao foi possivel criar sua conta agora. Confira os dados e tente novamente.', 'Fechar', {
+        this.snackBar.open('Não foi possível criar sua conta agora. Confira os dados e tente novamente.', 'Fechar', {
           duration: 5000,
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
@@ -89,7 +89,7 @@ export class RegisterComponent {
 
     this.authService.resendConfirmation(this.pendingConfirmationEmail).subscribe({
       next: () => {
-        this.snackBar.open('Email de confirmacao reenviado.', 'Fechar', {
+        this.snackBar.open('E-mail de confirmação reenviado.', 'Fechar', {
           duration: 6000,
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
@@ -98,7 +98,7 @@ export class RegisterComponent {
       error: () => {
         this.isResendingConfirmation = false;
         this.snackBar.open(
-          'Nao foi possivel reenviar a confirmacao agora. Tente novamente em alguns instantes.',
+          'Não foi possível reenviar a confirmação agora. Tente novamente em alguns instantes.',
           'Fechar',
           {
             duration: 6000,

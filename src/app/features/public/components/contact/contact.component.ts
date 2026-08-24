@@ -30,7 +30,7 @@ export class ContactComponent {
   subscribe(): void {
     if (this.newsletterForm.invalid) {
       this.newsletterForm.markAllAsTouched();
-      this.errorMessage = 'Informe um e-mail valido para receber as ofertas.';
+      this.errorMessage = 'Informe um e-mail válido para receber as ofertas.';
       return;
     }
 
@@ -39,13 +39,13 @@ export class ContactComponent {
 
     this.newsletterService.subscribe(this.newsletterForm.value.email).subscribe({
       next: () => {
-        this.showSnackbar('Inscricao realizada. Voce recebera nossas ofertas por e-mail.');
+        this.showSnackbar('Inscrição realizada. Você recebera nossas ofertas por e-mail.');
         this.newsletterForm.reset();
         this.isSubmitting = false;
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel concluir sua inscricao agora. Tente novamente em alguns instantes.';
+        this.errorMessage = 'Não foi possível concluir sua inscrição agora. Tente novamente em alguns instantes.';
         this.isSubmitting = false;
         this.changeDetectorRef.markForCheck();
       },

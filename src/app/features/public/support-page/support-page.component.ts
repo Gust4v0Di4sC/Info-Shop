@@ -12,41 +12,41 @@ const SUPPORT_TOPICS: SupportTopic[] = [
   {
     title: 'Fale conosco',
     slug: 'fale-conosco',
-    summary: 'Use nossos canais de atendimento para tirar duvidas antes ou depois da compra.',
+    summary: 'Use nossos canais de atendimento para tirar dúvidas antes ou depois da compra.',
     items: [
       'Atendimento por e-mail em suporte@infoshop.com.',
       'Telefone comercial: +55 8 9999-9999.',
-      'Endereco: Rua Tech, 123 - Esquina da Ciencia.',
+      'Endereço: Rua Tech, 123 - Esquina da Ciencia.',
     ],
   },
   {
     title: 'Perguntas frequentes',
     slug: 'perguntas-frequentes',
-    summary: 'Respostas rapidas para as duvidas mais comuns da loja.',
+    summary: 'Respostas rápidas para as dúvidas mais comuns da loja.',
     items: [
-      'Produtos em estoque aparecem disponiveis no catalogo.',
-      'Compras podem ser parceladas em ate 12 vezes sem juros.',
-      'O prazo de entrega e calculado conforme o endereco informado.',
+      'Produtos em estoque aparecem disponíveis no catálogo.',
+      'Compras podem ser parceladas em até 12 vezes sem juros.',
+      'O prazo de entrega é calculado conforme o endereço informado.',
     ],
   },
   {
-    title: 'Politica de compra',
+    title: 'Política de compra',
     slug: 'politica-de-compra',
     summary: 'Regras principais para pedidos realizados na InfoShop.',
     items: [
-      'O pedido e confirmado apos aprovacao do pagamento.',
-      'Produtos podem ter preco promocional por tempo limitado.',
+      'O pedido é confirmado após aprovação do pagamento.',
+      'Produtos podem ter preço promocional por tempo limitado.',
       'Dados de contato corretos ajudam a evitar atrasos na entrega.',
     ],
   },
   {
-    title: 'Trocas e devolucoes',
+    title: 'Trocas e devoluções',
     slug: 'trocas-e-devolucoes',
-    summary: 'Orientacoes para solicitar troca, devolucao ou suporte de garantia.',
+    summary: 'Orientações para solicitar troca, devolução ou suporte de garantia.',
     items: [
-      'Guarde nota fiscal, embalagem e acessorios do produto.',
-      'Solicitacoes devem informar numero do pedido e motivo.',
-      'A garantia padrao exibida na loja e de 12 meses.',
+      'Guarde nota fiscal, embalagem e acessórios do produto.',
+      'Solicitações devem informar número do pedido e motivo.',
+      'A garantia padrão exibida na loja é de 12 meses.',
     ],
   },
   {
@@ -54,9 +54,9 @@ const SUPPORT_TOPICS: SupportTopic[] = [
     slug: 'privacidade',
     summary: 'Como tratamos dados usados nos fluxos de cadastro, compra e entrega.',
     items: [
-      'Usamos dados cadastrais para identificacao e envio de pedidos.',
-      'Informacoes de pagamento sao processadas por provedores integrados.',
-      'Dados de conta podem ser revisados na area de perfil do cliente.',
+      'Usamos dados cadastrais para identificação e envio de pedidos.',
+      'Informações de pagamento são processadas por provedores integrados.',
+      'Dados de conta podem ser revisados na área de perfil do cliente.',
     ],
   },
 ];

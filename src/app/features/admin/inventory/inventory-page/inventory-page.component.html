@@ -3,7 +3,7 @@
     <div>
       <p class="eyebrow">Estoque</p>
       <h1>Controle de produtos</h1>
-      <span>Atualize unidades disponiveis, reservas e minimo operacional.</span>
+      <span>Atualize unidades disponíveis, reservas e mínimo operacional.</span>
     </div>
 
     <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
@@ -32,7 +32,7 @@
             <strong>{{ product.name }}</strong>
             <span>{{ product.model || product.description }}</span>
             <p [class.warning]="product.stock_quantity <= product.stock_minimum">
-              {{ stockStatus(product) }} - {{ availableStock(product) }} disponiveis
+              {{ stockStatus(product) }} - {{ availableStock(product) }} disponíveis
             </p>
           </div>
 
@@ -54,7 +54,7 @@
                 (change)="updateStock(product, 'stock_reserved', $any($event.target).value)">
             </label>
             <label>
-              Minimo
+              Mínimo
               <input
                 type="number"
                 min="0"
@@ -83,7 +83,7 @@
       [pageSize]="pageSize"
       [pageSizeOptions]="pageSizeOptions"
       (page)="onPageChange($event)"
-      aria-label="Paginacao de estoque">
+      aria-label="Paginação de estoque">
     </mat-paginator>
   }
 </section>

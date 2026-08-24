@@ -61,7 +61,7 @@ export default class HomeComponent implements OnInit {
       await this.authService.signInWithGoogle();
     } catch (error) {
       console.error('Erro no login Google:', error);
-      this.snackBar.open('Nao foi possivel entrar com Google agora. Tente novamente em alguns instantes.', 'Fechar', {
+      this.snackBar.open('Não foi possível entrar com Google agora. Tente novamente em alguns instantes.', 'Fechar', {
         duration: 5000,
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
@@ -103,7 +103,7 @@ export default class HomeComponent implements OnInit {
 
       await this.authService.redirectAfterSignIn();
     } catch {
-      this.snackBar.open('Nao foi possivel entrar agora. Tente novamente em alguns instantes.', 'Fechar', {
+      this.snackBar.open('Não foi possível entrar agora. Tente novamente em alguns instantes.', 'Fechar', {
         duration: 3000,
       });
     } finally {

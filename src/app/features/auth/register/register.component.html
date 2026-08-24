@@ -6,7 +6,7 @@
 
     <button mat-button class="back-link" type="button" (click)="goToLogin()">
       <mat-icon>arrow_back</mat-icon>
-      Ja tenho conta
+      Já tenho conta
     </button>
   </header>
 
@@ -24,7 +24,7 @@
             <mat-icon matPrefix>person_outline</mat-icon>
             <input matInput formControlName="fullName" type="text" placeholder="Seu nome">
             @if (registerForm.get('fullName')?.hasError('required')) {
-              <mat-error>Nome e obrigatorio</mat-error>
+              <mat-error>Nome é obrigatório</mat-error>
             }
             @if (registerForm.get('fullName')?.hasError('minlength')) {
               <mat-error>Informe pelo menos 3 caracteres</mat-error>
@@ -39,7 +39,7 @@
               <mat-error>Informe seu e-mail</mat-error>
             }
             @if (registerForm.get('email')?.hasError('email')) {
-              <mat-error>Informe um e-mail valido</mat-error>
+              <mat-error>Informe um e-mail válido</mat-error>
             }
           </mat-form-field>
 
@@ -50,7 +50,7 @@
               matInput
               formControlName="password"
               [type]="hidePassword ? 'password' : 'text'"
-              placeholder="Minimo de 6 caracteres">
+              placeholder="Mínimo de 6 caracteres">
             <button
               mat-icon-button
               matSuffix
@@ -60,7 +60,7 @@
               <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
             </button>
             @if (registerForm.get('password')?.hasError('required')) {
-              <mat-error>Senha e obrigatoria</mat-error>
+              <mat-error>Senha é obrigatória</mat-error>
             }
             @if (registerForm.get('password')?.hasError('minlength')) {
               <mat-error>Use pelo menos 6 caracteres</mat-error>
@@ -80,7 +80,7 @@
               matSuffix
               (click)="hideConfirmPassword = !hideConfirmPassword"
               type="button"
-              aria-label="Alternar visibilidade da confirmacao">
+              aria-label="Alternar visibilidade da confirmação">
               <mat-icon>{{ hideConfirmPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
             </button>
             @if (registerForm.get('confirmPassword')?.hasError('required')) {
@@ -89,7 +89,7 @@
           </mat-form-field>
 
           @if (registerForm.get('confirmPassword')?.touched && !passwordsMatch) {
-            <p class="form-error">As senhas nao conferem.</p>
+            <p class="form-error">As senhas não conferem.</p>
           }
 
           <button
@@ -102,7 +102,7 @@
         </form>
 
         <div class="login-account">
-          Ja tem conta?
+          Já tem conta?
           <button class="text-link" type="button" (click)="goToLogin()">Entrar</button>
         </div>
 
@@ -110,14 +110,14 @@
           <div class="confirmation-panel">
             <mat-icon>mark_email_unread</mat-icon>
             <div>
-              <strong>Confirmacao enviada</strong>
-              <p>Enviamos o link para {{ pendingConfirmationEmail }}. Confira tambem spam ou lixo eletronico.</p>
+              <strong>Confirmação enviada</strong>
+              <p>Enviamos o link para {{ pendingConfirmationEmail }}. Confira também spam ou lixo eletrônico.</p>
               <button
                 mat-button
                 type="button"
                 (click)="resendConfirmation()"
                 [disabled]="isResendingConfirmation">
-                {{ isResendingConfirmation ? 'Reenviando...' : 'Reenviar email' }}
+                {{ isResendingConfirmation ? 'Reenviando...' : 'Reenviar e-mail' }}
               </button>
             </div>
           </div>
@@ -126,7 +126,7 @@
     </mat-card>
 
     <p class="terms">
-      Ao criar sua conta, voce concorda com os termos de uso e a politica de privacidade da InfoShop.
+      Ao criar sua conta, você concorda com os termos de uso e a política de privacidade da InfoShop.
     </p>
   </main>
 </div>

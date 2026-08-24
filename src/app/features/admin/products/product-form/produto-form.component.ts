@@ -21,7 +21,7 @@ export class ProdutoFormComponent implements OnInit {
     { label: 'Tablets', value: 'tablets' },
     { label: 'Games', value: 'games' },
     { label: 'Hardware', value: 'hardware' },
-    { label: 'Perifericos', value: 'perifericos' },
+    { label: 'Periféricos', value: 'perifericos' },
   ];
 
   productForm: FormGroup;
@@ -158,7 +158,7 @@ export class ProdutoFormComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao atualizar produto:', error);
-          this.showSnackbar('Nao foi possivel atualizar o produto agora. Tente novamente.');
+          this.showSnackbar('Não foi possível atualizar o produto agora. Tente novamente.');
         },
       });
     } else {
@@ -171,7 +171,7 @@ export class ProdutoFormComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao criar produto:', error);
-          this.showSnackbar('Nao foi possivel criar o produto agora. Tente novamente.');
+          this.showSnackbar('Não foi possível criar o produto agora. Tente novamente.');
         },
       });
     }
@@ -181,7 +181,7 @@ export class ProdutoFormComponent implements OnInit {
   onSubmit(): void {
     
     if (this.productForm.valid) {
-      console.log('Formulario valido:', this.productForm.value);
+      console.log('Formulário válido:', this.productForm.value);
   
       if (this.selectedFile) {
         // Caso um arquivo tenha sido selecionado
@@ -201,7 +201,7 @@ export class ProdutoFormComponent implements OnInit {
           },
           error: (error) => {
             console.error('Erro no upload da imagem:', error);
-            this.showSnackbar('Nao foi possivel enviar a imagem agora. Tente novamente.');
+            this.showSnackbar('Não foi possível enviar a imagem agora. Tente novamente.');
           },
         });
       } else {
@@ -210,11 +210,11 @@ export class ProdutoFormComponent implements OnInit {
         this.saveProduct(this.productForm.get('imageUrl')?.value || null);
       }
     } else {
-      console.error('Formulario invalido:', this.productForm.value);
+      console.error('Formulário inválido:', this.productForm.value);
   
       // Marca os campos como "tocados" para exibir mensagens de erro no template
       this.markFormGroupTouched(this.productForm);
-      this.showSnackbar('Preencha os campos obrigatorios antes de continuar.');
+      this.showSnackbar('Preencha os campos obrigatórios antes de continuar.');
     }
   }
 
@@ -235,10 +235,10 @@ export class ProdutoFormComponent implements OnInit {
   getErrorMessage(controlName: string): string {
     const control = this.productForm.get(controlName);
     if (control?.hasError('required')) {
-      return 'Campo obrigatorio';
+      return 'Campo obrigatório';
     }
     if (control?.hasError('min')) {
-      return 'Valor nao pode ser negativo';
+      return 'Valor não pode ser negativo';
     }
     return '';
   }

@@ -1,23 +1,23 @@
 <main class="catalog-page">
   <section class="catalog-header">
     <div>
-      <p class="eyebrow">Catalogo InfoShop</p>
+      <p class="eyebrow">Catálogo InfoShop</p>
       <h1>{{ pageTitle() }}</h1>
       <p>
         @if (searchTerm) {
           Resultado filtrado pela busca feita no topo da loja.
         } @else {
-          Produtos cadastrados por categoria para validar a navegacao da loja.
+          Produtos cadastrados por categoria para validar a navegação da loja.
         }
       </p>
     </div>
   </section>
 
-  <nav class="category-tabs" aria-label="Categorias do catalogo">
+  <nav class="category-tabs" aria-label="Categorias do catálogo">
     <a routerLink="/catalogo" [class.active]="!selectedCategory">Todos</a>
     @for (category of categories; track category.slug) {
       <a
-        [routerLink]="['/catalogo', category.slug]"
+        [routerLink]="['/catálogo', category.slug]"
         [class.active]="selectedCategory?.slug === category.slug"
       >
         {{ category.label }}
@@ -32,11 +32,11 @@
   } @else if (products.length === 0) {
     <section class="catalog-state">{{ emptyMessage() }}</section>
   } @else {
-    <section class="products-grid" aria-label="Produtos do catalogo">
+    <section class="products-grid" aria-label="Produtos do catálogo">
       @for (product of products; track product.id; let index = $index) {
         <article class="product-card">
           <a
-            class="product-media"
+            class="product-média"
             [routerLink]="['/produto', product.id]"
             [attr.aria-label]="'Ver detalhes de ' + product.name">
             @if (product.is_featured) {
@@ -64,7 +64,7 @@
             <a class="product-title" [routerLink]="['/produto', product.id]">{{ product.name }}</a>
             <p class="product-description">{{ product.model || product.description }}</p>
             <strong class="product-price">{{ product.price | brlCurrency }}</strong>
-            <p class="installments">Em ate 12x sem juros</p>
+            <p class="installments">Em até 12x sem juros</p>
           </div>
         </article>
       }

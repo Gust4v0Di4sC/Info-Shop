@@ -1,14 +1,14 @@
 <section class="admin-page personalization-page">
   <header class="page-header">
     <div>
-      <p class="eyebrow">Personalizacao</p>
+      <p class="eyebrow">Personalização</p>
       <h1>Tema e identidade da loja</h1>
-      <span>Escolha o tema do painel e a logo que sera exibida na interface para o seu usuario.</span>
+      <span>Escolha o tema do painel e a logo que será exibida na interface para o seu usuário.</span>
     </div>
 
     <button mat-flat-button class="primary-action" type="button" (click)="save()" [disabled]="isSaving || isUploading">
       <mat-icon>save</mat-icon>
-      {{ isSaving ? 'Salvando...' : 'Salvar alteracoes' }}
+      {{ isSaving ? 'Salvando...' : 'Salvar alterações' }}
     </button>
   </header>
 
@@ -56,7 +56,7 @@
           <p class="eyebrow">Marca</p>
           <h2>Logo da loja</h2>
         </div>
-        <span class="selected-pill">Por usuario</span>
+        <span class="selected-pill">Por usuário</span>
       </div>
 
       <div class="logo-preview">
@@ -81,7 +81,7 @@
 
         <button mat-stroked-button type="button" (click)="clearLogo()">
           <mat-icon>restart_alt</mat-icon>
-          Usar padrao
+          Usar padrão
         </button>
       </div>
     </section>

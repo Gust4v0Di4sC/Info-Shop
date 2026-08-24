@@ -80,7 +80,7 @@ export class CartPageComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.pageErrorMessage = 'Nao foi possivel carregar seu carrinho agora. Tente novamente em alguns instantes.';
+        this.pageErrorMessage = 'Não foi possível carregar seu carrinho agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
         this.changeDetectorRef.markForCheck();
       },
@@ -92,7 +92,7 @@ export class CartPageComponent implements OnInit {
     this.cartService.updateQuantity(item.id, quantity).subscribe({
       next: () => this.loadCart(),
       error: () => {
-        this.showSnackbar('Nao foi possivel atualizar este item agora. Tente novamente.');
+        this.showSnackbar('Não foi possível atualizar este item agora. Tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
     });
@@ -106,7 +106,7 @@ export class CartPageComponent implements OnInit {
         this.loadCart();
       },
       error: () => {
-        this.showSnackbar('Nao foi possivel remover este item agora. Tente novamente.');
+        this.showSnackbar('Não foi possível remover este item agora. Tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
     });
@@ -124,7 +124,7 @@ export class CartPageComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.showSnackbar('Nao foi possivel limpar o carrinho agora. Tente novamente.');
+        this.showSnackbar('Não foi possível limpar o carrinho agora. Tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
     });
@@ -148,14 +148,14 @@ export class CartPageComponent implements OnInit {
         this.selectedServiceId = quotes[0]?.id || '';
         this.isQuoting = false;
         if (quotes.length === 0) {
-          this.actionErrorMessage = 'Nao encontramos frete disponivel para este endereco.';
+          this.actionErrorMessage = 'Não encontramos frete disponível para este endereço.';
         }
         this.changeDetectorRef.markForCheck();
       },
       error: error => {
         this.actionErrorMessage = error instanceof Error && error.message
           ? error.message
-          : 'Nao foi possivel calcular o frete agora. Confira o endereco e tente novamente.';
+          : 'Não foi possível calcular o frete agora. Confira o endereço e tente novamente.';
         this.isQuoting = false;
         this.changeDetectorRef.markForCheck();
       },
@@ -164,7 +164,7 @@ export class CartPageComponent implements OnInit {
 
   checkout(): void {
     if (!this.selectedServiceId) {
-      this.showSnackbar('Escolha uma opcao de frete antes de finalizar.');
+      this.showSnackbar('Escolha uma opção de frete antes de finalizar.');
       return;
     }
 
@@ -181,7 +181,7 @@ export class CartPageComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.showSnackbar('Nao foi possivel iniciar o pagamento agora. Tente novamente em alguns instantes.');
+        this.showSnackbar('Não foi possível iniciar o pagamento agora. Tente novamente em alguns instantes.');
         this.isCheckingOut = false;
         this.changeDetectorRef.markForCheck();
       },
@@ -209,7 +209,7 @@ export class CartPageComponent implements OnInit {
     }
 
     if (fieldName === 'postalCode' && control.hasError('pattern')) {
-      return 'Digite um CEP valido com 8 numeros.';
+      return 'Digite um CEP válido com 8 números.';
     }
 
     if (fieldName === 'state' && control.hasError('pattern')) {
@@ -242,15 +242,15 @@ export class CartPageComponent implements OnInit {
 
   private requiredFieldMessage(fieldName: string): string {
     const messages: Record<string, string> = {
-      postalCode: 'O CEP e obrigatorio para calcular o frete.',
-      state: 'A UF e obrigatoria.',
-      street: 'A rua e obrigatoria.',
-      number: 'O numero e obrigatorio.',
-      district: 'O bairro e obrigatorio.',
-      city: 'A cidade e obrigatoria.',
+      postalCode: 'O CEP é obrigatório para calcular o frete.',
+      state: 'A UF é obrigatória.',
+      street: 'A rua é obrigatória.',
+      number: 'O número é obrigatório.',
+      district: 'O bairro é obrigatório.',
+      city: 'A cidade é obrigatória.',
     };
 
-    return messages[fieldName] || 'Campo obrigatorio.';
+    return messages[fieldName] || 'Campo obrigatório.';
   }
 
   private showSnackbar(message: string): void {

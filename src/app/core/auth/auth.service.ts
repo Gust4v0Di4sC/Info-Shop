@@ -172,7 +172,7 @@ export class AuthService {
     );
 
     if (!response.user) {
-      throw new Error('Sessao de login nao encontrada.');
+      throw new Error('Sessão de login não encontrada.');
     }
 
     this.currentUserSubject.next(response.user);

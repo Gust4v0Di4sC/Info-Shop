@@ -272,7 +272,7 @@ export class AdminDashboardService {
     const labels: Record<string, string> = {
       open: 'Aberto',
       payment_pending: 'Aguardando pagamento',
-      payment_failed: 'Pagamento nao aprovado',
+      payment_failed: 'Pagamento não aprovado',
       confirmed: 'Confirmado',
       preparing: 'Em preparo',
       shipped: 'Enviado',

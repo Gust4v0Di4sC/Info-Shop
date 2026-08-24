@@ -29,8 +29,8 @@
           <article class="delivery-card">
             <div class="delivery-main">
               <span class="status-pill">{{ statusLabel(delivery.status) }}</span>
-              <h2>Pedido {{ delivery.order_id || 'sem codigo' }}</h2>
-              <p>{{ delivery.address || 'Endereco a confirmar' }}</p>
+              <h2>Pedido {{ delivery.order_id || 'sem código' }}</h2>
+              <p>{{ delivery.address || 'Endereço a confirmar' }}</p>
 
               <div class="progress-track" aria-hidden="true">
                 <span [style.width.%]="progress(delivery)"></span>
@@ -51,11 +51,11 @@
                 <strong>{{ delivery.shipping_deadline ? delivery.shipping_deadline + ' dias uteis' : 'A confirmar' }}</strong>
               </div>
               <div>
-                <span>Previsao</span>
+                <span>Previsão</span>
                 <strong>{{ dateLabel(delivery.estimated_delivery_date) }}</strong>
               </div>
               <div>
-                <span>Codigo</span>
+                <span>Código</span>
                 <strong>{{ delivery.tracking_code || delivery.melhor_envio_protocol || 'Aguardando postagem' }}</strong>
               </div>
               <div>

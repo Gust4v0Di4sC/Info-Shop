@@ -28,7 +28,7 @@
       @for (client of pagedClients(); track client.id) {
         <article class="client-card">
           <button
-            class="client-media"
+            class="client-média"
             type="button"
             (click)="openEditForm(client)"
             [attr.aria-label]="'Editar cliente ' + (client.name | displayText: 'sem nome')">
@@ -41,10 +41,10 @@
 
           <div class="client-info">
             <h2>{{ client.name | displayText: 'Cliente sem nome' }}</h2>
-            <p>{{ client.address | displayText: 'Endereco nao informado' }}</p>
+            <p>{{ client.address | displayText: 'Endereço não informado' }}</p>
             <div class="meta-row">
-              <span>{{ client.cpf | cpfCnpj: 'CPF nao informado' }}</span>
-              <span>{{ client.phone ? (client.phone | phoneBr) : (client.email | displayText: 'Contato nao informado') }}</span>
+              <span>{{ client.cpf | cpfCnpj: 'CPF não informado' }}</span>
+              <span>{{ client.phone ? (client.phone | phoneBr) : (client.email | displayText: 'Contato não informado') }}</span>
             </div>
           </div>
 
@@ -76,7 +76,7 @@
       [pageSize]="pageSize"
       [pageSizeOptions]="pageSizeOptions"
       (page)="onPageChange($event)"
-      aria-label="Paginacao de clientes">
+      aria-label="Paginação de clientes">
     </mat-paginator>
   }
 </section>

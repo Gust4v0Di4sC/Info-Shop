@@ -4,9 +4,9 @@
       <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
     </div>
     <div>
-      <p class="eyebrow">Catalogo</p>
+      <p class="eyebrow">Catálogo</p>
       <h2>{{ isEditMode ? 'Editar produto' : 'Novo produto' }}</h2>
-      <span>{{ isEditMode ? 'Atualize dados, preco e estoque.' : 'Cadastre um item para venda na loja.' }}</span>
+      <span>{{ isEditMode ? 'Atualize dados, preço e estoque.' : 'Cadastre um item para venda na loja.' }}</span>
     </div>
   </header>
 
@@ -33,7 +33,7 @@
 
       <div class="media-copy">
         <strong>Imagem do produto</strong>
-        <span>Use uma foto clara para melhorar a leitura no catalogo.</span>
+        <span>Use uma foto clara para melhorar a leitura no catálogo.</span>
       </div>
     </section>
 
@@ -67,7 +67,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Preco</mat-label>
+        <mat-label>Preço</mat-label>
         <input matInput type="number" formControlName="price" placeholder="0,00">
         @if (productForm.get('price')?.invalid) {
           <mat-error>{{ getErrorMessage('price') }}</mat-error>
@@ -91,16 +91,16 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Estoque minimo</mat-label>
-        <input matInput type="number" formControlName="stock_minimum" placeholder="Minimo">
+        <mat-label>Estoque mínimo</mat-label>
+        <input matInput type="number" formControlName="stock_minimum" placeholder="Mínimo">
         @if (productForm.get('stock_minimum')?.invalid) {
           <mat-error>{{ getErrorMessage('stock_minimum') }}</mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="wide">
-        <mat-label>Descricao</mat-label>
-        <textarea matInput formControlName="description" placeholder="Resumo para exibicao no catalogo" rows="3"></textarea>
+        <mat-label>Descrição</mat-label>
+        <textarea matInput formControlName="description" placeholder="Resumo para exibição no catálogo" rows="3"></textarea>
         @if (productForm.get('description')?.invalid) {
           <mat-error>{{ getErrorMessage('description') }}</mat-error>
         }
@@ -108,9 +108,9 @@
     </div>
 
     <div class="section-title">
-      <p class="eyebrow">Logistica</p>
-      <h3>Dados para cotacao de frete</h3>
-      <span>Se algum campo ficar vazio, o checkout usa o pacote padrao da loja.</span>
+      <p class="eyebrow">Logística</p>
+      <h3>Dados para cotação de frete</h3>
+      <span>Se algum campo ficar vazio, o checkout usa o pacote padrão da loja.</span>
     </div>
 
     <div class="form-grid">

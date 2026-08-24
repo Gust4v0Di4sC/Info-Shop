@@ -36,7 +36,7 @@ export class FeaturedProductsComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar os produtos.';
+        this.errorMessage = 'Não foi possível carregar os produtos.';
         this.isLoading = false;
         this.changeDetectorRef.markForCheck();
       },

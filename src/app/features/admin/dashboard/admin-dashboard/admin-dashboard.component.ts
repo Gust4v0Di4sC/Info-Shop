@@ -161,7 +161,7 @@ export class AdminDashboardComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar o painel agora. Tente novamente em alguns instantes.';
+        this.errorMessage = 'Não foi possível carregar o painel agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
         this.changeDetectorRef.markForCheck();
       },

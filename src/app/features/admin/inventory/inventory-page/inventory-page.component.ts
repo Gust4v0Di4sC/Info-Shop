@@ -66,7 +66,7 @@ export class InventoryPageComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar o estoque agora. Tente novamente em alguns instantes.';
+        this.errorMessage = 'Não foi possível carregar o estoque agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });
@@ -82,7 +82,7 @@ export class InventoryPageComponent implements OnInit {
         this.showSnackbar('Estoque atualizado.');
       },
       error: () => {
-        this.showSnackbar('Nao foi possivel atualizar o estoque agora. Tente novamente.');
+        this.showSnackbar('Não foi possível atualizar o estoque agora. Tente novamente.');
       },
     });
   }
@@ -104,7 +104,7 @@ export class InventoryPageComponent implements OnInit {
       return 'Estoque baixo';
     }
 
-    return 'Disponivel';
+    return 'Disponível';
   }
 
   pagedProducts(): Product[] {

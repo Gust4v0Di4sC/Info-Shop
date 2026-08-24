@@ -46,7 +46,7 @@ export class DeliveriesPageComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar as entregas agora. Tente novamente em alguns instantes.';
+        this.errorMessage = 'Não foi possível carregar as entregas agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });
@@ -64,7 +64,7 @@ export class DeliveriesPageComponent implements OnInit {
         this.showSnackbar('Entrega atualizada.');
       },
       error: () => {
-        this.showSnackbar('Nao foi possivel atualizar a entrega agora. Tente novamente.');
+        this.showSnackbar('Não foi possível atualizar a entrega agora. Tente novamente.');
       },
     });
   }

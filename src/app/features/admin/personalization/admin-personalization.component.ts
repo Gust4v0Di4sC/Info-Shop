@@ -14,7 +14,7 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
 export class AdminPersonalizationComponent implements OnInit, OnDestroy {
   readonly profileTabs: AdminSectionTab[] = [
     { label: 'Perfil', icon: 'account_circle', route: '/admin-profile' },
-    { label: 'Personalizacao', icon: 'palette', route: '/customization' },
+    { label: 'Personalização', icon: 'palette', route: '/customization' },
   ];
 
   readonly themeService = inject(AdminThemeService);
@@ -59,7 +59,7 @@ export class AdminPersonalizationComponent implements OnInit, OnDestroy {
     }
 
     if (!this.isAcceptedLogo(file)) {
-      this.showFeedback('Use uma imagem PNG, JPG, WEBP ou SVG de ate 2 MB.');
+      this.showFeedback('Use uma imagem PNG, JPG, WEBP ou SVG de até 2 MB.');
       return;
     }
 
@@ -69,7 +69,7 @@ export class AdminPersonalizationComponent implements OnInit, OnDestroy {
       this.logoUrl = await this.themeService.uploadStoreLogo(file);
       this.showFeedback('Logo enviada. Salve para aplicar no perfil.');
     } catch {
-      this.showFeedback('Nao foi possivel enviar a logo agora. Verifique a imagem e tente novamente.');
+      this.showFeedback('Não foi possível enviar a logo agora. Verifique a imagem e tente novamente.');
     } finally {
       this.isUploading = false;
     }
@@ -80,9 +80,9 @@ export class AdminPersonalizationComponent implements OnInit, OnDestroy {
 
     try {
       await this.themeService.savePersonalization(this.selectedThemeId, this.logoUrl);
-      this.showFeedback('Personalizacao salva no seu perfil.');
+      this.showFeedback('Personalização salva no seu perfil.');
     } catch {
-      this.showFeedback('Nao foi possivel salvar a personalizacao agora. Tente novamente em alguns instantes.');
+      this.showFeedback('Não foi possível salvar a personalização agora. Tente novamente em alguns instantes.');
     } finally {
       this.isSaving = false;
     }

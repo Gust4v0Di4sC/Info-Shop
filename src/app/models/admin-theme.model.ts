@@ -27,7 +27,7 @@ export const ADMIN_THEME_OPTIONS: AdminThemeOption[] = [
     id: 'corporate',
     label: 'Azul Corporativo',
     className: 'admin-theme-corporate',
-    description: 'Claro, sobrio e alinhado a identidade principal da loja.',
+    description: 'Claro, sóbrio e alinhado à identidade principal da loja.',
     palette: {
       background: '#eef2f8',
       card: '#ffffff',
@@ -51,7 +51,7 @@ export const ADMIN_THEME_OPTIONS: AdminThemeOption[] = [
     id: 'emerald',
     label: 'Esmeralda Contraste',
     className: 'admin-theme-emerald',
-    description: 'Alto contraste com verde para metricas e operacao.',
+    description: 'Alto contraste com verde para métricas e operação.',
     palette: {
       background: '#f2f7f4',
       card: '#ffffff',

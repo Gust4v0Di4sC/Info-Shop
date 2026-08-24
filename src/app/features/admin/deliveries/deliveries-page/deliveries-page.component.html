@@ -2,7 +2,7 @@
   <header class="page-header">
     <div>
       <p class="eyebrow">Entregas</p>
-      <h1>Acompanhamento logistico</h1>
+      <h1>Acompanhamento logístico</h1>
       <span>Pedidos criados por clientes e administradores entram nesta fila automaticamente.</span>
     </div>
 
@@ -26,8 +26,8 @@
         <article class="delivery-card">
           <div class="delivery-main">
             <span class="status-pill">{{ statusLabel(delivery.status) }}</span>
-            <h2>{{ delivery.customer_name || 'Cliente nao informado' }}</h2>
-            <p>{{ delivery.address || 'Endereco a confirmar' }}</p>
+            <h2>{{ delivery.customer_name || 'Cliente não informado' }}</h2>
+            <p>{{ delivery.address || 'Endereço a confirmar' }}</p>
             <small>Pedido {{ delivery.order_id || 'sem vinculo' }}</small>
             @if (delivery.melhor_envio_protocol || delivery.melhor_envio_order_id) {
               <small>Melhor Envio {{ delivery.melhor_envio_protocol || delivery.melhor_envio_order_id }}</small>
@@ -53,7 +53,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Codigo de rastreio</mat-label>
+              <mat-label>Código de rastreio</mat-label>
               <input
                 matInput
                 [value]="delivery.tracking_code || ''"
@@ -63,8 +63,8 @@
 
           <div class="shipping-summary">
             <span>
-              <strong>Servico</strong>
-              {{ delivery.selected_service_name || 'Nao selecionado' }}
+              <strong>Serviço</strong>
+              {{ delivery.selected_service_name || 'Não selecionado' }}
             </span>
             <span>
               <strong>Frete</strong>
@@ -88,7 +88,7 @@
           }
 
           <mat-form-field appearance="outline" class="notes-field">
-            <mat-label>Observacoes</mat-label>
+            <mat-label>Observações</mat-label>
             <textarea
               matInput
               rows="2"
@@ -106,7 +106,7 @@
       [pageSize]="pageSize"
       [pageSizeOptions]="pageSizeOptions"
       (page)="onPageChange($event)"
-      aria-label="Paginacao de entregas">
+      aria-label="Paginação de entregas">
     </mat-paginator>
   }
 </section>

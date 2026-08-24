@@ -12,7 +12,7 @@ import { AuthService } from '@app/core/auth/auth.service';
 export class AuthCallbackComponent implements OnInit {
   errorMessage = '';
   actionTitle = 'Processando login';
-  actionDescription = 'Aguarde enquanto validamos sua sessao.';
+  actionDescription = 'Aguarde enquanto validamos sua sessão.';
 
   constructor(private authService: AuthService) {}
 
@@ -21,13 +21,13 @@ export class AuthCallbackComponent implements OnInit {
       const type = this.getCallbackType();
 
       if (type === 'recovery') {
-        this.actionTitle = 'Validando recuperacao';
-        this.actionDescription = 'Aguarde enquanto preparamos a redefinicao de senha.';
+        this.actionTitle = 'Validando recuperação';
+        this.actionDescription = 'Aguarde enquanto preparamos a redefinição de senha.';
       }
 
       await this.authService.handleAuthCallback();
     } catch {
-      this.errorMessage = 'Nao foi possivel concluir o login. Tente entrar novamente.';
+      this.errorMessage = 'Não foi possível concluir o login. Tente entrar novamente.';
     }
   }
 

@@ -17,14 +17,14 @@ export class FooterComponent {
     { label: 'Tablets', slug: 'tablets' },
     { label: 'Games', slug: 'games' },
     { label: 'Hardware', slug: 'hardware' },
-    { label: 'Perifericos', slug: 'perifericos' },
+    { label: 'Periféricos', slug: 'perifericos' },
   ];
 
   readonly supportLinks = [
     { label: 'Fale conosco', slug: 'fale-conosco' },
     { label: 'Perguntas frequentes', slug: 'perguntas-frequentes' },
-    { label: 'Politica de compra', slug: 'politica-de-compra' },
-    { label: 'Trocas e devolucoes', slug: 'trocas-e-devolucoes' },
+    { label: 'Política de compra', slug: 'politica-de-compra' },
+    { label: 'Trocas e devoluções', slug: 'trocas-e-devolucoes' },
     { label: 'Privacidade', slug: 'privacidade' },
   ];
 

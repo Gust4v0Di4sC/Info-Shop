@@ -107,7 +107,7 @@ export class AdminThemeService {
 
   async uploadStoreLogo(file: File): Promise<string> {
     const authService = await this.authService();
-    const user = await authService.requireCurrentUser('Sessao administrativa nao encontrada.');
+    const user = await authService.requireCurrentUser('Sessão administrativa não encontrada.');
     const filePath = `${user.id}/${Date.now()}-${this.sanitizeFileName(file.name)}`;
     const { supabase } = await import('@app/core/supabase/supabase.client');
     const uploadResult = await supabase.storage

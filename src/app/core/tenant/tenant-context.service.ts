@@ -53,7 +53,7 @@ export class TenantContextService {
       distinctUntilChanged(),
       switchMap(storeId => storeId
         ? of(storeId)
-        : throwError(() => new Error('Nenhuma loja disponivel para este usuario administrativo.'))),
+        : throwError(() => new Error('Nenhuma loja disponível para este usuário administrativo.'))),
     );
   }
 
@@ -62,7 +62,7 @@ export class TenantContextService {
 
     const storeId = this.selectedStoreIdSubject.value;
     if (!storeId) {
-      throw new Error('Nenhuma loja disponivel para este usuario administrativo.');
+      throw new Error('Nenhuma loja disponível para este usuário administrativo.');
     }
 
     return storeId;

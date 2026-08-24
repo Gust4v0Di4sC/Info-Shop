@@ -24,12 +24,12 @@ export class PublicShellComponent {
   readonly layout = inject(ResponsiveLayoutService);
 
   readonly navItems: PublicNavItem[] = [
-    { label: 'Inicio', link: '/', fragment: 'inicio' },
+    { label: 'Início', link: '/', fragment: 'inicio' },
     { label: 'Categorias', link: '/', fragment: 'categorias' },
     { label: 'Produtos', link: '/', fragment: 'produtos' },
     { label: 'Ofertas', link: '/', fragment: 'ofertas' },
     { label: 'Contato', link: '/', fragment: 'contato' },
-    { label: 'Catalogo', link: '/catalogo' },
+    { label: 'Catálogo', link: '/catalogo' },
   ];
 
   closeDrawerOnCompact(drawer: MatSidenav): void {

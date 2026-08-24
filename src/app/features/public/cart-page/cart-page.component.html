@@ -30,7 +30,7 @@
             <article class="cart-item">
               <a
                 [routerLink]="['/produto', item.product_id]"
-                class="item-media"
+                class="item-média"
                 [attr.aria-label]="'Ver detalhes de ' + itemName(item)">
                 <img
                   [ngSrc]="item.product?.imageUrl || '/product1.webp'"
@@ -128,7 +128,7 @@
                 id="shipping-street"
                 formControlName="street"
                 autocomplete="address-line1"
-                placeholder="Endereco"
+                placeholder="Endereço"
                 [attr.aria-invalid]="fieldInvalid('street')"
                 aria-describedby="shipping-street-error">
               @if (fieldInvalid('street')) {
@@ -137,7 +137,7 @@
             </label>
             <div class="shipping-grid">
               <label for="shipping-number">
-                Numero
+                Número
                 <input
                   id="shipping-number"
                   formControlName="number"
@@ -186,7 +186,7 @@
             </label>
 
             @if (shippingForm.touched && shippingForm.invalid) {
-              <p class="error-text">Preencha o endereco para calcular o frete.</p>
+              <p class="error-text">Preencha o endereço para calcular o frete.</p>
             }
 
             <button class="quote-btn" type="submit" [disabled]="isQuoting">
@@ -199,7 +199,7 @@
           }
 
           @if (shippingQuotes.length > 0) {
-            <div class="shipping-options" role="radiogroup" aria-label="Opcoes de frete">
+            <div class="shipping-options" role="radiogroup" aria-label="Opções de frete">
               @for (quote of shippingQuotes; track quote.id) {
                 <label class="shipping-option" [class.selected]="selectedServiceId === quote.id">
                   <input

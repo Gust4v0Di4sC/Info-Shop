@@ -2,7 +2,7 @@
   <div class="newsletter-card">
     <div class="newsletter-copy">
       <h1>Fique ligado nas ofertas</h1>
-      <p>Receba promocoes e lancamentos uma vez por semana. Sem spam.</p>
+      <p>Receba promoções e lançamentos uma vez por semana. Sem spam.</p>
     </div>
 
     <form class="newsletter-form" [formGroup]="newsletterForm" (ngSubmit)="subscribe()" novalidate>
@@ -23,7 +23,7 @@
       <span id="newsletter-help">Usamos seu e-mail apenas para enviar ofertas da InfoShop.</span>
       <div id="newsletter-feedback" class="newsletter-feedback" aria-live="polite">
         @if (newsletterForm.get('email')?.touched && newsletterForm.get('email')?.invalid) {
-          <p class="error-text">Digite um e-mail valido.</p>
+          <p class="error-text">Digite um e-mail válido.</p>
         } @else if (errorMessage) {
           <p class="error-text">{{ errorMessage }}</p>
         }

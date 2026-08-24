@@ -67,7 +67,7 @@ export class OfferManagementComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar as ofertas agora. Tente novamente em alguns instantes.';
+        this.errorMessage = 'Não foi possível carregar as ofertas agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
       },
     });
@@ -99,7 +99,7 @@ export class OfferManagementComponent implements OnInit {
         this.isSaving = false;
       },
       error: () => {
-        this.showSnackbar('Nao foi possivel salvar a oferta agora. Confira os dados e tente novamente.');
+        this.showSnackbar('Não foi possível salvar a oferta agora. Confira os dados e tente novamente.');
         this.isSaving = false;
       },
     });
@@ -114,7 +114,7 @@ export class OfferManagementComponent implements OnInit {
         this.showSnackbar('Oferta removida da landing page.');
       },
       error: () => {
-        this.showSnackbar('Nao foi possivel remover a oferta agora. Tente novamente.');
+        this.showSnackbar('Não foi possível remover a oferta agora. Tente novamente.');
       },
     });
   }
@@ -126,7 +126,7 @@ export class OfferManagementComponent implements OnInit {
         this.showSnackbar('Destaque atualizado.');
       },
       error: () => {
-        this.showSnackbar('Nao foi possivel atualizar o destaque agora. Tente novamente.');
+        this.showSnackbar('Não foi possível atualizar o destaque agora. Tente novamente.');
       },
     });
   }

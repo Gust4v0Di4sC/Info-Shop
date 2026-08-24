@@ -33,7 +33,7 @@ export class ProductDetailComponent implements OnInit {
 
     if (!productId) {
       this.isLoading = false;
-      this.errorMessage = 'Produto nao encontrado.';
+      this.errorMessage = 'Produto não encontrado.';
       this.changeDetectorRef.markForCheck();
       return;
     }
@@ -45,7 +45,7 @@ export class ProductDetailComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel carregar este produto.';
+        this.errorMessage = 'Não foi possível carregar este produto.';
         this.isLoading = false;
         this.changeDetectorRef.markForCheck();
       },
@@ -81,7 +81,7 @@ export class ProductDetailComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.showSnackbar('Nao foi possivel adicionar este produto ao carrinho. Entre na sua conta e tente novamente.');
+        this.showSnackbar('Não foi possível adicionar este produto ao carrinho. Entre na sua conta e tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
     });

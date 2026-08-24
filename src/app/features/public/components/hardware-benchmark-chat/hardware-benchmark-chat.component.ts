@@ -33,7 +33,7 @@ export class HardwareBenchmarkChatComponent implements OnInit {
     validators: [Validators.required, Validators.maxLength(600)],
   });
 
-  readonly fallbackAnswer = 'Nao possuo informacoes a respeito disso.';
+  readonly fallbackAnswer = 'Não possuo informações a respeito disso.';
   messages: HardwareBenchmarkMessage[] = [];
   isAuthenticated = false;
   isSending = false;
@@ -98,7 +98,7 @@ export class HardwareBenchmarkChatComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Nao foi possivel consultar a IA agora.';
+        this.errorMessage = 'Não foi possível consultar a IA agora.';
         this.messages = [...this.messages, { role: 'model', text: this.fallbackAnswer }];
         this.isSending = false;
         this.changeDetectorRef.markForCheck();
