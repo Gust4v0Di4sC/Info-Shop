@@ -10,7 +10,7 @@
     <section class="product-detail">
       <div class="product-gallery">
         <img
-          [ngSrc]="product.imageUrl || '/product1.webp'"
+          [src]="product.imageUrl || '/product1.webp'"
           width="800"
           height="600"
           sizes="(max-width: 860px) 100vw, 55vw"
@@ -35,16 +35,16 @@
             (click)="decreaseQuantity()"
             [disabled]="quantity <= 1"
             [attr.aria-label]="'Diminuir quantidade de ' + product.name">
-            <i class="fas fa-minus"></i>
+            <mat-icon aria-hidden="true">remove</mat-icon>
           </button>
           <span aria-live="polite">{{ quantity }}</span>
           <button type="button" (click)="increaseQuantity()" [attr.aria-label]="'Aumentar quantidade de ' + product.name">
-            <i class="fas fa-plus"></i>
+            <mat-icon aria-hidden="true">add</mat-icon>
           </button>
         </div>
 
         <button class="primary-action" type="button" (click)="addToCart()">
-          <i class="fas fa-shopping-bag"></i>
+          <mat-icon aria-hidden="true">shopping_bag</mat-icon>
           Adicionar ao carrinho
         </button>
 

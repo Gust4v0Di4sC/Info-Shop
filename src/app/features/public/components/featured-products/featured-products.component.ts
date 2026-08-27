@@ -1,5 +1,5 @@
-import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 
@@ -9,7 +9,7 @@ import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 
 @Component({
   selector: 'app-featured-products',
-  imports: [BrlCurrencyPipe, NgOptimizedImage, RouterLink],
+  imports: [BrlCurrencyPipe, MatIconModule, RouterLink],
   templateUrl: './featured-products.component.html',
   styleUrls: ['./featured-products.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,8 +72,10 @@ export class FeaturedProductsComponent implements OnInit {
     clone.style.left = `${startX}px`;
     clone.style.top = `${startY}px`;
 
-    const icon = document.createElement('i');
-    icon.className = 'fas fa-shopping-cart';
+    const icon = document.createElement('span');
+    icon.className = 'material-icons';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = 'shopping_cart';
     clone.appendChild(icon);
     document.body.appendChild(clone);
 

@@ -6,7 +6,7 @@
         <h1>Sua compra</h1>
       </div>
       <a routerLink="/" class="secondary-action">
-        <i class="fas fa-arrow-left"></i>
+        <mat-icon aria-hidden="true">arrow_back</mat-icon>
         Continuar comprando
       </a>
     </div>
@@ -30,10 +30,10 @@
             <article class="cart-item">
               <a
                 [routerLink]="['/produto', item.product_id]"
-                class="item-média"
+                class="item-media"
                 [attr.aria-label]="'Ver detalhes de ' + itemName(item)">
                 <img
-                  [ngSrc]="item.product?.imageUrl || '/product1.webp'"
+                  [src]="item.product?.imageUrl || '/product1.webp'"
                   width="317"
                   height="346"
                   [alt]="'Imagem de ' + itemName(item)">
@@ -52,14 +52,14 @@
                   type="button"
                   (click)="changeQuantity(item, item.quantity - 1)"
                   [attr.aria-label]="'Diminuir quantidade de ' + itemName(item)">
-                  <i class="fas fa-minus"></i>
+                  <mat-icon aria-hidden="true">remove</mat-icon>
                 </button>
                 <span aria-live="polite">{{ item.quantity }}</span>
                 <button
                   type="button"
                   (click)="changeQuantity(item, item.quantity + 1)"
                   [attr.aria-label]="'Aumentar quantidade de ' + itemName(item)">
-                  <i class="fas fa-plus"></i>
+                  <mat-icon aria-hidden="true">add</mat-icon>
                 </button>
               </div>
 
@@ -68,7 +68,7 @@
                 type="button"
                 (click)="removeItem(item)"
                 [attr.aria-label]="'Remover ' + itemName(item) + ' do carrinho'">
-                <i class="fas fa-trash"></i>
+                <mat-icon aria-hidden="true">delete</mat-icon>
               </button>
             </article>
           }

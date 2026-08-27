@@ -50,3 +50,4 @@ AGENTS.MD
 
 # Local Netlify folder
 .netlify
+/deno.lock

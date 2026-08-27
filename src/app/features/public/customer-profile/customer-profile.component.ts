@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { of, switchMap } from 'rxjs';
 import { AuthService } from '@app/core/auth/auth.service';
@@ -16,7 +17,7 @@ interface ProfileAddressForm {
 
 @Component({
   selector: 'app-customer-profile',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, MatIconModule, RouterLink],
   templateUrl: './customer-profile.component.html',
   styleUrl: './customer-profile.component.scss'
 })

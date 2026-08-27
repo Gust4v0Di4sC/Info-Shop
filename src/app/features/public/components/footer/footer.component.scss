@@ -52,6 +52,10 @@
   }
 }
 
+.social-brand-icon {
+  color: currentColor;
+}
+
 h1 {
   color: #ffffff;
   font-size: 15px;
@@ -91,15 +95,21 @@ li a {
   display: flex;
   gap: 12px;
 
-  i {
+  mat-icon {
     color: #9fb0c3;
+    font-size: 17px;
+    height: 17px;
     margin-top: 2px;
     width: 16px;
   }
 }
 
 .footer-bottom {
+  align-items: center;
   border-top: 1px solid #172536;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
   margin: 0 auto;
   max-width: 1220px;
   padding: 22px 24px;
@@ -108,6 +118,18 @@ li a {
     color: #77879b;
     font-size: 13px;
     font-weight: 600;
+  }
+
+  a {
+    color: #77879b;
+    font-size: 12px;
+    font-weight: 650;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: #d9e3ef;
+    }
   }
 }
 
@@ -125,6 +147,9 @@ li a {
   }
 
   .footer-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
     padding: 20px 18px;
   }
 }

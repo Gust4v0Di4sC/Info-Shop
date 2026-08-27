@@ -5,6 +5,8 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { ResponsiveLayoutService } from '@app/core/layout/responsive-layout.service';
 import { FooterComponent } from '@app/features/public/components/footer/footer.component';
 import { HeaderComponent } from '@app/features/public/components/header/header.component';
+import { GsapInteractiveMotionDirective } from '@app/shared/directives/gsap-interactive-motion.directive';
+import { GsapPageMotionDirective } from '@app/shared/directives/gsap-page-motion.directive';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 
 interface PublicNavItem {
@@ -15,7 +17,15 @@ interface PublicNavItem {
 
 @Component({
   selector: 'app-public-shell',
-  imports: [FooterComponent, HeaderComponent, RouterLink, RouterOutlet, SharedMaterialModule],
+  imports: [
+    FooterComponent,
+    HeaderComponent,
+    RouterLink,
+    RouterOutlet,
+    SharedMaterialModule,
+    GsapInteractiveMotionDirective,
+    GsapPageMotionDirective,
+  ],
   templateUrl: './public-shell.component.html',
   styleUrl: './public-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

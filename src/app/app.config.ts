@@ -1,5 +1,5 @@
 import { IMAGE_LOADER } from '@angular/common';
-import { APP_INITIALIZER, ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, ErrorHandler, Provider, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import * as Sentry from '@sentry/angular';
@@ -12,6 +12,26 @@ import { telemetryInterceptor } from '@app/core/observability/telemetry.intercep
 import { AuthService } from '@app/core/auth/auth.service';
 import { environment } from '@environments/environment';
 
+const sentryProviders: Provider[] = environment.sentryDsn
+  ? [
+      {
+        provide: ErrorHandler,
+        useValue: Sentry.createErrorHandler(),
+      },
+      {
+        provide: Sentry.TraceService,
+        deps: [Router],
+      },
+      {
+        provide: APP_INITIALIZER,
+        useFactory: () => () => {},
+        deps: [Sentry.TraceService],
+        multi: true,
+      },
+    ]
+  : [];
+
+const serviceWorkerEnabled = environment.production && !isLocalDevOrigin();
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,20 +40,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch(), withInterceptors([telemetryInterceptor])),
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
-    {
-      provide: ErrorHandler,
-      useValue: Sentry.createErrorHandler(),
-    },
-    {
-      provide: Sentry.TraceService,
-      deps: [Router],
-    },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => () => {},
-      deps: [Sentry.TraceService],
-      multi: true,
-    },
+    ...sentryProviders,
     {
       provide: APP_INITIALIZER,
       useFactory: (authService: AuthService) => () => authService.loadUserFromSession(),
@@ -42,8 +49,12 @@ export const appConfig: ApplicationConfig = {
     },
     { provide: IMAGE_LOADER, useValue: supabaseImageLoader },
     provideServiceWorker('ngsw-worker.js', {
-      enabled: environment.production,
+      enabled: serviceWorkerEnabled,
       registrationStrategy: 'registerWhenStable:30000',
     }),
   ],
 };
+
+function isLocalDevOrigin(): boolean {
+  return typeof location !== 'undefined' && ['localhost', '127.0.0.1'].includes(location.hostname);
+}

@@ -156,9 +156,12 @@ h2 {
   font-weight: 700;
   margin: 14px 0 12px;
 
-  i {
+  mat-icon {
     color: #0f62cf;
+    font-size: 16px;
+    height: 16px;
     margin-right: 5px;
+    width: 16px;
   }
 }
 

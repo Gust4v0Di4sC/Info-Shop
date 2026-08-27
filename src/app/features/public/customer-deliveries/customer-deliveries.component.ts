@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { Delivery, DELIVERY_STATUS_LABELS } from '@app/models/delivery.model';
 import { DeliveryService } from '@app/services/delivery.service';
@@ -6,7 +7,7 @@ import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 
 @Component({
   selector: 'app-customer-deliveries',
-  imports: [RouterLink, BrlCurrencyPipe],
+  imports: [MatIconModule, RouterLink, BrlCurrencyPipe],
   templateUrl: './customer-deliveries.component.html',
   styleUrl: './customer-deliveries.component.scss',
 })

@@ -52,10 +52,6 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
 
     this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (this.prefersReducedMotion) {
-      return;
-    }
-
     this.ngZone.runOutsideAngular(() => {
       requestAnimationFrame(() => this.bindInteractiveElements());
 
@@ -99,12 +95,17 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
   private bindElement(element: HTMLElement): Array<() => void> {
     const isCard = this.isCardElement(element);
     const isCartAction = this.isCartAction(element);
+    const hoverY = this.prefersReducedMotion ? -1 : isCard ? -5 : -2;
+    const hoverScale = this.prefersReducedMotion ? 1.002 : isCard ? 1.01 : 1.015;
+    const pressScale = this.prefersReducedMotion ? 0.99 : isCard ? 0.995 : 0.965;
+    const hoverDuration = this.prefersReducedMotion ? 0.12 : 0.18;
+    const leaveDuration = this.prefersReducedMotion ? 0.14 : 0.22;
 
     const onEnter = () => {
       gsap.to(element, {
-        y: isCard ? -5 : -2,
-        scale: isCard ? 1.01 : 1.015,
-        duration: 0.18,
+        y: hoverY,
+        scale: hoverScale,
+        duration: hoverDuration,
         ease: 'power2.out',
         overwrite: 'auto',
       });
@@ -114,7 +115,7 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
       gsap.to(element, {
         y: 0,
         scale: 1,
-        duration: 0.22,
+        duration: leaveDuration,
         ease: 'power2.out',
         overwrite: 'auto',
         clearProps: 'transform',
@@ -123,7 +124,7 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
 
     const onDown = () => {
       gsap.to(element, {
-        scale: isCard ? 0.995 : 0.965,
+        scale: pressScale,
         duration: 0.08,
         ease: 'power1.out',
         overwrite: 'auto',
@@ -132,8 +133,8 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
 
     const onUp = () => {
       gsap.to(element, {
-        scale: isCard ? 1.01 : 1.015,
-        duration: 0.14,
+        scale: hoverScale,
+        duration: this.prefersReducedMotion ? 0.1 : 0.14,
         ease: 'back.out(2)',
         overwrite: 'auto',
       });
@@ -149,7 +150,7 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
         { scale: 0.96 },
         {
           scale: 1,
-          duration: 0.34,
+          duration: this.prefersReducedMotion ? 0.16 : 0.34,
           ease: 'elastic.out(1, 0.45)',
           clearProps: 'transform',
         },

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -10,7 +11,7 @@ import { HardwareBenchmarkService } from '@app/services/hardware-benchmark.servi
 
 @Component({
   selector: 'app-hardware-benchmark-chat',
-  imports: [ReactiveFormsModule],
+  imports: [MatIconModule, ReactiveFormsModule],
   templateUrl: './hardware-benchmark-chat.component.html',
   styleUrl: './hardware-benchmark-chat.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

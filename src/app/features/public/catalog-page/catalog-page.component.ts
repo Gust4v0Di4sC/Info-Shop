@@ -1,4 +1,3 @@
-import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { combineLatest } from 'rxjs';
@@ -23,7 +22,7 @@ const CATEGORIES: CatalogCategory[] = [
 
 @Component({
   selector: 'app-catalog-page',
-  imports: [NgOptimizedImage, RouterLink, BrlCurrencyPipe],
+  imports: [RouterLink, BrlCurrencyPipe],
   templateUrl: './catalog-page.component.html',
   styleUrl: './catalog-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

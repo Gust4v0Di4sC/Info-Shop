@@ -5,7 +5,7 @@
       <h2 id="benchmark-title">Compare com seu hardware atual</h2>
     </div>
     <span class="status-pill">
-      <i class="fas fa-microchip"></i>
+      <mat-icon aria-hidden="true">memory</mat-icon>
       Gemini
     </span>
   </div>
@@ -15,7 +15,7 @@
       <strong>Entre para usar o comparador</strong>
       <p>Usuários logados podem comparar este produto com o computador, notebook ou setup atual.</p>
       <button class="secondary-action" type="button" (click)="goToLogin()">
-        <i class="far fa-user"></i>
+        <mat-icon aria-hidden="true">person_outline</mat-icon>
         Entrar na conta
       </button>
     </div>
@@ -77,7 +77,7 @@
           placeholder="Pergunte como este produto se compara ao seu setup"></textarea>
       </label>
       <button class="primary-action" type="button" (click)="sendMessage()" [disabled]="isSending">
-        <i class="fas fa-paper-plane"></i>
+        <mat-icon aria-hidden="true">send</mat-icon>
         {{ isSending ? 'Analisando...' : 'Analisar' }}
       </button>
     </form>

@@ -6,7 +6,7 @@
         <h1>Acompanhamento de pedidos</h1>
       </div>
       <a routerLink="/perfil" class="secondary-action">
-        <i class="fas fa-user"></i>
+        <mat-icon aria-hidden="true">person</mat-icon>
         Minha conta
       </a>
     </div>
@@ -66,7 +66,7 @@
 
             @if (delivery.tracking_url) {
               <a class="tracking-link" [href]="delivery.tracking_url" target="_blank" rel="noopener">
-                <i class="fas fa-up-right-from-square"></i>
+                <mat-icon aria-hidden="true">open_in_new</mat-icon>
                 Abrir rastreio
               </a>
             }

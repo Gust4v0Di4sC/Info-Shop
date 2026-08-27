@@ -1,8 +1,10 @@
-/* Importação do Bootstrap e Font Awesome */
+/* Importação do Bootstrap e Material Icons */
 
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
+@import 'material-icons/iconfont/filled.css';
+@import '@flaticon/flaticon-uicons/css/brands/all.css';
 
 
 
@@ -41,6 +43,44 @@
   translate: -50% -50%;
   transform: translate3d(0, 0, 0);
   will-change: transform, opacity;
+}
+
+.flying-cart .material-icons {
+  direction: ltr;
+  display: inline-block;
+  font-family: 'Material Icons';
+  font-size: 20px;
+  font-style: normal;
+  font-weight: normal;
+  letter-spacing: normal;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  vertical-align: middle;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'liga';
+}
+
+mat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+  flex: 0 0 auto;
+}
+
+.social-brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
 }
 
 

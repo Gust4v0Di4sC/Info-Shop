@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 interface SupportTopic {
@@ -63,7 +64,7 @@ const SUPPORT_TOPICS: SupportTopic[] = [
 
 @Component({
   selector: 'app-support-page',
-  imports: [RouterLink],
+  imports: [MatIconModule, RouterLink],
   templateUrl: './support-page.component.html',
   styleUrl: './support-page.component.scss',
 })

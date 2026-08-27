@@ -14,8 +14,11 @@
   padding: 8px 24px;
   text-align: center;
 
-  i {
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
     margin-right: 6px;
+    width: 16px;
   }
 }
 

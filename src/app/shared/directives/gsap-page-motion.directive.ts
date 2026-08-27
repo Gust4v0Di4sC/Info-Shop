@@ -31,10 +31,6 @@ export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
 
     this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (this.prefersReducedMotion) {
-      return;
-    }
-
     this.ngZone.runOutsideAngular(() => {
       requestAnimationFrame(() => this.animateLatestView());
 
@@ -68,8 +64,8 @@ export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
 
     gsap.set(page, {
       autoAlpha: 0,
-      y: 12,
-      filter: 'blur(5px)',
+      y: this.prefersReducedMotion ? 4 : 12,
+      filter: this.prefersReducedMotion ? 'none' : 'blur(5px)',
     });
   }
 
@@ -85,14 +81,14 @@ export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
       page,
       {
         autoAlpha: 0,
-        y: 12,
-        filter: 'blur(5px)',
+        y: this.prefersReducedMotion ? 4 : 12,
+        filter: this.prefersReducedMotion ? 'none' : 'blur(5px)',
       },
       {
         autoAlpha: 1,
         y: 0,
         filter: 'blur(0px)',
-        duration: 0.34,
+        duration: this.prefersReducedMotion ? 0.2 : 0.34,
         ease: 'power2.out',
         clearProps: 'opacity,visibility,transform,filter',
       },
@@ -111,10 +107,10 @@ export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
         {
           autoAlpha: 1,
           y: 0,
-          duration: 0.32,
+          duration: this.prefersReducedMotion ? 0.18 : 0.32,
           ease: 'power2.out',
-          stagger: 0.035,
-          delay: 0.05,
+          stagger: this.prefersReducedMotion ? 0.015 : 0.035,
+          delay: this.prefersReducedMotion ? 0.02 : 0.05,
           clearProps: 'opacity,visibility,transform',
         },
       );

@@ -1,0 +1,17 @@
+[build]
+  command = "npm run build:observability"
+  publish = "dist/info-shop-angular/browser"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22.22.0"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["express"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true

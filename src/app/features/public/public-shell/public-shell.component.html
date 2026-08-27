@@ -28,7 +28,7 @@
   <mat-sidenav-content class="public-content">
     <app-header (menuRequested)="drawer.toggle()"></app-header>
 
-    <main class="public-main">
+    <main class="public-main" appGsapPageMotion appGsapInteractiveMotion>
       <router-outlet />
     </main>
 

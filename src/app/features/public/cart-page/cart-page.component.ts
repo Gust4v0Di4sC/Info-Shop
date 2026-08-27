@@ -1,6 +1,6 @@
-import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
@@ -11,7 +11,7 @@ import { PaymentService } from '@app/services/payment.service';
 
 @Component({
   selector: 'app-cart-page',
-  imports: [NgOptimizedImage, BrlCurrencyPipe, RouterLink, ReactiveFormsModule],
+  imports: [BrlCurrencyPipe, MatIconModule, RouterLink, ReactiveFormsModule],
   templateUrl: './cart-page.component.html',
   styleUrl: './cart-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

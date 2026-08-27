@@ -7,15 +7,15 @@
       </div>
       <div class="head-actions">
         <a routerLink="/carrinho" class="secondary-action">
-          <i class="fas fa-shopping-bag"></i>
+          <mat-icon aria-hidden="true">shopping_bag</mat-icon>
           Ver carrinho
         </a>
         <a routerLink="/minhas-entregas" class="secondary-action">
-          <i class="fas fa-truck"></i>
+          <mat-icon aria-hidden="true">local_shipping</mat-icon>
           Minhas entregas
         </a>
         <button class="logout-action" type="button" (click)="logout()" [disabled]="isLoggingOut">
-          <i class="fas fa-right-from-bracket"></i>
+          <mat-icon aria-hidden="true">logout</mat-icon>
           {{ isLoggingOut ? 'Saindo...' : 'Sair' }}
         </button>
       </div>
@@ -46,11 +46,11 @@
                 @if (avatarPreviewUrl) {
                   <img [src]="avatarPreviewUrl" [alt]="profileForm.value.full_name || 'Avatar do cliente'">
                 } @else {
-                  <i class="far fa-user"></i>
+                  <mat-icon aria-hidden="true">person_outline</mat-icon>
                 }
               </div>
               <label class="avatar-action">
-                <i class="fas fa-camera"></i>
+                <mat-icon aria-hidden="true">photo_camera</mat-icon>
                 Trocar foto
                 <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onAvatarSelected($event)">
               </label>

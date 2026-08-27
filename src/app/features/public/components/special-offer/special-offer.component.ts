@@ -1,4 +1,4 @@
-import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -17,7 +17,7 @@ import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 
 @Component({
   selector: 'app-special-offer',
-  imports: [BrlCurrencyPipe, NgOptimizedImage, RouterLink],
+  imports: [BrlCurrencyPipe, RouterLink],
   templateUrl: './special-offer.component.html',
   styleUrls: ['./special-offer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -137,8 +137,10 @@ export class SpecialOfferComponent implements OnInit, OnDestroy {
     clone.style.left = `${startX}px`;
     clone.style.top = `${startY}px`;
 
-    const icon = document.createElement('i');
-    icon.className = 'fas fa-shopping-cart';
+    const icon = document.createElement('span');
+    icon.className = 'material-icons';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = 'shopping_cart';
     clone.appendChild(icon);
     document.body.appendChild(clone);
 

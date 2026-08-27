@@ -11,7 +11,9 @@
     <div class="categories-grid">
       @for (category of categories; track category.slug) {
         <a class="category-card" [routerLink]="['/catalogo', category.slug]">
-          <span class="category-icon"><i [class]="category.icon"></i></span>
+          <span class="category-icon">
+            <mat-icon aria-hidden="true">{{ category.icon }}</mat-icon>
+          </span>
           <h2>{{ category.name }}</h2>
           <p>{{ category.count }} produtos</p>
         </a>

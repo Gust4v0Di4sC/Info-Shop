@@ -7,7 +7,7 @@
       </div>
       <a class="catalog-button" routerLink="/catalogo">
         Ver catálogo completo
-        <i class="fas fa-arrow-right"></i>
+        <mat-icon aria-hidden="true">arrow_forward</mat-icon>
       </a>
     </div>
 
@@ -22,12 +22,12 @@
       @for (product of products; track product.id) {
         <article class="product-card">
           <a
-            class="product-média"
+            class="product-media"
             [routerLink]="['/produto', product.id]"
             [attr.aria-label]="'Ver detalhes de ' + product.name">
             <span class="product-badge">Destaque</span>
             <img
-              [ngSrc]="product.imageUrl || '/product1.webp'"
+              [src]="product.imageUrl || '/product1.webp'"
               width="317"
               height="238"
               sizes="(max-width: 620px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -38,7 +38,7 @@
             <a class="product-title" [routerLink]="['/produto', product.id]">{{ product.name }}</a>
             <p class="product-description">{{ product.model || product.description }}</p>
             <p class="product-rating">
-              <i class="fa fa-star"></i>
+              <mat-icon aria-hidden="true">star</mat-icon>
               Produto selecionado
             </p>
             <strong class="product-price">{{ product.price | brlCurrency }}</strong>
