@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ClientFormService } from '@app/services/client-form.service';
+import { ViaCepService } from '@app/services/via-cep.service';
 import { of } from 'rxjs';
 
 import { ClienteFormComponent } from './cliente-form.component';
@@ -21,6 +22,12 @@ describe('ClienteFormComponent', () => {
             createClient: () => of({}),
             updateClient: () => of({}),
             uploadImage: () => of({ imageUrl: '' }),
+          },
+        },
+        {
+          provide: ViaCepService,
+          useValue: {
+            lookup: () => of(null),
           },
         },
       ],

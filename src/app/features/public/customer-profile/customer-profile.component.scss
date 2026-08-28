@@ -1,6 +1,6 @@
 .profile-page {
   background: #f6f8fb;
-  font-family: "Roboto Flex", Roboto, sans-serif;
+  font-family: "Open Sans", Arial, "Helvetica Neue", sans-serif;
   min-height: 70vh;
   padding: 54px 24px 72px;
 }
@@ -255,6 +255,13 @@ input {
 
 .feedback {
   color: #176b3a;
+  font-size: 13px;
+  font-weight: 750;
+  margin: 0;
+}
+
+.field-hint {
+  color: #667085;
   font-size: 13px;
   font-weight: 750;
   margin: 0;

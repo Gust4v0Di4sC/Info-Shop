@@ -83,11 +83,11 @@
           <div class="field-row">
             <label>
               Telefone
-              <input formControlName="phone" type="tel">
+              <input formControlName="phone" type="tel" inputmode="tel" maxlength="15" autocomplete="tel" (input)="formatPhoneField()">
             </label>
             <label>
               CPF ou CNPJ
-              <input formControlName="document" type="text">
+              <input formControlName="document" type="text" inputmode="numeric" maxlength="18" autocomplete="off" (input)="formatDocumentField()">
             </label>
           </div>
         </section>
@@ -102,26 +102,38 @@
           <div class="field-row">
             <label>
               Rua
-              <input formControlName="street" type="text">
+              <input formControlName="street" type="text" autocomplete="address-line1">
             </label>
             <label>
               CEP
-              <input formControlName="postalCode" type="text" inputmode="numeric">
+              <input formControlName="postalCode" type="text" inputmode="numeric" maxlength="9" autocomplete="postal-code" (input)="formatPostalCodeField()">
             </label>
           </div>
 
-          <div class="field-row three-columns">
+          @if (isFetchingCep) {
+            <p class="field-hint">Buscando endereco...</p>
+          }
+
+          @if (cepErrorMessage) {
+            <p class="error-text">{{ cepErrorMessage }}</p>
+          }
+
+          <div class="field-row">
             <label>
               Bairro
-              <input formControlName="district" type="text">
+              <input formControlName="district" type="text" autocomplete="address-level3">
+            </label>
+            <label>
+              Cidade
+              <input formControlName="city" type="text" autocomplete="address-level2">
             </label>
             <label>
               Número
-              <input formControlName="number" type="text">
+              <input formControlName="number" type="text" autocomplete="address-line2">
             </label>
             <label>
               Estado
-              <input formControlName="state" type="text" maxlength="2">
+              <input formControlName="state" type="text" maxlength="2" autocomplete="address-level1">
             </label>
           </div>
 

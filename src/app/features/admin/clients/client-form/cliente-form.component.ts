@@ -1,12 +1,15 @@
 
-import { Component, Inject, OnInit, Optional } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Client, ClientInsert } from '@app/models/client.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClientFormService } from '@app/services/client-form.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, finalize, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
+import { ViaCepService } from '@app/services/via-cep.service';
+import { formatCep, formatCpf, formatPhone, onlyDigits } from '@app/shared/utils/input-masks';
 
 @Component({
   selector: 'app-cliente-form',
@@ -15,22 +18,27 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
   styleUrl: './cliente-form.component.scss'
 })
 
-export class ClienteFormComponent implements OnInit {
+export class ClienteFormComponent implements OnInit, OnDestroy {
   clientForm: FormGroup;
   clientId: string | null = null;
   isEditMode: boolean = false;
   imagePreview: string | null = null;
   selectedFile: File | null = null;
+  isFetchingCep = false;
+  cepErrorMessage = '';
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private clientService: ClientFormService,
     private snackBar: MatSnackBar,
+    private viaCepService: ViaCepService,
     @Optional() public dialogRef: MatDialogRef<ClienteFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data:any 
   ) {
     this.clientForm = this.fb.group({
       name: ['', [Validators.required]],
+      postalCode: [''],
       address: ['', [Validators.required]],
       age: ['', [Validators.required]],
       cpf: ['', [Validators.required]],
@@ -46,6 +54,7 @@ export class ClienteFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.bindPostalCodeAutocomplete();
 
     if (this.clientId) {
       this.clientService.getClientById(this.clientId).subscribe({
@@ -58,6 +67,11 @@ export class ClienteFormComponent implements OnInit {
         }
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 
@@ -73,9 +87,10 @@ export class ClienteFormComponent implements OnInit {
     this.clientForm.patchValue({
       name: client.name,
       age: client.age,
+      postalCode: formatCep(this.extractPostalCode(client.address || '')),
       address: client.address,
-      cpf: client.cpf,
-      phone: client.phone,
+      cpf: formatCpf(client.cpf),
+      phone: formatPhone(client.phone),
       imageUrl:  client.imageUrl // Compatibilidade com db.json
     });
   
@@ -182,6 +197,18 @@ export class ClienteFormComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  formatCpfField(): void {
+    this.formatControl('cpf', formatCpf);
+  }
+
+  formatPhoneField(): void {
+    this.formatControl('phone', formatPhone);
+  }
+
+  formatPostalCodeField(): void {
+    this.formatControl('postalCode', formatCep);
+  }
+
   private markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach(control => {
       control.markAsTouched();
@@ -189,6 +216,73 @@ export class ClienteFormComponent implements OnInit {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  private bindPostalCodeAutocomplete(): void {
+    this.clientForm.get('postalCode')?.valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap(value => {
+        const postalCode = onlyDigits(String(value || ''));
+
+        if (postalCode.length !== 8) {
+          this.isFetchingCep = false;
+          this.cepErrorMessage = '';
+          return of(null);
+        }
+
+        this.isFetchingCep = true;
+        this.cepErrorMessage = '';
+
+        return this.viaCepService.lookup(postalCode).pipe(
+          finalize(() => {
+            this.isFetchingCep = false;
+          }),
+        );
+      }),
+      takeUntil(this.destroy$),
+    ).subscribe(address => {
+      if (!address) {
+        const postalCode = onlyDigits(String(this.clientForm.get('postalCode')?.value || ''));
+        if (postalCode.length === 8) {
+          this.cepErrorMessage = 'CEP nao encontrado. Preencha o endereco manualmente.';
+        }
+        return;
+      }
+
+      this.clientForm.patchValue({
+        address: this.formatAddressSuggestion(address.postalCode, address.street, address.district, address.city, address.state),
+      }, { emitEvent: false });
+      this.cepErrorMessage = '';
+    });
+  }
+
+  private formatAddressSuggestion(
+    postalCode: string,
+    street: string,
+    district: string,
+    city: string,
+    state: string,
+  ): string {
+    return [
+      street,
+      district,
+      city && state ? `${city}/${state}` : city || state,
+      `CEP ${postalCode}`,
+    ].filter(Boolean).join(' - ');
+  }
+
+  private extractPostalCode(address: string): string {
+    return onlyDigits(address).slice(-8);
+  }
+
+  private formatControl(controlName: string, formatter: (value: string) => string): void {
+    const control = this.clientForm.get(controlName);
+    const formatted = formatter(String(control?.value || ''));
+
+    if (control && control.value !== formatted) {
+      control.setValue(formatted, { emitEvent: false });
+    }
   }
 
   getErrorMessage(controlName: string, groupName?: string): string {
