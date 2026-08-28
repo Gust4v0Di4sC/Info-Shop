@@ -197,10 +197,19 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
   }
 
   private shouldSkip(element: HTMLElement): boolean {
-    return Boolean(
-      element.closest('.mat-mdc-dialog-container') ||
+    if (
       element.hasAttribute('disabled') ||
-      element.getAttribute('aria-disabled') === 'true',
+      element.getAttribute('aria-disabled') === 'true' ||
+      element.getAttribute('aria-busy') === 'true' ||
+      element.classList.contains('is-loading')
+    ) {
+      gsap.killTweensOf(element);
+      gsap.set(element, { clearProps: 'transform' });
+      return true;
+    }
+
+    return Boolean(
+      element.closest('.mat-mdc-dialog-container'),
     );
   }
 

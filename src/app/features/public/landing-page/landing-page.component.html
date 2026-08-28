@@ -2,11 +2,7 @@
     <app-hero></app-hero>
     <app-categories></app-categories>
     <app-featured-products></app-featured-products>
-    @defer (on viewport) {
-        <app-special-offer></app-special-offer>
-    } @placeholder {
-        <div class="defer-anchor" aria-hidden="true"></div>
-    }
+    <app-special-offer></app-special-offer>
     <section class="ai-benchmark-section" aria-labelledby="ai-benchmark-title">
         <div class="ai-benchmark-container">
             <div class="ai-benchmark-copy">
@@ -26,7 +22,7 @@
                 </div>
             </div>
 
-            <a class="ai-benchmark-action" href="#produtos">
+            <a class="ai-benchmark-action" routerLink="/" fragment="produtos">
                 Ver produtos
                 <mat-icon aria-hidden="true">arrow_forward</mat-icon>
             </a>

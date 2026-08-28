@@ -5,6 +5,7 @@ import { CartPageComponent } from './cart-page.component';
 import { CartServiceService } from '@app/services/cart-service.service';
 import { PaymentService } from '@app/services/payment.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ViaCepService } from '@app/services/via-cep.service';
 
 describe('CartPageComponent', () => {
   it('should create a Mercado Pago preference and redirect to its init point', () => {
@@ -16,6 +17,7 @@ describe('CartPageComponent', () => {
       new FormBuilder(),
       changeDetectorRefMock(),
       snackBarMock(),
+      viaCepServiceMock(),
     );
     const redirectSpy = spyOn(component, 'redirectToPayment');
 
@@ -51,6 +53,7 @@ describe('CartPageComponent', () => {
       new FormBuilder(),
       changeDetectorRefMock(),
       snackBar,
+      viaCepServiceMock(),
     );
 
     component.selectedServiceId = '1';
@@ -74,6 +77,7 @@ describe('CartPageComponent', () => {
       new FormBuilder(),
       changeDetectorRefMock(),
       snackBarMock(),
+      viaCepServiceMock(),
     );
     (cartService.calculateShipping as jasmine.Spy).and.returnValue(of([]));
 
@@ -96,6 +100,7 @@ describe('CartPageComponent', () => {
       new FormBuilder(),
       changeDetectorRefMock(),
       snackBarMock(),
+      viaCepServiceMock(),
     );
     (cartService.calculateShipping as jasmine.Spy).and.returnValue(of([
       { id: '2', name: 'SEDEX', company: 'Correios', price: 29.9, deliveryTime: 2 },
@@ -145,6 +150,12 @@ function changeDetectorRefMock(): ChangeDetectorRef {
     markForCheck: jasmine.createSpy('markForCheck'),
     reattach: jasmine.createSpy('reattach'),
   } as unknown as ChangeDetectorRef;
+}
+
+function viaCepServiceMock(): ViaCepService {
+  return {
+    lookup: jasmine.createSpy('lookup').and.returnValue(of(null)),
+  } as unknown as ViaCepService;
 }
 
 function fillAddress(component: CartPageComponent): void {

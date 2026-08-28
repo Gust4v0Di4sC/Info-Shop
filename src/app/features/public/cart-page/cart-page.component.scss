@@ -1,6 +1,6 @@
 .cart-page {
   background: #f6f8fb;
-  font-family: "Roboto Flex", Roboto, sans-serif;
+  font-family: "Open Sans", Arial, "Helvetica Neue", sans-serif;
   min-height: 70vh;
   padding: clamp(36px, 6vw, 54px) clamp(16px, 4vw, 24px) clamp(56px, 7vw, 72px);
 }
@@ -368,6 +368,13 @@ h2 {
   color: #b42318;
   font-size: 12px;
   font-weight: 800;
+  margin: 0;
+}
+
+.field-hint {
+  color: #667085;
+  font-size: 12px;
+  font-weight: 750;
   margin: 0;
 }
 

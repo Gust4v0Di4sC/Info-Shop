@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, map, Observable } from 'rxjs';
+import { BehaviorSubject, from, map, Observable, timeout } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { AuthService } from '@app/core/auth/auth.service';
 import { getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
@@ -45,7 +45,10 @@ export class CartServiceService {
 
   calculateShipping(address: DeliveryAddress): Observable<ShippingQuoteOption[]> {
     return from(this.invokeFunction<ShippingQuoteResponse>('melhor-envio-quote', { address }))
-      .pipe(map(response => response.quotes));
+      .pipe(
+        timeout({ first: 20000 }),
+        map(response => this.normalizeShippingQuotes(response)),
+      );
   }
 
   incrementCart() {
@@ -217,6 +220,20 @@ export class CartServiceService {
     }
 
     return data;
+  }
+
+  private normalizeShippingQuotes(response: ShippingQuoteResponse): ShippingQuoteOption[] {
+    if (!response || !Array.isArray(response.quotes)) {
+      throw new Error('Resposta de frete invalida. Tente calcular novamente.');
+    }
+
+    return response.quotes.filter(quote =>
+      quote &&
+      typeof quote.id === 'string' &&
+      typeof quote.name === 'string' &&
+      typeof quote.company === 'string' &&
+      typeof quote.price === 'number',
+    );
   }
 
   private async normalizeFunctionError(error: unknown): Promise<Error> {

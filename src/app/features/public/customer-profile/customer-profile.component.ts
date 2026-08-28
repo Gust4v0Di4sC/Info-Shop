@@ -1,16 +1,19 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { of, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, finalize, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { AuthService } from '@app/core/auth/auth.service';
 import { CustomerProfileService } from '@app/services/customer-profile.service';
 import { AppUser } from '@app/models/app-user.model';
+import { ViaCepService } from '@app/services/via-cep.service';
+import { formatCep, formatCpfCnpj, formatPhone, onlyDigits } from '@app/shared/utils/input-masks';
 
 interface ProfileAddressForm {
   street: string;
   postalCode: string;
   district: string;
+  city: string;
   number: string;
   state: string;
 }
@@ -21,7 +24,7 @@ interface ProfileAddressForm {
   templateUrl: './customer-profile.component.html',
   styleUrl: './customer-profile.component.scss'
 })
-export class CustomerProfileComponent implements OnInit {
+export class CustomerProfileComponent implements OnInit, OnDestroy {
   profileForm: FormGroup;
   isLoading = true;
   isSaving = false;
@@ -31,12 +34,16 @@ export class CustomerProfileComponent implements OnInit {
   feedbackMessage = '';
   avatarPreviewUrl: string | null = null;
   selectedAvatarFile: File | null = null;
+  isFetchingCep = false;
+  cepErrorMessage = '';
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private customerProfileService: CustomerProfileService,
     private changeDetectorRef: ChangeDetectorRef,
+    private viaCepService: ViaCepService,
   ) {
     this.profileForm = this.fb.group({
       email: [{ value: '', disabled: true }],
@@ -47,13 +54,20 @@ export class CustomerProfileComponent implements OnInit {
       street: [''],
       postalCode: [''],
       district: [''],
+      city: [''],
       number: [''],
       state: ['', [Validators.maxLength(2)]],
     });
   }
 
   ngOnInit(): void {
+    this.bindPostalCodeAutocomplete();
     this.loadProfile();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadProfile(): void {
@@ -85,15 +99,16 @@ export class CustomerProfileComponent implements OnInit {
     this.feedbackMessage = '';
     this.errorMessage = '';
 
+    const formValue = this.profileForm.getRawValue();
     const avatarUrl$ = this.selectedAvatarFile
       ? this.customerProfileService.uploadAvatar(this.selectedAvatarFile)
-      : of(this.profileForm.value.avatar_url || null);
+      : of(formValue.avatar_url || null);
 
     avatarUrl$.pipe(
       switchMap(avatarUrl => this.customerProfileService.updateCurrentProfile({
-        full_name: this.profileForm.value.full_name,
-        phone: this.profileForm.value.phone || null,
-        document: this.profileForm.value.document || null,
+        full_name: String(formValue.full_name || '').trim(),
+        phone: String(formValue.phone || '').trim() || null,
+        document: String(formValue.document || '').trim() || null,
         address: this.buildAddress() || null,
         avatar_url: avatarUrl,
       })),
@@ -147,6 +162,18 @@ export class CustomerProfileComponent implements OnInit {
     this.isLoggingOut = false;
   }
 
+  formatPhoneField(): void {
+    this.formatControl('phone', formatPhone);
+  }
+
+  formatDocumentField(): void {
+    this.formatControl('document', formatCpfCnpj);
+  }
+
+  formatPostalCodeField(): void {
+    this.formatControl('postalCode', formatCep);
+  }
+
   private loadAdminStatus(): void {
     this.customerProfileService.isCurrentUserAdmin().subscribe({
       next: isAdmin => {
@@ -165,8 +192,8 @@ export class CustomerProfileComponent implements OnInit {
     this.profileForm.patchValue({
       email: profile.email,
       full_name: profile.full_name || '',
-      phone: profile.phone || '',
-      document: profile.document || '',
+      phone: formatPhone(profile.phone || ''),
+      document: formatCpfCnpj(profile.document || ''),
       avatar_url: profile.avatar_url || '',
       ...address,
     });
@@ -175,18 +202,21 @@ export class CustomerProfileComponent implements OnInit {
   }
 
   private buildAddress(): string {
+    const formValue = this.profileForm.getRawValue();
     const address: ProfileAddressForm = {
-      street: this.profileForm.value.street || '',
-      postalCode: this.profileForm.value.postalCode || '',
-      district: this.profileForm.value.district || '',
-      number: this.profileForm.value.number || '',
-      state: (this.profileForm.value.state || '').toUpperCase(),
+      street: formValue.street || '',
+      postalCode: formValue.postalCode || '',
+      district: formValue.district || '',
+      city: formValue.city || '',
+      number: formValue.number || '',
+      state: (formValue.state || '').toUpperCase(),
     };
 
     const addressEntries: Array<[string, string]> = [
       ['Rua', address.street],
       ['CEP', address.postalCode],
       ['Bairro', address.district],
+      ['Cidade', address.city],
       ['Número', address.number],
       ['Estado', address.state],
     ];
@@ -202,6 +232,7 @@ export class CustomerProfileComponent implements OnInit {
       street: '',
       postalCode: '',
       district: '',
+      city: '',
       number: '',
       state: '',
     };
@@ -214,7 +245,9 @@ export class CustomerProfileComponent implements OnInit {
       rua: 'street',
       cep: 'postalCode',
       bairro: 'district',
+      cidade: 'city',
       numero: 'number',
+      'número': 'number',
       estado: 'state',
     };
 
@@ -237,6 +270,62 @@ export class CustomerProfileComponent implements OnInit {
   private isAcceptedAvatar(file: File): boolean {
     const acceptedTypes = ['image/png', 'image/jpeg', 'image/webp'];
     return acceptedTypes.includes(file.type) && file.size <= 2 * 1024 * 1024;
+  }
+
+  private bindPostalCodeAutocomplete(): void {
+    this.profileForm.get('postalCode')?.valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap(value => {
+        const postalCode = onlyDigits(String(value || ''));
+
+        if (postalCode.length !== 8) {
+          this.isFetchingCep = false;
+          this.cepErrorMessage = '';
+          this.changeDetectorRef.markForCheck();
+          return of(null);
+        }
+
+        this.isFetchingCep = true;
+        this.cepErrorMessage = '';
+        this.changeDetectorRef.markForCheck();
+
+        return this.viaCepService.lookup(postalCode).pipe(
+          finalize(() => {
+            this.isFetchingCep = false;
+            this.changeDetectorRef.markForCheck();
+          }),
+        );
+      }),
+      takeUntil(this.destroy$),
+    ).subscribe(address => {
+      if (!address) {
+        const postalCode = onlyDigits(String(this.profileForm.get('postalCode')?.value || ''));
+        if (postalCode.length === 8) {
+          this.cepErrorMessage = 'CEP nao encontrado. Confira os numeros ou preencha o endereco manualmente.';
+        }
+        this.changeDetectorRef.markForCheck();
+        return;
+      }
+
+      this.profileForm.patchValue({
+        street: address.street || this.profileForm.value.street || '',
+        district: address.district || this.profileForm.value.district || '',
+        city: address.city || this.profileForm.value.city || '',
+        state: address.state || this.profileForm.value.state || '',
+      }, { emitEvent: false });
+      this.cepErrorMessage = '';
+      this.changeDetectorRef.markForCheck();
+    });
+  }
+
+  private formatControl(controlName: string, formatter: (value: string) => string): void {
+    const control = this.profileForm.get(controlName);
+    const formatted = formatter(String(control?.value || ''));
+
+    if (control && control.value !== formatted) {
+      control.setValue(formatted, { emitEvent: false });
+    }
   }
 
 }

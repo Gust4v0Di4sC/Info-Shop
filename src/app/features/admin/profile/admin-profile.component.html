@@ -65,13 +65,13 @@
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Telefone</mat-label>
             <mat-icon matPrefix>call</mat-icon>
-            <input matInput formControlName="phone" type="tel">
+            <input matInput formControlName="phone" type="tel" inputmode="tel" maxlength="15" autocomplete="tel" (input)="formatPhoneField()">
           </mat-form-field>
 
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Documento</mat-label>
             <mat-icon matPrefix>badge</mat-icon>
-            <input matInput formControlName="document" type="text">
+            <input matInput formControlName="document" type="text" inputmode="numeric" maxlength="18" autocomplete="off" (input)="formatDocumentField()">
           </mat-form-field>
         </div>
 
@@ -109,7 +109,7 @@
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Documento da loja</mat-label>
             <mat-icon matPrefix>badge</mat-icon>
-            <input matInput formControlName="sender_document" type="text">
+            <input matInput formControlName="sender_document" type="text" inputmode="numeric" maxlength="18" autocomplete="off" (input)="formatSenderDocumentField()">
           </mat-form-field>
 
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -123,13 +123,19 @@
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Telefone</mat-label>
             <mat-icon matPrefix>call</mat-icon>
-            <input matInput formControlName="sender_phone" type="tel">
+            <input matInput formControlName="sender_phone" type="tel" inputmode="tel" maxlength="15" autocomplete="tel" (input)="formatSenderPhoneField()">
           </mat-form-field>
 
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>CEP de origem</mat-label>
             <mat-icon matPrefix>local_shipping</mat-icon>
-            <input matInput formControlName="sender_postal_code" type="text">
+            <input matInput formControlName="sender_postal_code" type="text" inputmode="numeric" maxlength="9" autocomplete="postal-code" (input)="formatSenderPostalCodeField()">
+            @if (isFetchingSenderCep) {
+              <mat-hint>Buscando endereco...</mat-hint>
+            }
+            @if (senderCepMessage) {
+              <mat-hint class="error-text">{{ senderCepMessage }}</mat-hint>
+            }
           </mat-form-field>
         </div>
 
@@ -137,13 +143,13 @@
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Endereço</mat-label>
             <mat-icon matPrefix>home_pin</mat-icon>
-            <input matInput formControlName="sender_address" type="text">
+            <input matInput formControlName="sender_address" type="text" autocomplete="address-line1">
           </mat-form-field>
 
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Número</mat-label>
             <mat-icon matPrefix>tag</mat-icon>
-            <input matInput formControlName="sender_number" type="text">
+            <input matInput formControlName="sender_number" type="text" autocomplete="address-line2">
           </mat-form-field>
         </div>
 
@@ -151,13 +157,13 @@
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Bairro</mat-label>
             <mat-icon matPrefix>location_city</mat-icon>
-            <input matInput formControlName="sender_district" type="text">
+            <input matInput formControlName="sender_district" type="text" autocomplete="address-level3">
           </mat-form-field>
 
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Complemento</mat-label>
             <mat-icon matPrefix>add_home</mat-icon>
-            <input matInput formControlName="sender_complement" type="text">
+            <input matInput formControlName="sender_complement" type="text" autocomplete="address-line3">
           </mat-form-field>
         </div>
 
@@ -165,13 +171,13 @@
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Cidade</mat-label>
             <mat-icon matPrefix>location_on</mat-icon>
-            <input matInput formControlName="sender_city" type="text">
+            <input matInput formControlName="sender_city" type="text" autocomplete="address-level2">
           </mat-form-field>
 
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>UF</mat-label>
             <mat-icon matPrefix>map</mat-icon>
-            <input matInput formControlName="sender_state" type="text" maxlength="2">
+            <input matInput formControlName="sender_state" type="text" maxlength="2" autocomplete="address-level1">
           </mat-form-field>
         </div>
 

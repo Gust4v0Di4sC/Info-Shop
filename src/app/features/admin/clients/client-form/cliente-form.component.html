@@ -56,7 +56,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>CPF</mat-label>
-        <input matInput formControlName="cpf" placeholder="000.000.000-00">
+        <input matInput formControlName="cpf" inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" (input)="formatCpfField()">
         @if (clientForm.get('cpf')?.invalid) {
           <mat-error>{{ getErrorMessage('cpf') }}</mat-error>
         }
@@ -64,9 +64,20 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Telefone</mat-label>
-        <input matInput formControlName="phone" placeholder="(00) 00000-0000">
+        <input matInput formControlName="phone" type="tel" inputmode="tel" maxlength="15" autocomplete="tel" placeholder="(00) 00000-0000" (input)="formatPhoneField()">
         @if (clientForm.get('phone')?.invalid) {
           <mat-error>{{ getErrorMessage('phone') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>CEP</mat-label>
+        <input matInput formControlName="postalCode" inputmode="numeric" maxlength="9" autocomplete="postal-code" placeholder="00000-000" (input)="formatPostalCodeField()">
+        @if (isFetchingCep) {
+          <mat-hint>Buscando endereco...</mat-hint>
+        }
+        @if (cepErrorMessage) {
+          <mat-hint class="error-text">{{ cepErrorMessage }}</mat-hint>
         }
       </mat-form-field>
 

@@ -17,7 +17,7 @@
     <a routerLink="/catalogo" [class.active]="!selectedCategory">Todos</a>
     @for (category of categories; track category.slug) {
       <a
-        [routerLink]="['/catálogo', category.slug]"
+        [routerLink]="['/catalogo', category.slug]"
         [class.active]="selectedCategory?.slug === category.slug"
       >
         {{ category.label }}

@@ -10,6 +10,7 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 import { CategoriesComponent } from '@app/features/public/components/categories/categories.component';
 import { ContactComponent } from '@app/features/public/components/contact/contact.component';
@@ -26,6 +27,7 @@ import { SpecialOfferComponent } from '@app/features/public/components/special-o
     ContactComponent,
     SpecialOfferComponent,
     MatIconModule,
+    RouterLink,
   ],
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss',

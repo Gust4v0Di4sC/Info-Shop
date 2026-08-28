@@ -359,6 +359,8 @@ app.get('/api/public/products', asyncHandler(async (req, res) => {
 }));
 
 app.use('/api/supabase', asyncHandler(async (req, res) => {
+  let requestBody: Buffer | undefined;
+
   try {
     if (!allowedProxyPrefixes.some(prefix => req.path.startsWith(prefix))) {
       res.status(404).json({ message: 'Rota do Supabase não permitida.' });
@@ -380,7 +382,7 @@ app.use('/api/supabase', asyncHandler(async (req, res) => {
     headers.set('apikey', supabaseAnonKey);
     headers.set('Authorization', `Bearer ${session?.access_token || supabaseAnonKey}`);
 
-    const requestBody = ['GET', 'HEAD'].includes(req.method)
+    requestBody = ['GET', 'HEAD'].includes(req.method)
       ? undefined
       : await readProxyRequestBody(req);
     const upstreamBody = requestBody
@@ -415,12 +417,213 @@ app.use('/api/supabase', asyncHandler(async (req, res) => {
         res.setHeader(key, value);
       }
     });
+    const upstreamBuffer = Buffer.from(await upstream.arrayBuffer());
+    const localFallback = localSupabaseFunctionFallback(req, upstream, upstreamBuffer, requestBody);
+
+    if (localFallback) {
+      res.status(localFallback.status);
+      res.setHeader('Content-Type', 'application/json');
+      noStore(res);
+      res.send(JSON.stringify(localFallback.body));
+      return;
+    }
+
     noStore(res);
-    res.send(Buffer.from(await upstream.arrayBuffer()));
+    res.send(upstreamBuffer);
   } catch (error) {
+    const localFallback = localSupabaseFunctionFallback(req, null, Buffer.alloc(0), requestBody);
+
+    if (localFallback) {
+      res.status(localFallback.status);
+      res.setHeader('Content-Type', 'application/json');
+      noStore(res);
+      res.send(JSON.stringify(localFallback.body));
+      return;
+    }
+
     errorResponse(res, error, 502);
   }
 }));
+
+interface LocalSupabaseFunctionFallback {
+  status: number;
+  body: unknown;
+}
+
+function localSupabaseFunctionFallback(
+  req: Request,
+  upstream: globalThis.Response | null,
+  upstreamBody: Buffer,
+  requestBody?: Buffer,
+): LocalSupabaseFunctionFallback | null {
+  if (isProduction || req.method !== 'POST') {
+    return null;
+  }
+
+  if (req.path === '/functions/v1/melhor-envio-quote') {
+    return localShippingQuoteFallback(upstream, upstreamBody, requestBody);
+  }
+
+  if (req.path === '/functions/v1/hardware-benchmark-chat') {
+    return localHardwareBenchmarkFallback(upstream, requestBody);
+  }
+
+  if (req.path === '/functions/v1/mercado-pago-create-preference') {
+    return localPaymentPreferenceFallback(upstream, requestBody);
+  }
+
+  return null;
+}
+
+function localShippingQuoteFallback(
+  upstream: globalThis.Response | null,
+  upstreamBody: Buffer,
+  requestBody?: Buffer,
+): LocalSupabaseFunctionFallback | null {
+  const upstreamJson = parseJsonBuffer(upstreamBody);
+  const quotes = Array.isArray(upstreamJson?.['quotes']) ? upstreamJson['quotes'] as unknown[] : null;
+  const shouldFallback = !upstream || !upstream.ok || (quotes && quotes.length === 0);
+
+  if (!shouldFallback) {
+    return null;
+  }
+
+  const requestJson = parseJsonBuffer(requestBody);
+  const address = requestJson?.['address'] && typeof requestJson['address'] === 'object'
+    ? requestJson['address'] as Record<string, unknown>
+    : {};
+
+  return {
+    status: 200,
+    body: {
+      quotes: buildLocalShippingQuotes(address),
+      localFallback: true,
+    },
+  };
+}
+
+function localHardwareBenchmarkFallback(
+  upstream: globalThis.Response | null,
+  requestBody?: Buffer,
+): LocalSupabaseFunctionFallback | null {
+  if (upstream && upstream.status !== 404 && upstream.status < 500) {
+    return null;
+  }
+
+  const requestJson = parseJsonBuffer(requestBody);
+  const currentHardware = String(requestJson?.['currentHardware'] || '').trim();
+  const message = String(requestJson?.['message'] || '').trim();
+
+  if (!currentHardware || !message) {
+    return null;
+  }
+
+  return {
+    status: 200,
+    body: {
+      answer: buildLocalHardwareBenchmarkAnswer(currentHardware, message),
+      localFallback: true,
+    },
+  };
+}
+
+function localPaymentPreferenceFallback(
+  upstream: globalThis.Response | null,
+  requestBody?: Buffer,
+): LocalSupabaseFunctionFallback | null {
+  if (upstream && upstream.status !== 404 && upstream.status < 500) {
+    return null;
+  }
+
+  const requestJson = parseJsonBuffer(requestBody);
+  const selectedServiceId = String(requestJson?.['selectedServiceId'] || '');
+
+  if (!selectedServiceId.startsWith('local-')) {
+    return null;
+  }
+
+  const orderId = `local-${Date.now()}`;
+  const address = requestJson?.['address'] && typeof requestJson['address'] === 'object'
+    ? requestJson['address'] as Record<string, unknown>
+    : {};
+  const quotes = buildLocalShippingQuotes(address);
+  const quote = quotes.find(item => item['id'] === selectedServiceId) || quotes[0];
+
+  return {
+    status: 200,
+    body: {
+      order: { id: orderId, status: 'payment_pending' },
+      payment: { id: `payment-${orderId}`, status: 'local_pending' },
+      quote,
+      initPoint: `/pagamento/retorno?status=pending&order_id=${orderId}&local=1`,
+      sandboxInitPoint: null,
+      localFallback: true,
+    },
+  };
+}
+
+function buildLocalHardwareBenchmarkAnswer(currentHardware: string, message: string): string {
+  const hardware = currentHardware.slice(0, 180);
+  const question = message.slice(0, 160);
+
+  return [
+    `Com base no hardware informado (${hardware}), a recomendacao depende do componente exato do produto e do uso esperado.`,
+    `Para a pergunta "${question}", compare principalmente CPU, GPU, memoria, armazenamento, compatibilidade da placa-mae e fonte.`,
+    'Se o produto tiver GPU/CPU mais recente ou corrigir um gargalo claro do seu setup, tende a ser um upgrade. Se o ganho for pequeno, priorize custo-beneficio e compatibilidade antes da compra.',
+  ].join(' ');
+}
+
+function buildLocalShippingQuotes(address: Record<string, unknown>): Array<Record<string, unknown>> {
+  const postalCode = onlyDigits(String(address['postalCode'] || ''));
+  const state = String(address['state'] || '').trim().toUpperCase();
+  const cepPrefix = Number(postalCode.slice(0, 2));
+  const zone = Number.isFinite(cepPrefix) && cepPrefix > 0
+    ? Math.max(1, Math.min(6, Math.ceil(Math.abs(cepPrefix - 29) / 12) + 1))
+    : 3;
+  const interstateFee = state && !['ES', 'RJ', 'MG', 'SP'].includes(state) ? 9 : 0;
+  const standardPrice = roundMoney(16.9 + zone * 4.2 + interstateFee);
+  const expressPrice = roundMoney(standardPrice + 14.5 + Math.max(0, 5 - zone));
+
+  return [
+    {
+      id: 'local-standard',
+      name: 'Entrega local economica',
+      company: 'InfoShop Local',
+      price: standardPrice,
+      deliveryTime: Math.max(3, zone + 2),
+      raw: { localFallback: true },
+    },
+    {
+      id: 'local-express',
+      name: 'Entrega local expressa',
+      company: 'InfoShop Local',
+      price: expressPrice,
+      deliveryTime: Math.max(1, Math.ceil(zone / 2)),
+      raw: { localFallback: true },
+    },
+  ];
+}
+
+function parseJsonBuffer(buffer?: Buffer): Record<string, unknown> | null {
+  if (!buffer || buffer.length === 0) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(buffer.toString('utf8')) as unknown;
+    return parsed && typeof parsed === 'object' ? parsed as Record<string, unknown> : null;
+  } catch {
+    return null;
+  }
+}
+
+function onlyDigits(value: string): string {
+  return value.replace(/\D/g, '');
+}
+
+function roundMoney(value: number): number {
+  return Math.round(value * 100) / 100;
+}
 
 function asyncHandler(
   handler: (req: Request, res: Response, next: NextFunction) => Promise<void>,
@@ -433,7 +636,7 @@ function asyncHandler(
 function contentSecurityPolicy(): string {
   const scriptSources = ["'self'", "'unsafe-inline'"];
   const workerSources = ["'self'", 'blob:'];
-  const connectSources = ["'self'", 'https://*.supabase.co'];
+  const connectSources = ["'self'", 'https://*.supabase.co', 'https://viacep.com.br'];
 
   const sentryOrigin = sentryDsnOrigin();
   if (sentryOrigin) {
@@ -453,7 +656,7 @@ function contentSecurityPolicy(): string {
     `script-src ${scriptSources.join(' ')}`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
-    "img-src 'self' data: blob: https://*.supabase.co",
+    "img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com",
     `connect-src ${connectSources.join(' ')}`,
     `worker-src ${workerSources.join(' ')}`,
     "form-action 'self'",

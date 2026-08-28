@@ -70,7 +70,7 @@ test.describe('validacao real', () => {
     const email = process.env['E2E_NEW_CLIENT_EMAIL'] || `infoshop.e2e.${timestamp}@example.com`;
     const password = process.env['E2E_NEW_CLIENT_PASSWORD'] || `Cliente@${timestamp}`;
 
-    const confirmationPanel = page.getByText(/confirmacao enviada/i);
+    const confirmationPanel = page.getByText(/confirmação enviada/i);
     const profileHeading = page.getByRole('heading', { name: /perfil do cliente/i });
 
     if (process.env['E2E_NEW_CLIENT_EMAIL'] && process.env['E2E_NEW_CLIENT_PASSWORD']) {
@@ -90,7 +90,7 @@ test.describe('validacao real', () => {
     }
 
     if (await confirmationPanel.isVisible()) {
-      await expect(page.getByRole('button', { name: /reenviar email/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /reenviar e-mail/i })).toBeVisible();
       return;
     }
 
@@ -121,7 +121,7 @@ test.describe('validacao real', () => {
     await page.getByRole('textbox', { name: /^pergunta$/i }).fill('Esse produto e um upgrade relevante para jogos?');
     await page.locator('.chat-form .primary-action').click();
     await expect(page.locator('.message.model-message').last()).toBeVisible({ timeout: 45_000 });
-    await expect(page.getByText(/nao foi possivel consultar a ia agora/i)).toHaveCount(0);
+    await expect(page.getByText(/não foi possível consultar a ia agora/i)).toHaveCount(0);
 
     await page.getByRole('button', { name: /adicionar ao carrinho/i }).click();
     await expect(page.getByText(/foi adicionado ao carrinho/i)).toBeVisible();
@@ -135,7 +135,7 @@ test.describe('validacao real', () => {
     await page.locator('#shipping-district').fill('Se');
     await page.locator('#shipping-city').fill('Sao Paulo');
     await page.getByRole('button', { name: /calcular frete/i }).click();
-    await expect(page.getByRole('radiogroup', { name: /opcoes de frete/i })).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByRole('radiogroup', { name: /opções de frete/i })).toBeVisible({ timeout: 45_000 });
 
     const paymentResponse = page.waitForResponse(response =>
       response.url().includes('/functions/v1/mercado-pago-create-preference'),

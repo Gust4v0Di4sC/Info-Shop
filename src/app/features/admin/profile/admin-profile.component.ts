@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { debounceTime, distinctUntilChanged, finalize, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { ADMIN_ROLE_LABELS, AdminRole, normalizeAdminRole } from '@app/models/admin.model';
 import { AdminProfileService } from '@app/services/admin-profile.service';
+import { ViaCepService } from '@app/services/via-cep.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
+import { formatCep, formatCpfCnpj, formatPhone, onlyDigits } from '@app/shared/utils/input-masks';
 
 @Component({
   selector: 'app-admin-profile',
@@ -12,7 +15,7 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
   templateUrl: './admin-profile.component.html',
   styleUrl: './admin-profile.component.scss',
 })
-export class AdminProfileComponent implements OnInit {
+export class AdminProfileComponent implements OnInit, OnDestroy {
   readonly profileTabs: AdminSectionTab[] = [
     { label: 'Perfil', icon: 'account_circle', route: '/admin-profile' },
     { label: 'Personalização', icon: 'palette', route: '/customization' },
@@ -24,11 +27,15 @@ export class AdminProfileComponent implements OnInit {
   errorMessage = '';
   adminRole: AdminRole | null = null;
   createdAt = '';
+  isFetchingSenderCep = false;
+  senderCepMessage = '';
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private adminProfileService: AdminProfileService,
     private snackBar: MatSnackBar,
+    private viaCepService: ViaCepService,
   ) {
     this.profileForm = this.fb.group({
       email: [{ value: '', disabled: true }],
@@ -56,7 +63,13 @@ export class AdminProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.bindSenderPostalCodeAutocomplete();
     this.loadProfile();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadProfile(): void {
@@ -70,15 +83,15 @@ export class AdminProfileComponent implements OnInit {
         this.profileForm.patchValue({
           email: profile.user.email,
           full_name: profile.user.full_name || '',
-          phone: profile.user.phone || '',
-          document: profile.user.document || '',
+          phone: formatPhone(profile.user.phone || ''),
+          document: formatCpfCnpj(profile.user.document || ''),
           address: profile.user.address || '',
           region: profile.admin.region,
           store_name: profile.admin.store_name,
-          sender_document: profile.store?.sender_document || '',
+          sender_document: formatCpfCnpj(profile.store?.sender_document || ''),
           sender_email: profile.store?.sender_email || '',
-          sender_phone: profile.store?.sender_phone || '',
-          sender_postal_code: profile.store?.sender_postal_code || '',
+          sender_phone: formatPhone(profile.store?.sender_phone || ''),
+          sender_postal_code: formatCep(profile.store?.sender_postal_code || ''),
           sender_address: profile.store?.sender_address || '',
           sender_number: profile.store?.sender_number || '',
           sender_complement: profile.store?.sender_complement || '',
@@ -141,15 +154,15 @@ export class AdminProfileComponent implements OnInit {
         this.createdAt = profile.admin.created_at;
         this.profileForm.patchValue({
           full_name: profile.user.full_name || '',
-          phone: profile.user.phone || '',
-          document: profile.user.document || '',
+          phone: formatPhone(profile.user.phone || ''),
+          document: formatCpfCnpj(profile.user.document || ''),
           address: profile.user.address || '',
           region: profile.admin.region,
           store_name: profile.admin.store_name,
-          sender_document: profile.store?.sender_document || '',
+          sender_document: formatCpfCnpj(profile.store?.sender_document || ''),
           sender_email: profile.store?.sender_email || '',
-          sender_phone: profile.store?.sender_phone || '',
-          sender_postal_code: profile.store?.sender_postal_code || '',
+          sender_phone: formatPhone(profile.store?.sender_phone || ''),
+          sender_postal_code: formatCep(profile.store?.sender_postal_code || ''),
           sender_address: profile.store?.sender_address || '',
           sender_number: profile.store?.sender_number || '',
           sender_complement: profile.store?.sender_complement || '',
@@ -191,5 +204,76 @@ export class AdminProfileComponent implements OnInit {
       horizontalPosition: 'end',
       verticalPosition: 'top',
     });
+  }
+
+  formatPhoneField(): void {
+    this.formatControl('phone', formatPhone);
+  }
+
+  formatDocumentField(): void {
+    this.formatControl('document', formatCpfCnpj);
+  }
+
+  formatSenderDocumentField(): void {
+    this.formatControl('sender_document', formatCpfCnpj);
+  }
+
+  formatSenderPhoneField(): void {
+    this.formatControl('sender_phone', formatPhone);
+  }
+
+  formatSenderPostalCodeField(): void {
+    this.formatControl('sender_postal_code', formatCep);
+  }
+
+  private bindSenderPostalCodeAutocomplete(): void {
+    this.profileForm.get('sender_postal_code')?.valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap(value => {
+        const postalCode = onlyDigits(String(value || ''));
+
+        if (postalCode.length !== 8) {
+          this.isFetchingSenderCep = false;
+          this.senderCepMessage = '';
+          return of(null);
+        }
+
+        this.isFetchingSenderCep = true;
+        this.senderCepMessage = '';
+
+        return this.viaCepService.lookup(postalCode).pipe(
+          finalize(() => {
+            this.isFetchingSenderCep = false;
+          }),
+        );
+      }),
+      takeUntil(this.destroy$),
+    ).subscribe(address => {
+      if (!address) {
+        const postalCode = onlyDigits(String(this.profileForm.get('sender_postal_code')?.value || ''));
+        if (postalCode.length === 8) {
+          this.senderCepMessage = 'CEP nao encontrado. Confira os numeros ou preencha manualmente.';
+        }
+        return;
+      }
+
+      this.profileForm.patchValue({
+        sender_address: address.street || this.profileForm.value.sender_address || '',
+        sender_district: address.district || this.profileForm.value.sender_district || '',
+        sender_city: address.city || this.profileForm.value.sender_city || '',
+        sender_state: address.state || this.profileForm.value.sender_state || '',
+      }, { emitEvent: false });
+      this.senderCepMessage = '';
+    });
+  }
+
+  private formatControl(controlName: string, formatter: (value: string) => string): void {
+    const control = this.profileForm.get(controlName);
+    const formatted = formatter(String(control?.value || ''));
+
+    if (control && control.value !== formatted) {
+      control.setValue(formatted, { emitEvent: false });
+    }
   }
 }

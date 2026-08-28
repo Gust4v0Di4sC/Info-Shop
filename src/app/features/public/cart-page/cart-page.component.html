@@ -98,13 +98,20 @@
                   id="shipping-postal-code"
                   formControlName="postalCode"
                   inputmode="numeric"
-                  maxlength="8"
+                  maxlength="9"
                   autocomplete="postal-code"
-                  placeholder="00000000"
+                  placeholder="00000-000"
+                  (input)="formatPostalCodeField()"
                   [attr.aria-invalid]="fieldInvalid('postalCode')"
                   aria-describedby="shipping-postal-code-error">
                 @if (fieldInvalid('postalCode')) {
                   <p id="shipping-postal-code-error" class="error-text">{{ fieldErrorMessage('postalCode') }}</p>
+                }
+                @if (isFetchingCep) {
+                  <p class="field-hint">Buscando endereco...</p>
+                }
+                @if (cepErrorMessage) {
+                  <p class="error-text">{{ cepErrorMessage }}</p>
                 }
               </label>
               <label for="shipping-state">
@@ -189,7 +196,12 @@
               <p class="error-text">Preencha o endereço para calcular o frete.</p>
             }
 
-            <button class="quote-btn" type="submit" [disabled]="isQuoting">
+            <button
+              class="quote-btn"
+              type="submit"
+              [class.is-loading]="isQuoting"
+              [disabled]="isQuoting || isFetchingCep"
+              [attr.aria-busy]="isQuoting">
               {{ isQuoting ? 'Calculando...' : 'Calcular frete' }}
             </button>
           </form>
@@ -218,7 +230,13 @@
             </div>
           }
 
-          <button class="checkout-btn" type="button" (click)="checkout()" [disabled]="isCheckingOut || !selectedServiceId">
+          <button
+            class="checkout-btn"
+            type="button"
+            (click)="checkout()"
+            [class.is-loading]="isCheckingOut"
+            [disabled]="isCheckingOut || !selectedServiceId"
+            [attr.aria-busy]="isCheckingOut">
             {{ isCheckingOut ? 'Abrindo pagamento...' : 'Pagar com Mercado Pago' }}
           </button>
           <button class="clear-btn" type="button" (click)="clearCart()">
