@@ -2,12 +2,13 @@
   <section class="support-layout">
     <nav class="support-nav" aria-label="Topicos de suporte">
       @for (supportTopic of topics; track supportTopic.slug) {
-        <a
-          [routerLink]="['/suporte', supportTopic.slug]"
+        <button
+          type="button"
+          (click)="selectTopic(supportTopic)"
           [class.active]="supportTopic.slug === topic.slug"
         >
           {{ supportTopic.title }}
-        </a>
+        </button>
       }
     </nav>
 

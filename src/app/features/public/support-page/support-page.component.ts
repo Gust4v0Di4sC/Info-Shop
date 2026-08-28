@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 interface SupportTopic {
   title: string;
@@ -72,12 +72,20 @@ export class SupportPageComponent implements OnInit {
   readonly topics = SUPPORT_TOPICS;
   topic: SupportTopic = SUPPORT_TOPICS[0];
 
-  constructor(private readonly route: ActivatedRoute) {}
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const slug = params.get('topic');
       this.topic = this.topics.find(topic => topic.slug === slug) || SUPPORT_TOPICS[0];
     });
+  }
+
+  selectTopic(topic: SupportTopic): void {
+    this.topic = topic;
+    void this.router.navigate(['/suporte', topic.slug], { replaceUrl: false });
   }
 }

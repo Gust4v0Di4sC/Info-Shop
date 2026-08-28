@@ -3,7 +3,7 @@ import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { User as SupabaseUser } from '@supabase/supabase-js';
-import { BehaviorSubject, catchError, firstValueFrom, from, map, of, tap } from 'rxjs';
+import { BehaviorSubject, catchError, firstValueFrom, map, of, tap, timeout } from 'rxjs';
 import { Admin, ADMIN_DEFAULT_ROUTE, AdminRole, normalizeAdminRole } from '@app/models/admin.model';
 
 interface AuthUserResponse {
@@ -38,7 +38,9 @@ export class AuthService {
 
     try {
       const response = await firstValueFrom(
-        this.http.get<AuthUserResponse>('/api/auth/session', { withCredentials: true }),
+        this.http.get<AuthUserResponse>('/api/auth/session', { withCredentials: true }).pipe(
+          timeout({ first: 4000 }),
+        ),
       );
       this.currentUserSubject.next(response.user);
       return response.user;

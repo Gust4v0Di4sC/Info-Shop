@@ -8,9 +8,11 @@ const SLOW_REQUEST_THRESHOLD_MS = 2000;
 export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
   const startedAt = performance.now();
   const requestId = req.headers.get(REQUEST_ID_HEADER) || createRequestId();
-  const tracedRequest = req.clone({
-    headers: req.headers.set(REQUEST_ID_HEADER, requestId),
-  });
+  const tracedRequest = isCrossOriginRequest(req.url)
+    ? req
+    : req.clone({
+        headers: req.headers.set(REQUEST_ID_HEADER, requestId),
+      });
 
   return next(tracedRequest).pipe(
     tap(event => {
@@ -53,3 +55,15 @@ export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
     }),
   );
 };
+
+function isCrossOriginRequest(url: string): boolean {
+  if (!/^https?:\/\//i.test(url) || typeof location === 'undefined') {
+    return false;
+  }
+
+  try {
+    return new URL(url).origin !== location.origin;
+  } catch {
+    return false;
+  }
+}
