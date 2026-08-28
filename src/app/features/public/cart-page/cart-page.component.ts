@@ -1,13 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
+import { debounceTime, distinctUntilChanged, finalize, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { CartItemWithProduct } from '@app/models/cart-item.model';
 import { CartServiceService } from '@app/services/cart-service.service';
 import { DeliveryAddress, ShippingQuoteOption } from '@app/models/shipping.model';
 import { PaymentService } from '@app/services/payment.service';
+import { ViaCepService } from '@app/services/via-cep.service';
+import { formatCep, onlyDigits } from '@app/shared/utils/input-masks';
 
 @Component({
   selector: 'app-cart-page',
@@ -16,7 +19,7 @@ import { PaymentService } from '@app/services/payment.service';
   styleUrl: './cart-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CartPageComponent implements OnInit {
+export class CartPageComponent implements OnInit, OnDestroy {
   shippingForm: FormGroup;
   items: CartItemWithProduct[] = [];
   shippingQuotes: ShippingQuoteOption[] = [];
@@ -26,6 +29,9 @@ export class CartPageComponent implements OnInit {
   actionErrorMessage = '';
   isQuoting = false;
   isCheckingOut = false;
+  isFetchingCep = false;
+  cepErrorMessage = '';
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private cartService: CartServiceService,
@@ -33,9 +39,10 @@ export class CartPageComponent implements OnInit {
     private fb: FormBuilder,
     private changeDetectorRef: ChangeDetectorRef,
     private snackBar: MatSnackBar,
+    private viaCepService: ViaCepService,
   ) {
     this.shippingForm = this.fb.group({
-      postalCode: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+      postalCode: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]],
       street: ['', [Validators.required]],
       number: ['', [Validators.required]],
       district: ['', [Validators.required]],
@@ -46,7 +53,13 @@ export class CartPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.bindPostalCodeAutocomplete();
     this.loadCart();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get subtotal(): number {
@@ -131,6 +144,11 @@ export class CartPageComponent implements OnInit {
   }
 
   calculateShipping(): void {
+    if (this.isFetchingCep) {
+      this.actionErrorMessage = 'Aguarde a busca do CEP terminar antes de calcular o frete.';
+      return;
+    }
+
     if (this.shippingForm.invalid) {
       this.shippingForm.markAllAsTouched();
       return;
@@ -153,9 +171,7 @@ export class CartPageComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },
       error: error => {
-        this.actionErrorMessage = error instanceof Error && error.message
-          ? error.message
-          : 'Não foi possível calcular o frete agora. Confira o endereço e tente novamente.';
+        this.actionErrorMessage = this.shippingErrorMessage(error);
         this.isQuoting = false;
         this.changeDetectorRef.markForCheck();
       },
@@ -219,10 +235,19 @@ export class CartPageComponent implements OnInit {
     return 'Confira este campo.';
   }
 
+  formatPostalCodeField(): void {
+    const control = this.shippingForm.get('postalCode');
+    const formatted = formatCep(String(control?.value || ''));
+
+    if (control && control.value !== formatted) {
+      control.setValue(formatted, { emitEvent: false });
+    }
+  }
+
   private deliveryAddress(): DeliveryAddress {
     const value = this.shippingForm.value;
     return {
-      postalCode: this.onlyDigits(value.postalCode || ''),
+      postalCode: onlyDigits(value.postalCode || ''),
       street: value.street || '',
       number: value.number || '',
       district: value.district || '',
@@ -232,8 +257,51 @@ export class CartPageComponent implements OnInit {
     };
   }
 
-  private onlyDigits(value: string): string {
-    return value.replace(/\D/g, '');
+  private bindPostalCodeAutocomplete(): void {
+    this.shippingForm.get('postalCode')?.valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap(value => {
+        const postalCode = onlyDigits(String(value || ''));
+
+        if (postalCode.length !== 8) {
+          this.isFetchingCep = false;
+          this.cepErrorMessage = '';
+          this.changeDetectorRef.markForCheck();
+          return of(null);
+        }
+
+        this.isFetchingCep = true;
+        this.cepErrorMessage = '';
+        this.changeDetectorRef.markForCheck();
+
+        return this.viaCepService.lookup(postalCode).pipe(
+          finalize(() => {
+            this.isFetchingCep = false;
+            this.changeDetectorRef.markForCheck();
+          }),
+        );
+      }),
+      takeUntil(this.destroy$),
+    ).subscribe(address => {
+      if (!address) {
+        const postalCode = onlyDigits(String(this.shippingForm.get('postalCode')?.value || ''));
+        if (postalCode.length === 8) {
+          this.cepErrorMessage = 'CEP nao encontrado. Confira os numeros ou preencha o endereco manualmente.';
+        }
+        this.changeDetectorRef.markForCheck();
+        return;
+      }
+
+      this.shippingForm.patchValue({
+        street: address.street || this.shippingForm.value.street || '',
+        district: address.district || this.shippingForm.value.district || '',
+        city: address.city || this.shippingForm.value.city || '',
+        state: address.state || this.shippingForm.value.state || '',
+      }, { emitEvent: false });
+      this.cepErrorMessage = '';
+      this.changeDetectorRef.markForCheck();
+    });
   }
 
   redirectToPayment(url: string): void {
@@ -251,6 +319,16 @@ export class CartPageComponent implements OnInit {
     };
 
     return messages[fieldName] || 'Campo obrigatório.';
+  }
+
+  private shippingErrorMessage(error: unknown): string {
+    if (error instanceof Error && error.name === 'TimeoutError') {
+      return 'O calculo de frete demorou mais que o esperado. Tente novamente em instantes.';
+    }
+
+    return error instanceof Error && error.message
+      ? error.message
+      : 'Não foi possível calcular o frete agora. Confira o endereço e tente novamente.';
   }
 
   private showSnackbar(message: string): void {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, map, Observable, switchMap } from 'rxjs';
+import { from, map, Observable, switchMap, timeout } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { AuthService } from '@app/core/auth/auth.service';
 import { Delivery, DeliveryUpdate } from '@app/models/delivery.model';
@@ -29,7 +29,7 @@ export class DeliveryService {
   }
 
   getCurrentUserDeliveries(): Observable<Delivery[]> {
-    return from(this.loadCurrentUserDeliveries());
+    return from(this.loadCurrentUserDeliveries()).pipe(timeout({ first: 4000 }));
   }
 
   updateDelivery(id: string, delivery: DeliveryUpdate): Observable<Delivery> {

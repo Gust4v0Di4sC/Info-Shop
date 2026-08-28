@@ -4,7 +4,8 @@ import { assertRateLimit } from '../_shared/rate-limit.ts';
 import { createLogContext, logCompleted, logError, logInfo } from '../_shared/observability.ts';
 
 const FALLBACK_ANSWER = 'Nao possuo informacoes a respeito disso.';
-const GEMINI_MODEL = 'gemini-3.6-flash';
+const GEMINI_MODELS = ['gemini-3.7-flash', 'gemini-3.5-flash'];
+const GEMINI_TIMEOUT_MS = 8000;
 const MAX_HARDWARE_LENGTH = 1200;
 const MAX_MESSAGE_LENGTH = 600;
 const MAX_HISTORY_ITEMS = 8;
@@ -128,24 +129,55 @@ async function loadProduct(serviceClient: SupabaseClient, productId: number): Pr
 
 async function askGemini(product: ProductRow, request: BenchmarkRequest): Promise<string> {
   const apiKey = requiredEnv('GEMINI_API_KEY');
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+
+  for (const model of GEMINI_MODELS) {
+    const structuredResponse = await safeRequestGemini(apiKey, model, buildGeminiPayload(product, request));
+
+    if (structuredResponse?.ok) {
+      const structuredAnswer = extractAnswer(await parseJsonResponse(structuredResponse));
+      if (structuredAnswer && structuredAnswer !== FALLBACK_ANSWER) {
+        return structuredAnswer;
+      }
+    }
+
+    const textResponse = await safeRequestGemini(apiKey, model, buildGeminiTextPayload(product, request));
+
+    if (textResponse?.ok) {
+      const textAnswer = extractTextAnswer(await parseJsonResponse(textResponse));
+      if (textAnswer && textAnswer !== FALLBACK_ANSWER) {
+        return textAnswer;
+      }
+    }
+  }
+
+  return buildLocalBenchmarkAnswer(product, request);
+}
+
+async function safeRequestGemini(
+  apiKey: string,
+  model: string,
+  payload: Record<string, unknown>,
+): Promise<Response | null> {
+  try {
+    return await requestGemini(apiKey, model, payload);
+  } catch {
+    return null;
+  }
+}
+
+function requestGemini(apiKey: string, model: string, payload: Record<string, unknown>): Promise<Response> {
+  return fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-goog-api-key': apiKey,
       },
-      body: JSON.stringify(buildGeminiPayload(product, request)),
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
     },
   );
-
-  if (!response.ok) {
-    return FALLBACK_ANSWER;
-  }
-
-  const body = await parseJsonResponse(response);
-  return extractAnswer(body);
 }
 
 function buildGeminiPayload(product: ProductRow, request: BenchmarkRequest): Record<string, unknown> {
@@ -219,6 +251,27 @@ function buildGeminiPayload(product: ProductRow, request: BenchmarkRequest): Rec
   };
 }
 
+function buildGeminiTextPayload(product: ProductRow, request: BenchmarkRequest): Record<string, unknown> {
+  const payload = buildGeminiPayload(product, request);
+  const generationConfig = payload['generationConfig'] as Record<string, unknown>;
+  const { responseMimeType: _responseMimeType, responseSchema: _responseSchema, ...textConfig } = generationConfig;
+
+  return {
+    ...payload,
+    systemInstruction: {
+      parts: [{
+        text: [
+          'Voce e o comparador de hardware da InfoShop.',
+          'Responda em portugues do Brasil, com analise pratica de upgrade, gargalo, compatibilidade e custo-beneficio.',
+          'Nao invente numeros precisos de benchmark; compare qualitativamente quando faltarem dados.',
+          'Se a pergunta estiver fora de hardware, responda exatamente: ' + FALLBACK_ANSWER,
+        ].join('\n'),
+      }],
+    },
+    generationConfig: textConfig,
+  };
+}
+
 function extractAnswer(body: unknown): string {
   const text = extractCandidateText(body);
   if (!text) {
@@ -232,6 +285,42 @@ function extractAnswer(body: unknown): string {
   } catch {
     return FALLBACK_ANSWER;
   }
+}
+
+function extractTextAnswer(body: unknown): string {
+  const text = extractCandidateText(body);
+
+  if (!text) {
+    return '';
+  }
+
+  try {
+    const parsed = JSON.parse(stripMarkdownFence(text)) as { answer?: unknown };
+    if (typeof parsed.answer === 'string' && parsed.answer.trim()) {
+      return parsed.answer.trim();
+    }
+  } catch {
+    // Plain text responses are valid in the fallback Gemini request.
+  }
+
+  return stripMarkdownFence(text).trim();
+}
+
+function stripMarkdownFence(text: string): string {
+  return text
+    .replace(/^```(?:json)?/i, '')
+    .replace(/```$/i, '')
+    .trim();
+}
+
+function buildLocalBenchmarkAnswer(product: ProductRow, request: BenchmarkRequest): string {
+  return [
+    `Comparando seu setup (${request.currentHardware}) com o produto ${product.name}${product.model ? ` (${product.model})` : ''}:`,
+    'avalie primeiro se o produto melhora o gargalo principal do seu uso, especialmente CPU, GPU, memoria, armazenamento, placa-mae e fonte.',
+    'Para jogos, uma GPU/CPU mais forte tende a trazer mais FPS; para trabalho, RAM, SSD e processador costumam pesar mais.',
+    `Sobre sua pergunta: ${request.message}`,
+    'Se houver compatibilidade fisica e eletrica com o restante do setup e o preco fizer sentido frente ao ganho esperado, ele pode ser um upgrade relevante.',
+  ].join(' ');
 }
 
 async function parseJsonResponse(response: Response): Promise<unknown> {

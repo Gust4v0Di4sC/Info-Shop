@@ -207,6 +207,7 @@ export async function melhorEnvioRequest(path: string, init: RequestInit): Promi
   const response = await fetch(`${baseUrl}${path}`, {
     ...init,
     headers,
+    signal: AbortSignal.timeout(15000),
   });
 
   const text = await response.text();
@@ -416,6 +417,7 @@ async function requestOAuthToken(body: URLSearchParams): Promise<JsonRecord> {
       'User-Agent': requiredEnv('ME_USER_AGENT'),
     },
     body,
+    signal: AbortSignal.timeout(15000),
   });
 
   const text = await response.text();

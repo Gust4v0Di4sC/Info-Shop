@@ -73,12 +73,7 @@ export async function createMercadoPagoPreference(
   selectedServiceId: string,
 ): Promise<PendingCheckout> {
   const cart = await loadCartForUser(serviceClient, user);
-  const quotes = await calculateQuotes(cart, address);
-  const selectedQuote = quotes.find(quote => quote.id === String(selectedServiceId));
-
-  if (!selectedQuote) {
-    throw new Error('Frete selecionado indisponivel. Calcule novamente.');
-  }
+  const selectedQuote = await selectCheckoutQuote(cart, address, selectedServiceId);
 
   const productById = new Map(cart.products.map(product => [String(product.id), product as ProductSnapshot]));
   assertStockAvailable(cart.items, productById);
@@ -469,6 +464,11 @@ async function createDeliveryLabel(
   address: DeliveryAddress,
   selectedServiceId: string,
 ): Promise<void> {
+  if (selectedServiceId.startsWith('local-')) {
+    await upsertLocalDelivery(serviceClient, order, address, selectedServiceId);
+    return;
+  }
+
   const user = { id: String(order['userId']), email: null, user_metadata: { full_name: order['name'] } } as User;
   const cart = await loadOrderAsCart(serviceClient, order, user);
   const quotes = await calculateQuotes(cart, address);
@@ -511,6 +511,77 @@ async function createDeliveryLabel(
     shipping_deadline: selectedQuote.deliveryTime,
     label_status: 'generated',
     notes: 'Etiqueta criada apos pagamento aprovado no Mercado Pago.',
+  };
+
+  const { data: existingDelivery } = await serviceClient
+    .from('deliveries')
+    .select('id')
+    .eq('order_id', String(order['id']))
+    .maybeSingle();
+
+  const result = existingDelivery
+    ? await serviceClient.from('deliveries').update(deliveryUpdate).eq('id', existingDelivery.id)
+    : await serviceClient.from('deliveries').insert(deliveryUpdate);
+
+  if (result.error) {
+    throw result.error;
+  }
+}
+
+async function selectCheckoutQuote(
+  cart: Awaited<ReturnType<typeof loadCartForUser>>,
+  address: DeliveryAddress,
+  selectedServiceId: string,
+): Promise<ShippingQuote> {
+  try {
+    const quotes = await calculateQuotes(cart, address);
+    const selectedQuote = quotes.find(quote => quote.id === String(selectedServiceId));
+
+    if (selectedQuote) {
+      return selectedQuote;
+    }
+  } catch (error) {
+    if (!selectedServiceId.startsWith('local-')) {
+      throw error;
+    }
+  }
+
+  const localQuote = buildLocalShippingQuotes(address).find(quote => quote.id === String(selectedServiceId));
+
+  if (localQuote) {
+    return localQuote;
+  }
+
+  throw new Error('Frete selecionado indisponivel. Calcule novamente.');
+}
+
+async function upsertLocalDelivery(
+  serviceClient: SupabaseClient,
+  order: JsonRecord,
+  address: DeliveryAddress,
+  selectedServiceId: string,
+): Promise<void> {
+  const selectedQuote = buildLocalShippingQuotes(address).find(quote => quote.id === selectedServiceId);
+
+  if (!selectedQuote) {
+    throw new Error('Frete aprovado indisponivel para gerar entrega.');
+  }
+
+  const deliveryUpdate = {
+    store_id: String(order['store_id']),
+    order_id: String(order['id']),
+    user_id: String(order['userId']),
+    customer_name: String(order['name']),
+    address: String(order['address']),
+    status: 'preparing',
+    melhor_envio_order_id: null,
+    melhor_envio_protocol: null,
+    selected_service_id: selectedQuote.id,
+    selected_service_name: `${selectedQuote.company} - ${selectedQuote.name}`,
+    shipping_price: selectedQuote.price,
+    shipping_deadline: selectedQuote.deliveryTime,
+    label_status: 'pending',
+    notes: 'Entrega local registrada apos pagamento aprovado no Mercado Pago.',
   };
 
   const { data: existingDelivery } = await serviceClient
@@ -697,8 +768,43 @@ function normalizePaymentStatus(status: string): string {
   return 'failed';
 }
 
+function buildLocalShippingQuotes(address: DeliveryAddress): ShippingQuote[] {
+  const postalCode = onlyDigits(address.postalCode || '');
+  const state = String(address.state || '').trim().toUpperCase();
+  const cepPrefix = Number(postalCode.slice(0, 2));
+  const zone = Number.isFinite(cepPrefix) && cepPrefix > 0
+    ? Math.max(1, Math.min(6, Math.ceil(Math.abs(cepPrefix - 29) / 12) + 1))
+    : 3;
+  const interstateFee = state && !['ES', 'RJ', 'MG', 'SP'].includes(state) ? 9 : 0;
+  const standardPrice = roundMoney(16.9 + zone * 4.2 + interstateFee);
+  const expressPrice = roundMoney(standardPrice + 14.5 + Math.max(0, 5 - zone));
+
+  return [
+    {
+      id: 'local-standard',
+      name: 'Entrega local economica',
+      company: 'InfoShop Local',
+      price: standardPrice,
+      deliveryTime: Math.max(3, zone + 2),
+      raw: { localFallback: true },
+    },
+    {
+      id: 'local-express',
+      name: 'Entrega local expressa',
+      company: 'InfoShop Local',
+      price: expressPrice,
+      deliveryTime: Math.max(1, Math.ceil(zone / 2)),
+      raw: { localFallback: true },
+    },
+  ];
+}
+
 function roundMoney(value: number): number {
   return Math.round(Number(value || 0) * 100) / 100;
+}
+
+function onlyDigits(value: string): string {
+  return String(value || '').replace(/\D/g, '');
 }
 
 function timingSafeEqual(actual: string, expected: string): boolean {
