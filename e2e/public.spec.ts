@@ -30,17 +30,21 @@ test.describe('navegacao publica', () => {
     await page.goto('/catalogo/notebooks');
     await expect(page.getByRole('heading', { name: /notebooks/i })).toBeVisible();
 
-    await page.getByRole('searchbox', { name: /buscar produtos/i }).fill('notebook');
+    const searchBox = page.getByRole('searchbox', { name: /buscar produtos/i });
+    await searchBox.fill('notebook');
+    await expect(searchBox).toHaveValue('notebook');
     await page.getByRole('button', { name: /^buscar$/i }).click();
     await expect(page).toHaveURL(/\/catalogo\?q=notebook/);
     await expect(page.getByRole('heading', { name: /busca por "notebook"/i })).toBeVisible();
 
-    await page.getByRole('searchbox', { name: /buscar produtos/i }).fill('zzzz-produto-inexistente-e2e');
+    await searchBox.fill('zzzz-produto-inexistente-e2e');
+    await expect(searchBox).toHaveValue('zzzz-produto-inexistente-e2e');
     await page.getByRole('button', { name: /^buscar$/i }).click();
     await expect(page).toHaveURL(/q=zzzz-produto-inexistente-e2e/);
     await expect(page.getByText(/nenhum produto encontrado para esta busca/i)).toBeVisible();
 
-    await page.getByRole('searchbox', { name: /buscar produtos/i }).fill('');
+    await searchBox.fill('');
+    await expect(searchBox).toHaveValue('');
     await page.getByRole('button', { name: /^buscar$/i }).click();
     await expect(page).toHaveURL(/\/catalogo$/);
   });
@@ -57,7 +61,7 @@ test.describe('navegacao publica', () => {
     for (const topic of topics) {
       await page.goto(`/suporte/${topic}`);
       await expect(page.getByText('Suporte InfoShop')).toBeVisible();
-      await expect(page.getByRole('link', { name: /ver catalogo/i })).toBeVisible();
+      await expect(page.getByRole('link', { name: /ver catálogo/i })).toBeVisible();
     }
   });
 });
@@ -89,14 +93,14 @@ test.describe('catalogo e produto', () => {
 
   test('produto inexistente mostra erro', async ({ page }) => {
     await page.goto('/produto/999999999');
-    await expect(page.getByText(/nao foi possivel carregar este produto/i)).toBeVisible();
+    await expect(page.getByText(/não foi possível carregar este produto/i)).toBeVisible();
     await expect(page.getByRole('link', { name: /voltar para a loja/i })).toBeVisible();
   });
 
   test('carrinho sem login mostra estado de erro e link para login', async ({ page }) => {
     await page.goto('/carrinho');
     await expect(page.getByRole('heading', { name: /sua compra/i })).toBeVisible();
-    await expect(page.getByText(/nao foi possivel carregar seu carrinho|entre na sua conta/i)).toBeVisible();
+    await expect(page.getByText(/não foi possível carregar seu carrinho|entre na sua conta/i)).toBeVisible();
     await expect(page.getByRole('link', { name: /entrar na conta/i })).toHaveAttribute('href', '/home');
   });
 });
