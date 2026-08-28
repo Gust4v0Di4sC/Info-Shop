@@ -37,6 +37,9 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
     '.delivery-card',
     '.category-card',
     '.cart-item',
+    '.quick-link',
+    '.primary-action',
+    '.secondary-action',
   ].join(',');
 
   constructor(
@@ -223,6 +226,7 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
       'delivery-card',
       'category-card',
       'cart-item',
+      'quick-link',
     ].some(className => element.classList.contains(className));
   }
 

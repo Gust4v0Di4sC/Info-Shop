@@ -19,7 +19,10 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    await this.router.navigate(['/home']);
+    await this.router.navigate(['/redirecionando'], {
+      queryParams: { to: '/home', reason: 'login_required' },
+      replaceUrl: true,
+    });
     return false;
   }
 }
@@ -42,7 +45,13 @@ export class GuestGuard implements CanActivate {
 
     const adminRole = await this.authService.getAdminRole(user.id);
 
-    await this.router.navigate([adminRole ? ADMIN_DEFAULT_ROUTE[adminRole] : '/perfil']);
+    await this.router.navigate(['/redirecionando'], {
+      queryParams: {
+        to: adminRole ? ADMIN_DEFAULT_ROUTE[adminRole] : '/perfil',
+        reason: 'already_authenticated',
+      },
+      replaceUrl: true,
+    });
     return false;
   }
 }
@@ -66,7 +75,10 @@ export class PublicGuard implements CanActivate {
     const adminRole = await this.authService.getAdminRole(user.id);
 
     if (adminRole) {
-      await this.router.navigate([ADMIN_DEFAULT_ROUTE[adminRole]]);
+      await this.router.navigate(['/redirecionando'], {
+        queryParams: { to: ADMIN_DEFAULT_ROUTE[adminRole], reason: 'admin_area' },
+        replaceUrl: true,
+      });
       return false;
     }
 
@@ -87,21 +99,30 @@ export class AdminGuard implements CanActivate {
     const user = await this.authService.getCurrentUserAsync();
 
     if (!user) {
-      await this.router.navigate(['/home']);
+      await this.router.navigate(['/redirecionando'], {
+        queryParams: { to: '/home', reason: 'login_required' },
+        replaceUrl: true,
+      });
       return false;
     }
 
     const adminRole = await this.authService.getAdminRole(user.id);
 
     if (!adminRole) {
-      await this.router.navigate(['/perfil']);
+      await this.router.navigate(['/redirecionando'], {
+        queryParams: { to: '/perfil', reason: 'customer_area' },
+        replaceUrl: true,
+      });
       return false;
     }
 
     const allowedRoles = route.data['allowedRoles'] as AdminRole[] | undefined;
 
     if (allowedRoles?.length && !allowedRoles.includes(adminRole)) {
-      await this.router.navigate([ADMIN_DEFAULT_ROUTE[adminRole]]);
+      await this.router.navigate(['/redirecionando'], {
+        queryParams: { to: ADMIN_DEFAULT_ROUTE[adminRole], reason: 'role_fallback' },
+        replaceUrl: true,
+      });
       return false;
     }
 

@@ -146,6 +146,10 @@ export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
       '.inventory-row',
       '.delivery-card',
       '.state-card',
+      '.error-shell',
+      '.redirect-panel',
+      '.status-console',
+      '.quick-link',
     ];
 
     return Array.from(page.querySelectorAll<HTMLElement>(selectors.join(','))).slice(0, 18);
