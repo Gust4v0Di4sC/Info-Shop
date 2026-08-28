@@ -1,0 +1,32 @@
+<main class="error-page" aria-labelledby="errorTitle">
+  <section class="error-shell">
+    <div class="status-mark" aria-hidden="true">
+      <mat-icon>{{ copy.icon }}</mat-icon>
+    </div>
+
+    <div class="error-content">
+      <p class="eyebrow">Erro {{ code }}</p>
+      <h1 id="errorTitle">{{ copy.title }}</h1>
+      <p class="summary">{{ copy.message }}</p>
+
+      @if (incident) {
+        <p class="incident">Protocolo: {{ incident }}</p>
+      }
+
+      <div class="actions">
+        <button type="button" class="primary-action" (click)="goBack()">
+          <mat-icon aria-hidden="true">arrow_back</mat-icon>
+          Voltar
+        </button>
+        <a class="secondary-action" routerLink="/">
+          <mat-icon aria-hidden="true">home</mat-icon>
+          Inicio
+        </a>
+        <a class="secondary-action" routerLink="/suporte/fale-conosco">
+          <mat-icon aria-hidden="true">support_agent</mat-icon>
+          Suporte
+        </a>
+      </div>
+    </div>
+  </section>
+</main>

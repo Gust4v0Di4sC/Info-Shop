@@ -1,0 +1,150 @@
+:host {
+  display: block;
+}
+
+.redirect-page {
+  align-items: center;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.16), transparent 32%),
+    linear-gradient(180deg, #f8fafc 0%, #edf4f7 100%);
+  display: grid;
+  min-height: 72vh;
+  padding: clamp(36px, 7vw, 86px) 24px;
+}
+
+.redirect-panel {
+  background: #ffffff;
+  border: 1px solid #dce7f1;
+  border-radius: 8px;
+  box-shadow: 0 24px 64px rgba(15, 35, 64, 0.12);
+  display: grid;
+  gap: 16px;
+  margin: 0 auto;
+  max-width: 620px;
+  padding: clamp(26px, 5vw, 44px);
+  width: 100%;
+}
+
+.route-loader {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+
+  mat-icon {
+    color: #0f62cf;
+    font-size: 32px;
+    height: 32px;
+    width: 32px;
+  }
+
+  span {
+    background: linear-gradient(90deg, #0f62cf, #10b981, #f97316);
+    border-radius: 999px;
+    display: block;
+    height: 6px;
+    width: 120px;
+  }
+}
+
+.eyebrow {
+  color: #0f62cf;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 6px 0 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  color: #111827;
+  font-size: clamp(32px, 5vw, 50px);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.summary {
+  color: #4b5563;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.destination {
+  background: #f8fafc;
+  border: 1px solid #e3ebf4;
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+
+  span {
+    color: #6b7788;
+    font-size: 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  strong {
+    color: #172033;
+    font-size: 14px;
+    font-weight: 850;
+    overflow-wrap: anywhere;
+  }
+}
+
+.progress-track {
+  background: #e7eef6;
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+
+  span {
+    background: linear-gradient(90deg, #0f62cf, #10b981);
+    border-radius: inherit;
+    display: block;
+    height: 100%;
+    transition: width 120ms linear;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.primary-action,
+.secondary-action {
+  align-items: center;
+  border-radius: 8px;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 850;
+  gap: 9px;
+  min-height: 44px;
+  padding: 0 16px;
+  text-decoration: none;
+
+  mat-icon {
+    font-size: 19px;
+    height: 19px;
+    width: 19px;
+  }
+}
+
+.primary-action {
+  background: #0f62cf;
+  border: 1px solid #0f62cf;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.secondary-action {
+  background: #ffffff;
+  border: 1px solid #d8e2ec;
+  color: #172033;
+}

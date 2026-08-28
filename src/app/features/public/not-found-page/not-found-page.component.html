@@ -1,0 +1,33 @@
+<main class="not-found-page" #scene>
+  <section class="not-found-hero" aria-labelledby="notFoundTitle">
+    <div class="error-copy" data-depth="0.3">
+      <p class="eyebrow">Erro 404</p>
+      <h1 id="notFoundTitle">Essa pagina saiu do mapa</h1>
+      <p class="summary">
+        O endereco pode ter mudado, expirado ou sido digitado com algum detalhe diferente.
+      </p>
+
+      <div class="actions" aria-label="Acoes de recuperacao">
+        @for (link of recoveryLinks; track link.route) {
+          <a class="quick-link" [routerLink]="link.route">
+            <mat-icon aria-hidden="true">{{ link.icon }}</mat-icon>
+            {{ link.label }}
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="code-stage" aria-hidden="true" data-depth="0.75">
+      <span class="digit">4</span>
+      <div class="zero-ring">
+        <span class="orbit-chip chip-one"></span>
+        <span class="orbit-chip chip-two"></span>
+        <span class="orbit-chip chip-three"></span>
+        <span class="zero-core">
+          <mat-icon>memory</mat-icon>
+        </span>
+      </div>
+      <span class="digit">4</span>
+    </div>
+  </section>
+</main>

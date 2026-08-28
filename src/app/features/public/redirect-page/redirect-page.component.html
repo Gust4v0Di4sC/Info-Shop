@@ -1,0 +1,32 @@
+<main class="redirect-page" aria-labelledby="redirectTitle">
+  <section class="redirect-panel" aria-live="polite">
+    <div class="route-loader" aria-hidden="true">
+      <mat-icon>sync_alt</mat-icon>
+      <span></span>
+    </div>
+
+    <p class="eyebrow">Redirecionamento</p>
+    <h1 id="redirectTitle">Ajustando sua rota</h1>
+    <p class="summary">{{ message }}</p>
+
+    <div class="destination">
+      <span>Destino</span>
+      <strong>{{ targetPath }}</strong>
+    </div>
+
+    <div class="progress-track" aria-label="Progresso do redirecionamento">
+      <span [style.width.%]="progress()"></span>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="primary-action" (click)="navigateNow()">
+        <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+        Continuar agora
+      </button>
+      <a class="secondary-action" routerLink="/" (click)="clearTimers()">
+        <mat-icon aria-hidden="true">home</mat-icon>
+        Inicio
+      </a>
+    </div>
+  </section>
+</main>

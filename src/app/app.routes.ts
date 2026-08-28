@@ -78,6 +78,43 @@ export const routes: Routes = [
         data: { animation: 'payment-return' },
         canActivate: [AuthGuard, PublicGuard],
       },
+      {
+        path: 'erro',
+        loadComponent: () => import('@app/features/public/error-page/error-page.component').then(
+          m => m.ErrorPageComponent,
+        ),
+        title: 'Erro | InfoShop',
+        data: { animation: 'error' },
+      },
+      {
+        path: 'erro/:code',
+        loadComponent: () => import('@app/features/public/error-page/error-page.component').then(
+          m => m.ErrorPageComponent,
+        ),
+        title: 'Erro | InfoShop',
+        data: { animation: 'error-code' },
+      },
+      {
+        path: 'redirecionando',
+        loadComponent: () => import('@app/features/public/redirect-page/redirect-page.component').then(
+          m => m.RedirectPageComponent,
+        ),
+        title: 'Redirecionando | InfoShop',
+        data: { animation: 'redirecting' },
+      },
+      {
+        path: 'nao-encontrado',
+        loadComponent: () => import('@app/features/public/not-found-page/not-found-page.component').then(
+          m => m.NotFoundPageComponent,
+        ),
+        title: 'Pagina nao encontrada | InfoShop',
+        data: { animation: 'not-found' },
+      },
+      {
+        path: '404',
+        redirectTo: 'nao-encontrado',
+        pathMatch: 'full',
+      },
     ],
   },
   {
@@ -201,6 +238,10 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '',
+    loadComponent: () => import('@app/features/public/not-found-page/not-found-page.component').then(
+      m => m.NotFoundPageComponent,
+    ),
+    title: 'Pagina nao encontrada | InfoShop',
+    data: { animation: 'not-found' },
   },
 ];

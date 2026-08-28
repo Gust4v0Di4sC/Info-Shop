@@ -40,6 +40,7 @@ export class PublicShellComponent {
     { label: 'Ofertas', link: '/', fragment: 'ofertas' },
     { label: 'Contato', link: '/', fragment: 'contato' },
     { label: 'Catálogo', link: '/catalogo' },
+    { label: 'Suporte', link: '/suporte/perguntas-frequentes' },
   ];
 
   closeDrawerOnCompact(drawer: MatSidenav): void {
