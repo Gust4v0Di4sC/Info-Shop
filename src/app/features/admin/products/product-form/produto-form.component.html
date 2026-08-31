@@ -40,7 +40,7 @@
     <div class="form-grid">
       <mat-form-field appearance="outline" class="wide">
         <mat-label>Nome</mat-label>
-        <input matInput cdkFocusInitial formControlName="name" placeholder="Nome do produto">
+        <input matInput cdkFocusInitial formControlName="name">
         @if (productForm.get('name')?.invalid) {
           <mat-error>{{ getErrorMessage('name') }}</mat-error>
         }
@@ -48,7 +48,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Modelo</mat-label>
-        <input matInput formControlName="model" placeholder="Modelo">
+        <input matInput formControlName="model">
         @if (productForm.get('model')?.invalid) {
           <mat-error>{{ getErrorMessage('model') }}</mat-error>
         }
@@ -68,7 +68,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Preço</mat-label>
-        <input matInput type="number" formControlName="price" placeholder="0,00">
+        <input matInput type="number" formControlName="price">
         @if (productForm.get('price')?.invalid) {
           <mat-error>{{ getErrorMessage('price') }}</mat-error>
         }
@@ -76,7 +76,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Custo</mat-label>
-        <input matInput type="number" formControlName="cost" placeholder="0,00">
+        <input matInput type="number" formControlName="cost">
         @if (productForm.get('cost')?.invalid) {
           <mat-error>{{ getErrorMessage('cost') }}</mat-error>
         }
@@ -84,7 +84,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Estoque inicial</mat-label>
-        <input matInput type="number" formControlName="stock_quantity" placeholder="Quantidade">
+        <input matInput type="number" formControlName="stock_quantity">
         @if (productForm.get('stock_quantity')?.invalid) {
           <mat-error>{{ getErrorMessage('stock_quantity') }}</mat-error>
         }
@@ -92,7 +92,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Estoque mínimo</mat-label>
-        <input matInput type="number" formControlName="stock_minimum" placeholder="Mínimo">
+        <input matInput type="number" formControlName="stock_minimum">
         @if (productForm.get('stock_minimum')?.invalid) {
           <mat-error>{{ getErrorMessage('stock_minimum') }}</mat-error>
         }
@@ -100,7 +100,7 @@
 
       <mat-form-field appearance="outline" class="wide">
         <mat-label>Descrição</mat-label>
-        <textarea matInput formControlName="description" placeholder="Resumo para exibição no catálogo" rows="3"></textarea>
+        <textarea matInput formControlName="description" rows="3"></textarea>
         @if (productForm.get('description')?.invalid) {
           <mat-error>{{ getErrorMessage('description') }}</mat-error>
         }
@@ -116,7 +116,7 @@
     <div class="form-grid">
       <mat-form-field appearance="outline">
         <mat-label>Peso (kg)</mat-label>
-        <input matInput type="number" min="0.001" step="0.001" formControlName="shipping_weight" placeholder="0,500">
+        <input matInput type="number" min="0.001" step="0.001" formControlName="shipping_weight">
         @if (productForm.get('shipping_weight')?.invalid) {
           <mat-error>{{ getErrorMessage('shipping_weight') }}</mat-error>
         }
@@ -124,7 +124,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Largura (cm)</mat-label>
-        <input matInput type="number" min="1" step="0.1" formControlName="shipping_width" placeholder="16">
+        <input matInput type="number" min="1" step="0.1" formControlName="shipping_width">
         @if (productForm.get('shipping_width')?.invalid) {
           <mat-error>{{ getErrorMessage('shipping_width') }}</mat-error>
         }
@@ -132,7 +132,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Altura (cm)</mat-label>
-        <input matInput type="number" min="1" step="0.1" formControlName="shipping_height" placeholder="4">
+        <input matInput type="number" min="1" step="0.1" formControlName="shipping_height">
         @if (productForm.get('shipping_height')?.invalid) {
           <mat-error>{{ getErrorMessage('shipping_height') }}</mat-error>
         }
@@ -140,7 +140,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Comprimento (cm)</mat-label>
-        <input matInput type="number" min="1" step="0.1" formControlName="shipping_length" placeholder="24">
+        <input matInput type="number" min="1" step="0.1" formControlName="shipping_length">
         @if (productForm.get('shipping_length')?.invalid) {
           <mat-error>{{ getErrorMessage('shipping_length') }}</mat-error>
         }
@@ -148,7 +148,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Valor segurado</mat-label>
-        <input matInput type="number" min="0" step="0.01" formControlName="shipping_insurance_value" placeholder="Opcional">
+        <input matInput type="number" min="0" step="0.01" formControlName="shipping_insurance_value">
         @if (productForm.get('shipping_insurance_value')?.invalid) {
           <mat-error>{{ getErrorMessage('shipping_insurance_value') }}</mat-error>
         }

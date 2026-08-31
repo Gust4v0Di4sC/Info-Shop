@@ -37,7 +37,7 @@
           <mat-form-field appearance="outline" class="full-width login-field">
             <mat-label>E-mail</mat-label>
             <mat-icon matPrefix>mail_outline</mat-icon>
-            <input matInput formControlName="email" type="email" placeholder="voce@email.com">
+            <input matInput formControlName="email" type="email">
             @if (loginForm.get('email')?.hasError('required')) {
               <mat-error>Informe seu e-mail</mat-error>
             }
@@ -52,8 +52,7 @@
             <input
               matInput
               formControlName="password"
-              [type]="hidePassword ? 'password' : 'text'"
-              placeholder="Sua senha">
+              [type]="hidePassword ? 'password' : 'text'">
             <button
               mat-icon-button
               matSuffix

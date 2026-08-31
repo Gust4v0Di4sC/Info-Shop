@@ -100,7 +100,6 @@
                   inputmode="numeric"
                   maxlength="9"
                   autocomplete="postal-code"
-                  placeholder="00000-000"
                   (input)="formatPostalCodeField()"
                   [attr.aria-invalid]="fieldInvalid('postalCode')"
                   aria-describedby="shipping-postal-code-error">
@@ -121,7 +120,6 @@
                   formControlName="state"
                   maxlength="2"
                   autocomplete="address-level1"
-                  placeholder="SP"
                   [attr.aria-invalid]="fieldInvalid('state')"
                   aria-describedby="shipping-state-error">
                 @if (fieldInvalid('state')) {
@@ -135,7 +133,6 @@
                 id="shipping-street"
                 formControlName="street"
                 autocomplete="address-line1"
-                placeholder="Endereço"
                 [attr.aria-invalid]="fieldInvalid('street')"
                 aria-describedby="shipping-street-error">
               @if (fieldInvalid('street')) {
@@ -149,7 +146,6 @@
                   id="shipping-number"
                   formControlName="number"
                   autocomplete="address-line2"
-                  placeholder="123"
                   [attr.aria-invalid]="fieldInvalid('number')"
                   aria-describedby="shipping-number-error">
                 @if (fieldInvalid('number')) {
@@ -162,7 +158,6 @@
                   id="shipping-district"
                   formControlName="district"
                   autocomplete="address-level3"
-                  placeholder="Centro"
                   [attr.aria-invalid]="fieldInvalid('district')"
                   aria-describedby="shipping-district-error">
                 @if (fieldInvalid('district')) {
@@ -176,7 +171,6 @@
                 id="shipping-city"
                 formControlName="city"
                 autocomplete="address-level2"
-                placeholder="Cidade"
                 [attr.aria-invalid]="fieldInvalid('city')"
                 aria-describedby="shipping-city-error">
               @if (fieldInvalid('city')) {
@@ -188,8 +182,7 @@
               <input
                 id="shipping-complement"
                 formControlName="complement"
-                autocomplete="address-line3"
-                placeholder="Opcional">
+                autocomplete="address-line3">
             </label>
 
             @if (shippingForm.touched && shippingForm.invalid) {

@@ -8,8 +8,9 @@
 
     <div class="header-actions">
       <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+        <mat-label>Buscar cliente</mat-label>
         <mat-icon matPrefix>search</mat-icon>
-        <input matInput [formControl]="searchControl" placeholder="Buscar cliente" type="text">
+        <input matInput [formControl]="searchControl" type="text">
       </mat-form-field>
 
       <button mat-flat-button class="primary-action" type="button" (click)="openClientForm()">

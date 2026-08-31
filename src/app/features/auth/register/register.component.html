@@ -22,7 +22,7 @@
           <mat-form-field appearance="outline" class="full-width register-field">
             <mat-label>Nome completo</mat-label>
             <mat-icon matPrefix>person_outline</mat-icon>
-            <input matInput formControlName="fullName" type="text" placeholder="Seu nome">
+            <input matInput formControlName="fullName" type="text">
             @if (registerForm.get('fullName')?.hasError('required')) {
               <mat-error>Nome é obrigatório</mat-error>
             }
@@ -34,7 +34,7 @@
           <mat-form-field appearance="outline" class="full-width register-field">
             <mat-label>E-mail</mat-label>
             <mat-icon matPrefix>mail_outline</mat-icon>
-            <input matInput formControlName="email" type="email" placeholder="voce@email.com">
+            <input matInput formControlName="email" type="email">
             @if (registerForm.get('email')?.hasError('required')) {
               <mat-error>Informe seu e-mail</mat-error>
             }
@@ -49,8 +49,7 @@
             <input
               matInput
               formControlName="password"
-              [type]="hidePassword ? 'password' : 'text'"
-              placeholder="Mínimo de 6 caracteres">
+              [type]="hidePassword ? 'password' : 'text'">
             <button
               mat-icon-button
               matSuffix
@@ -73,8 +72,7 @@
             <input
               matInput
               formControlName="confirmPassword"
-              [type]="hideConfirmPassword ? 'password' : 'text'"
-              placeholder="Repita sua senha">
+              [type]="hideConfirmPassword ? 'password' : 'text'">
             <button
               mat-icon-button
               matSuffix

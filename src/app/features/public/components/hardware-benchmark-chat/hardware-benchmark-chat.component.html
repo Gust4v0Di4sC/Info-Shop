@@ -25,8 +25,7 @@
       <textarea
         [formControl]="currentHardwareControl"
         rows="3"
-        maxlength="1200"
-        placeholder="Ex.: Ryzen 5 3600, GTX 1660, 16GB RAM, SSD NVMe 500GB"></textarea>
+        maxlength="1200"></textarea>
     </label>
 
     <div class="prompt-row" aria-label="Perguntas sugeridas">
@@ -73,8 +72,7 @@
         <textarea
           [formControl]="messageControl"
           rows="2"
-          maxlength="600"
-          placeholder="Pergunte como este produto se compara ao seu setup"></textarea>
+          maxlength="600"></textarea>
       </label>
       <button class="primary-action" type="button" (click)="sendMessage()" [disabled]="isSending">
         <mat-icon aria-hidden="true">send</mat-icon>

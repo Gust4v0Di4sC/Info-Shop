@@ -40,7 +40,7 @@
     <div class="form-grid">
       <mat-form-field appearance="outline" class="wide">
         <mat-label>Nome</mat-label>
-        <input matInput cdkFocusInitial formControlName="name" placeholder="Nome completo">
+        <input matInput cdkFocusInitial formControlName="name">
         @if (clientForm.get('name')?.invalid) {
           <mat-error>{{ getErrorMessage('name') }}</mat-error>
         }
@@ -48,7 +48,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Idade</mat-label>
-        <input matInput type="number" formControlName="age" placeholder="Idade">
+        <input matInput type="number" formControlName="age">
         @if (clientForm.get('age')?.invalid) {
           <mat-error>{{ getErrorMessage('age') }}</mat-error>
         }
@@ -56,7 +56,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>CPF</mat-label>
-        <input matInput formControlName="cpf" inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" (input)="formatCpfField()">
+        <input matInput formControlName="cpf" inputmode="numeric" maxlength="14" autocomplete="off" (input)="formatCpfField()">
         @if (clientForm.get('cpf')?.invalid) {
           <mat-error>{{ getErrorMessage('cpf') }}</mat-error>
         }
@@ -64,7 +64,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Telefone</mat-label>
-        <input matInput formControlName="phone" type="tel" inputmode="tel" maxlength="15" autocomplete="tel" placeholder="(00) 00000-0000" (input)="formatPhoneField()">
+        <input matInput formControlName="phone" type="tel" inputmode="tel" maxlength="15" autocomplete="tel" (input)="formatPhoneField()">
         @if (clientForm.get('phone')?.invalid) {
           <mat-error>{{ getErrorMessage('phone') }}</mat-error>
         }
@@ -72,7 +72,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>CEP</mat-label>
-        <input matInput formControlName="postalCode" inputmode="numeric" maxlength="9" autocomplete="postal-code" placeholder="00000-000" (input)="formatPostalCodeField()">
+        <input matInput formControlName="postalCode" inputmode="numeric" maxlength="9" autocomplete="postal-code" (input)="formatPostalCodeField()">
         @if (isFetchingCep) {
           <mat-hint>Buscando endereco...</mat-hint>
         }
@@ -83,7 +83,7 @@
 
       <mat-form-field appearance="outline" class="wide">
         <mat-label>Endereço</mat-label>
-        <input matInput formControlName="address" placeholder="Rua, número, bairro e cidade">
+        <input matInput formControlName="address">
         @if (clientForm.get('address')?.invalid) {
           <mat-error>{{ getErrorMessage('address') }}</mat-error>
         }

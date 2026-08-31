@@ -26,7 +26,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>ID do usuário</mat-label>
-        <input matInput formControlName="userId" placeholder="Gerado pelo cliente">
+        <input matInput formControlName="userId">
         @if (orderForm.get('userId')?.invalid) {
           <mat-error>{{ getErrorMessage('userId') }}</mat-error>
         }
@@ -46,7 +46,7 @@
 
       <mat-form-field appearance="outline" class="wide">
         <mat-label>Endereço de entrega</mat-label>
-        <textarea matInput formControlName="address" placeholder="Endereço do cliente" rows="3"></textarea>
+        <textarea matInput formControlName="address" rows="3"></textarea>
         @if (orderForm.get('address')?.invalid) {
           <mat-error>{{ getErrorMessage('address') }}</mat-error>
         }
