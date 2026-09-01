@@ -35,7 +35,8 @@ describe('DeliveryService', () => {
     const query: any = {
       select: jasmine.createSpy('select').and.callFake(() => query),
       eq: jasmine.createSpy('eq').and.callFake(() => query),
-      order: jasmine.createSpy('order').and.resolveTo({
+      order: jasmine.createSpy('order').and.callFake(() => query),
+      limit: jasmine.createSpy('limit').and.resolveTo({
         data: [
           {
             id: 'delivery-1',
@@ -52,6 +53,7 @@ describe('DeliveryService', () => {
 
     expect(supabase.from as jasmine.Spy).toHaveBeenCalledWith('deliveries');
     expect(query.eq).toHaveBeenCalledWith('user_id', 'user-1');
+    expect(query.limit).toHaveBeenCalledWith(25);
     expect(deliveries[0].id).toBe('delivery-1');
   });
 });

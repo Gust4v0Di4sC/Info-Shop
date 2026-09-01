@@ -128,7 +128,11 @@ async function loadProduct(serviceClient: SupabaseClient, productId: number): Pr
 }
 
 async function askGemini(product: ProductRow, request: BenchmarkRequest): Promise<string> {
-  const apiKey = requiredEnv('GEMINI_API_KEY');
+  const apiKey = Deno.env.get('GEMINI_API_KEY');
+
+  if (!apiKey) {
+    return buildLocalBenchmarkAnswer(product, request);
+  }
 
   for (const model of GEMINI_MODELS) {
     const structuredResponse = await safeRequestGemini(apiKey, model, buildGeminiPayload(product, request));

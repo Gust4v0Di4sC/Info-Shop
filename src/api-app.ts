@@ -360,6 +360,7 @@ app.get('/api/public/products', asyncHandler(async (req, res) => {
 
 app.use('/api/supabase', asyncHandler(async (req, res) => {
   let requestBody: Buffer | undefined;
+  let hasSession = false;
 
   try {
     if (!allowedProxyPrefixes.some(prefix => req.path.startsWith(prefix))) {
@@ -369,6 +370,7 @@ app.use('/api/supabase', asyncHandler(async (req, res) => {
 
     const target = new URL(`${supabaseUrl}${req.originalUrl.replace(/^\/api\/supabase/, '')}`);
     const { session } = await requireOptionalSession(req, res);
+    hasSession = Boolean(session);
     const headers = new Headers();
 
     for (const [name, value] of Object.entries(req.headers)) {
@@ -418,7 +420,7 @@ app.use('/api/supabase', asyncHandler(async (req, res) => {
       }
     });
     const upstreamBuffer = Buffer.from(await upstream.arrayBuffer());
-    const localFallback = localSupabaseFunctionFallback(req, upstream, upstreamBuffer, requestBody);
+    const localFallback = localSupabaseFunctionFallback(req, upstream, upstreamBuffer, requestBody, hasSession);
 
     if (localFallback) {
       res.status(localFallback.status);
@@ -431,7 +433,7 @@ app.use('/api/supabase', asyncHandler(async (req, res) => {
     noStore(res);
     res.send(upstreamBuffer);
   } catch (error) {
-    const localFallback = localSupabaseFunctionFallback(req, null, Buffer.alloc(0), requestBody);
+    const localFallback = localSupabaseFunctionFallback(req, null, Buffer.alloc(0), requestBody, hasSession);
 
     if (localFallback) {
       res.status(localFallback.status);
@@ -455,8 +457,11 @@ function localSupabaseFunctionFallback(
   upstream: globalThis.Response | null,
   upstreamBody: Buffer,
   requestBody?: Buffer,
+  hasSession = false,
 ): LocalSupabaseFunctionFallback | null {
-  if (isProduction || req.method !== 'POST') {
+  const allowProductionFallback = req.path === '/functions/v1/hardware-benchmark-chat';
+
+  if ((isProduction && !allowProductionFallback) || req.method !== 'POST') {
     return null;
   }
 
@@ -465,7 +470,7 @@ function localSupabaseFunctionFallback(
   }
 
   if (req.path === '/functions/v1/hardware-benchmark-chat') {
-    return localHardwareBenchmarkFallback(upstream, requestBody);
+    return localHardwareBenchmarkFallback(upstream, requestBody, hasSession);
   }
 
   if (req.path === '/functions/v1/mercado-pago-create-preference') {
@@ -505,16 +510,22 @@ function localShippingQuoteFallback(
 function localHardwareBenchmarkFallback(
   upstream: globalThis.Response | null,
   requestBody?: Buffer,
+  hasSession = false,
 ): LocalSupabaseFunctionFallback | null {
-  if (upstream && upstream.status !== 404 && upstream.status < 500) {
+  if (!hasSession) {
+    return null;
+  }
+
+  if (upstream && ![400, 404].includes(upstream.status) && upstream.status < 500) {
     return null;
   }
 
   const requestJson = parseJsonBuffer(requestBody);
+  const productId = Number(requestJson?.['productId']);
   const currentHardware = String(requestJson?.['currentHardware'] || '').trim();
   const message = String(requestJson?.['message'] || '').trim();
 
-  if (!currentHardware || !message) {
+  if (!Number.isInteger(productId) || productId <= 0 || !currentHardware || !message) {
     return null;
   }
 
@@ -654,8 +665,8 @@ function contentSecurityPolicy(): string {
     "object-src 'none'",
     "frame-ancestors 'none'",
     `script-src ${scriptSources.join(' ')}`,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com data:",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' data:",
     "img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com",
     `connect-src ${connectSources.join(' ')}`,
     `worker-src ${workerSources.join(' ')}`,
