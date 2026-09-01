@@ -54,8 +54,6 @@ export class CustomerProfileService {
         email: user.email || '',
         full_name: this.getMetadataValue(user.user_metadata, 'full_name') ||
           this.getMetadataValue(user.user_metadata, 'name'),
-        avatar_url: this.getMetadataValue(user.user_metadata, 'avatar_url') ||
-          this.getMetadataValue(user.user_metadata, 'picture'),
       }, { onConflict: 'id' })
       .select()
       .single();

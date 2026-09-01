@@ -204,9 +204,17 @@ export class CustomerProfileComponent implements OnInit, OnDestroy {
       avatar_url: profile.avatar_url || '',
       ...address,
     });
-    this.avatarPreviewUrl = profile.avatar_url;
+    this.avatarPreviewUrl = this.displayableAvatarUrl(profile.avatar_url);
     this.avatarImageFailed = false;
     this.selectedAvatarFile = null;
+  }
+
+  private displayableAvatarUrl(url: string | null): string | null {
+    if (!url || /^https:\/\/lh3\.googleusercontent\.com\//i.test(url)) {
+      return null;
+    }
+
+    return url;
   }
 
   private buildAddress(): string {
