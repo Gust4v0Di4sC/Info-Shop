@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { CartPageComponent } from './cart-page.component';
 import { CartServiceService } from '@app/services/cart-service.service';
+import { CartItemWithProduct } from '@app/models/cart-item.model';
 import { PaymentService } from '@app/services/payment.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ViaCepService } from '@app/services/via-cep.service';
@@ -114,6 +115,65 @@ describe('CartPageComponent', () => {
     expect(component.selectedServiceId).toBe('2');
     expect(component.isQuoting).toBeFalse();
   });
+
+  it('should update item quantity locally before the backend finishes', () => {
+    const cartService = cartServiceMock();
+    const component = new CartPageComponent(
+      cartService,
+      paymentServiceMock(),
+      new FormBuilder(),
+      changeDetectorRefMock(),
+      snackBarMock(),
+      viaCepServiceMock(),
+    );
+    component.items = [cartItem({ id: 'item-1', quantity: 1 })];
+
+    component.changeQuantity(component.items[0], 2);
+
+    expect(component.items[0].quantity).toBe(2);
+    expect(cartService.setCartCount).toHaveBeenCalledWith(2);
+    expect(cartService.updateQuantity).toHaveBeenCalledWith('item-1', 2);
+  });
+
+  it('should restore item quantity when optimistic update fails', () => {
+    const cartService = cartServiceMock();
+    (cartService.updateQuantity as jasmine.Spy).and.returnValue(throwError(() => new Error('Falha')));
+    const snackBar = snackBarMock();
+    const component = new CartPageComponent(
+      cartService,
+      paymentServiceMock(),
+      new FormBuilder(),
+      changeDetectorRefMock(),
+      snackBar,
+      viaCepServiceMock(),
+    );
+    component.items = [cartItem({ id: 'item-1', quantity: 1 })];
+
+    component.changeQuantity(component.items[0], 2);
+
+    expect(component.items[0].quantity).toBe(1);
+    expect(cartService.setCartCount).toHaveBeenCalledWith(1);
+    expect(snackBar.open).toHaveBeenCalled();
+  });
+
+  it('should remove items locally before remove request finishes', () => {
+    const cartService = cartServiceMock();
+    const component = new CartPageComponent(
+      cartService,
+      paymentServiceMock(),
+      new FormBuilder(),
+      changeDetectorRefMock(),
+      snackBarMock(),
+      viaCepServiceMock(),
+    );
+    component.items = [cartItem({ id: 'item-1', quantity: 1 })];
+
+    component.removeItem(component.items[0]);
+
+    expect(component.items).toEqual([]);
+    expect(cartService.setCartCount).toHaveBeenCalledWith(0);
+    expect(cartService.removeItem).toHaveBeenCalledWith('item-1');
+  });
 });
 
 function cartServiceMock(): CartServiceService {
@@ -121,6 +181,10 @@ function cartServiceMock(): CartServiceService {
     calculateShipping: jasmine.createSpy(),
     getCartItems: jasmine.createSpy(),
     refreshCartCount: jasmine.createSpy(),
+    updateQuantity: jasmine.createSpy().and.returnValue(of(undefined)),
+    removeItem: jasmine.createSpy().and.returnValue(of(undefined)),
+    clearCart: jasmine.createSpy().and.returnValue(of(undefined)),
+    setCartCount: jasmine.createSpy(),
   } as unknown as CartServiceService;
 }
 
@@ -168,4 +232,25 @@ function fillAddress(component: CartPageComponent): void {
     state: 'SP',
     complement: '',
   });
+}
+
+function cartItem(overrides: Partial<CartItemWithProduct>): CartItemWithProduct {
+  return {
+    id: 'item-1',
+    user_id: 'user-1',
+    product_id: '1',
+    quantity: 1,
+    created_at: '2026-01-01T00:00:00.000Z',
+    updated_at: '2026-01-01T00:00:00.000Z',
+    product: {
+      id: 1,
+      name: 'Produto E2E',
+      model: 'Modelo',
+      description: 'Descricao',
+      imageUrl: '/product1.webp',
+      price: 100,
+      offer_price: null,
+    },
+    ...overrides,
+  };
 }

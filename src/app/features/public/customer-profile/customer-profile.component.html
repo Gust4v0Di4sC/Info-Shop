@@ -43,8 +43,12 @@
           <div class="identity-grid">
             <div class="avatar-editor">
               <div class="avatar">
-                @if (avatarPreviewUrl) {
-                  <img [src]="avatarPreviewUrl" [alt]="profileForm.value.full_name || 'Avatar do cliente'">
+                @if (avatarPreviewUrl && !avatarImageFailed) {
+                  <img
+                    [src]="avatarPreviewUrl"
+                    [alt]="profileForm.value.full_name || 'Avatar do cliente'"
+                    referrerpolicy="no-referrer"
+                    (error)="onAvatarImageError()">
                 } @else {
                   <mat-icon aria-hidden="true">person_outline</mat-icon>
                 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, map, Observable, timeout } from 'rxjs';
+import { BehaviorSubject, catchError, from, map, Observable, throwError, timeout } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { AuthService } from '@app/core/auth/auth.service';
 import { getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
@@ -28,7 +28,15 @@ export class CartServiceService {
   }
 
   addProduct(productId: string | number, quantity = 1): Observable<void> {
-    return from(this.addProductToCart(productId, quantity));
+    const normalizedQuantity = Math.max(1, quantity);
+    this.incrementCart(normalizedQuantity);
+
+    return from(this.addProductToCart(productId, normalizedQuantity)).pipe(
+      catchError(error => {
+        this.incrementCart(-normalizedQuantity);
+        return throwError(() => error);
+      }),
+    );
   }
 
   updateQuantity(itemId: string, quantity: number): Observable<void> {
@@ -51,8 +59,12 @@ export class CartServiceService {
       );
   }
 
-  incrementCart() {
-    this.cartCount.next(this.cartCount.value + 1);
+  incrementCart(quantity = 1): void {
+    this.cartCount.next(Math.max(0, this.cartCount.value + quantity));
+  }
+
+  setCartCount(count: number): void {
+    this.cartCount.next(Math.max(0, count));
   }
 
   private async getUserId(): Promise<string> {

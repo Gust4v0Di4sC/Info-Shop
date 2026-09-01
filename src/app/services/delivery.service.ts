@@ -10,6 +10,25 @@ import { TenantContextService } from '@app/core/tenant/tenant-context.service';
   providedIn: 'root'
 })
 export class DeliveryService {
+  private readonly currentUserDeliverySelect = [
+    'id',
+    'order_id',
+    'user_id',
+    'store_id',
+    'status',
+    'address',
+    'carrier',
+    'tracking_code',
+    'created_at',
+    'estimated_delivery_date',
+    'melhor_envio_protocol',
+    'selected_service_name',
+    'shipping_price',
+    'shipping_deadline',
+    'tracking_url',
+    'label_status',
+  ].join(', ');
+
   constructor(
     private tenantContext: TenantContextService,
     private authService: AuthService,
@@ -52,10 +71,11 @@ export class DeliveryService {
 
     const result = await supabase
       .from('deliveries')
-      .select('*')
+      .select(this.currentUserDeliverySelect)
       .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(25);
 
-    return getSupabaseList(result);
+    return getSupabaseList(result) as unknown as Delivery[];
   }
 }

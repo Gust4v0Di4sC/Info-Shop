@@ -114,17 +114,12 @@ async function observedSupabaseFetch(request: Request, requestId: string): Promi
     recordSupabaseFetchTelemetry(request, response, requestId, performance.now() - startedAt);
     return response;
   } catch (error) {
-    Sentry.captureException(error, {
-      tags: {
-        requestId,
-        service: 'supabase',
-        method: request.method,
-        status: 'network_error',
-      },
-      extra: {
-        url: sanitizedUrl(request.url),
-        durationMs: Math.round(performance.now() - startedAt),
-      },
+    captureSupabaseException(error, {
+      requestId,
+      method: request.method,
+      status: 'network_error',
+      url: sanitizedUrl(request.url),
+      durationMs: Math.round(performance.now() - startedAt),
     });
 
     throw error;
@@ -152,19 +147,53 @@ function recordSupabaseFetchTelemetry(
   };
 
   if (!response.ok) {
-    Sentry.captureMessage('Supabase fetch failed', {
-      ...baseContext,
-      level: response.status >= 500 ? 'error' : 'warning',
-    });
+    captureSupabaseMessage('Supabase fetch failed', response.status >= 500 ? 'error' : 'warning', baseContext);
     return;
   }
 
   if (durationMs > SLOW_SUPABASE_REQUEST_THRESHOLD_MS) {
-    Sentry.captureMessage('Slow Supabase request', {
-      ...baseContext,
-      level: 'warning',
-    });
+    captureSupabaseMessage('Slow Supabase request', 'warning', baseContext);
   }
+}
+
+function captureSupabaseException(
+  error: unknown,
+  context: { requestId: string; method: string; status: string; url: string; durationMs: number },
+): void {
+  if (!environment.sentryDsn) {
+    return;
+  }
+
+  Sentry.captureException(error, {
+    tags: {
+      requestId: context.requestId,
+      service: 'supabase',
+      method: context.method,
+      status: context.status,
+    },
+    extra: {
+      url: context.url,
+      durationMs: context.durationMs,
+    },
+  });
+}
+
+function captureSupabaseMessage(
+  message: string,
+  level: 'warning' | 'error',
+  context: {
+    tags: { requestId: string; service: string; method: string; status: string };
+    extra: { url: string; durationMs: number };
+  },
+): void {
+  if (!environment.sentryDsn) {
+    return;
+  }
+
+  Sentry.captureMessage(message, {
+    ...context,
+    level,
+  });
 }
 
 function isRetryableSupabaseResponse(request: Request, response: Response): boolean {
