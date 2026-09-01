@@ -31,7 +31,7 @@ const sentryProviders: Provider[] = environment.sentryDsn
     ]
   : [];
 
-const serviceWorkerEnabled = environment.production && !isLocalDevOrigin();
+const serviceWorkerEnabled = false;
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -55,6 +55,3 @@ export const appConfig: ApplicationConfig = {
   ],
 };
 
-function isLocalDevOrigin(): boolean {
-  return typeof location !== 'undefined' && ['localhost', '127.0.0.1'].includes(location.hostname);
-}

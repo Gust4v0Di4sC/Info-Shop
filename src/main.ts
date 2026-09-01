@@ -4,7 +4,7 @@ import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 
-cleanupLocalServiceWorker();
+cleanupServiceWorker();
 
 if (environment.sentryDsn) {
   Sentry.init({
@@ -37,12 +37,8 @@ bootstrapApplication(AppComponent, appConfig)
     console.error(err);
   });
 
-function cleanupLocalServiceWorker(): void {
-  const isLocalHost = typeof location !== 'undefined' &&
-    ['localhost', '127.0.0.1'].includes(location.hostname);
-
+function cleanupServiceWorker(): void {
   if (
-    (environment.production && !isLocalHost) ||
     typeof window === 'undefined' ||
     !('serviceWorker' in navigator)
   ) {
