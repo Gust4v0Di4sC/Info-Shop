@@ -368,7 +368,7 @@ app.use('/api/supabase', asyncHandler(async (req, res) => {
       return;
     }
 
-    const target = new URL(`${supabaseUrl}${req.originalUrl.replace(/^\/api\/supabase/, '')}`);
+    const target = new URL(req.url, supabaseUrl);
     const { session } = await requireOptionalSession(req, res);
     hasSession = Boolean(session);
     const headers = new Headers();
