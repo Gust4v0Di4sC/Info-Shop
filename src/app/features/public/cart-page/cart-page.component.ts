@@ -101,10 +101,22 @@ export class CartPageComponent implements OnInit, OnDestroy {
   }
 
   changeQuantity(item: CartItemWithProduct, quantity: number): void {
+    const normalizedQuantity = Math.max(0, quantity);
+    const previousItems = this.items;
+    const previousCartCount = this.cartQuantityTotal(previousItems);
+
+    if (normalizedQuantity === item.quantity) {
+      return;
+    }
+
     this.actionErrorMessage = '';
-    this.cartService.updateQuantity(item.id, quantity).subscribe({
-      next: () => this.loadCart(),
+    this.applyQuantityLocally(item.id, normalizedQuantity);
+
+    this.cartService.updateQuantity(item.id, normalizedQuantity).subscribe({
+      next: () => undefined,
       error: () => {
+        this.items = previousItems;
+        this.cartService.setCartCount(previousCartCount);
         this.showSnackbar('Não foi possível atualizar este item agora. Tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
@@ -112,13 +124,19 @@ export class CartPageComponent implements OnInit, OnDestroy {
   }
 
   removeItem(item: CartItemWithProduct): void {
+    const previousItems = this.items;
+    const previousCartCount = this.cartQuantityTotal(previousItems);
+
     this.actionErrorMessage = '';
+    this.applyQuantityLocally(item.id, 0);
+
     this.cartService.removeItem(item.id).subscribe({
       next: () => {
         this.showSnackbar(`${this.itemName(item)} foi removido do carrinho.`);
-        this.loadCart();
       },
       error: () => {
+        this.items = previousItems;
+        this.cartService.setCartCount(previousCartCount);
         this.showSnackbar('Não foi possível remover este item agora. Tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
@@ -126,17 +144,25 @@ export class CartPageComponent implements OnInit, OnDestroy {
   }
 
   clearCart(): void {
+    const previousItems = this.items;
+    const previousCartCount = this.cartQuantityTotal(previousItems);
+
     this.actionErrorMessage = '';
+    this.items = [];
+    this.shippingQuotes = [];
+    this.selectedServiceId = '';
+    this.cartService.setCartCount(0);
+    this.changeDetectorRef.markForCheck();
+
     this.cartService.clearCart().subscribe({
       next: () => {
-        this.items = [];
-        this.shippingQuotes = [];
-        this.selectedServiceId = '';
         this.actionErrorMessage = '';
         this.showSnackbar('Carrinho limpo.');
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
+        this.items = previousItems;
+        this.cartService.setCartCount(previousCartCount);
         this.showSnackbar('Não foi possível limpar o carrinho agora. Tente novamente.');
         this.changeDetectorRef.markForCheck();
       },
@@ -255,6 +281,19 @@ export class CartPageComponent implements OnInit, OnDestroy {
       state: (value.state || '').toUpperCase(),
       complement: value.complement || null,
     };
+  }
+
+  private applyQuantityLocally(itemId: string, quantity: number): void {
+    this.items = quantity <= 0
+      ? this.items.filter(cartItem => cartItem.id !== itemId)
+      : this.items.map(cartItem => cartItem.id === itemId ? { ...cartItem, quantity } : cartItem);
+
+    this.cartService.setCartCount(this.cartQuantityTotal(this.items));
+    this.changeDetectorRef.markForCheck();
+  }
+
+  private cartQuantityTotal(items: CartItemWithProduct[]): number {
+    return items.reduce((sum, cartItem) => sum + cartItem.quantity, 0);
   }
 
   private bindPostalCodeAutocomplete(): void {

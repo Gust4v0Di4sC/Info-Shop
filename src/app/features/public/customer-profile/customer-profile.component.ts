@@ -33,6 +33,7 @@ export class CustomerProfileComponent implements OnInit, OnDestroy {
   errorMessage = '';
   feedbackMessage = '';
   avatarPreviewUrl: string | null = null;
+  avatarImageFailed = false;
   selectedAvatarFile: File | null = null;
   isFetchingCep = false;
   cepErrorMessage = '';
@@ -147,9 +148,15 @@ export class CustomerProfileComponent implements OnInit, OnDestroy {
     const reader = new FileReader();
     reader.onload = () => {
       this.avatarPreviewUrl = reader.result as string;
+      this.avatarImageFailed = false;
       this.changeDetectorRef.markForCheck();
     };
     reader.readAsDataURL(file);
+  }
+
+  onAvatarImageError(): void {
+    this.avatarImageFailed = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   async logout(): Promise<void> {
@@ -198,6 +205,7 @@ export class CustomerProfileComponent implements OnInit, OnDestroy {
       ...address,
     });
     this.avatarPreviewUrl = profile.avatar_url;
+    this.avatarImageFailed = false;
     this.selectedAvatarFile = null;
   }
 
