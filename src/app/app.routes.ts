@@ -238,10 +238,7 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    loadComponent: () => import('@app/features/public/not-found-page/not-found-page.component').then(
-      m => m.NotFoundPageComponent,
-    ),
-    title: 'Pagina nao encontrada | InfoShop',
-    data: { animation: 'not-found' },
+    redirectTo: '',
+    pathMatch: 'full',
   },
 ];
