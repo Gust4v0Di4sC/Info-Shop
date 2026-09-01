@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { Delivery, DELIVERY_STATUS_LABELS } from '@app/models/delivery.model';
@@ -16,7 +16,10 @@ export class CustomerDeliveriesComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
 
-  constructor(private deliveryService: DeliveryService) {}
+  constructor(
+    private deliveryService: DeliveryService,
+    private changeDetectorRef: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.loadDeliveries();
@@ -30,10 +33,12 @@ export class CustomerDeliveriesComponent implements OnInit {
       next: deliveries => {
         this.deliveries = deliveries;
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Não foi possível carregar suas entregas agora. Tente novamente em alguns instantes.';
         this.isLoading = false;
+        this.changeDetectorRef.markForCheck();
       },
     });
   }
