@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, map, switchMap } from 'rxjs';
-import { Order } from '@app/models/order.model';
+import { Order, OrderUpdate } from '@app/models/order.model';
 import { supabase } from '@app/core/supabase/supabase.client';
-import { getSupabaseData, getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
+import { getSupabaseData, getSupabaseList } from '@app/core/supabase/supabase-response';
 import { TenantContextService } from '@app/core/tenant/tenant-context.service';
 
 @Injectable({
@@ -55,17 +55,21 @@ export class OrderService {
     );
   }
 
-  /** Deletar pedido */
-  deleteOrder(id: string | number): Observable<void> {
+  /** Cancelar pedido sem remover o registro */
+  cancelOrder(id: string | number): Observable<Order> {
+    const update: OrderUpdate = { status: 'canceled' };
+
     return from(this.tenantContext.getSelectedStoreId()).pipe(
       switchMap(storeId => from(
         supabase
           .from('orders')
-          .delete()
+          .update(update)
           .eq('id', Number(id))
-          .eq('store_id', storeId),
+          .eq('store_id', storeId)
+          .select()
+          .single(),
       )),
-      map(throwSupabaseError),
+      map(getSupabaseData),
     );
   }
 }

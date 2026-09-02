@@ -39,11 +39,11 @@ export const ADMIN_THEME_OPTIONS: AdminThemeOption[] = [
     id: 'graphite',
     label: 'Grafite Escuro',
     className: 'admin-theme-graphite',
-    description: 'Escuro para uso prolongado, com destaque ambar.',
+    description: 'Escuro para uso prolongado, com destaque grafite frio.',
     palette: {
       background: '#15181d',
       card: '#1e232b',
-      primary: '#f0a500',
+      primary: '#4b5563',
       foreground: '#f5f7fa',
     },
   },

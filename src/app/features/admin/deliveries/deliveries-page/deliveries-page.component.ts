@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
@@ -13,12 +14,15 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
   styleUrl: './deliveries-page.component.scss'
 })
 export class DeliveriesPageComponent implements OnInit {
+  @ViewChild('deliveryDetailsTemplate') private deliveryDetailsTemplate?: TemplateRef<unknown>;
+
   readonly orderTabs: AdminSectionTab[] = [
     { label: 'Pedidos', icon: 'receipt_long', route: '/orders' },
     { label: 'Entregas', icon: 'local_shipping', route: '/deliveries' },
   ];
 
   deliveries: Delivery[] = [];
+  selectedDelivery: Delivery | null = null;
   isLoading = true;
   errorMessage = '';
   pageIndex = 0;
@@ -27,6 +31,7 @@ export class DeliveriesPageComponent implements OnInit {
   statusOptions = Object.entries(DELIVERY_STATUS_LABELS).map(([value, label]) => ({ value, label }));
 
   constructor(
+    private dialog: MatDialog,
     private deliveryService: DeliveryService,
     private snackBar: MatSnackBar,
   ) {}
@@ -71,6 +76,47 @@ export class DeliveriesPageComponent implements OnInit {
 
   statusLabel(status: string): string {
     return DELIVERY_STATUS_LABELS[status] || status;
+  }
+
+  statusTone(status: string): string {
+    const tones: Record<string, string> = {
+      pending: 'status-critical',
+      preparing: 'status-attention',
+      shipped: 'status-progress',
+      out_for_delivery: 'status-urgent',
+      delivered: 'status-success',
+      canceled: 'status-muted',
+    };
+
+    return tones[status] || 'status-attention';
+  }
+
+  severityLabel(status: string): string {
+    const labels: Record<string, string> = {
+      pending: 'Alta prioridade',
+      preparing: 'Atencao',
+      shipped: 'Monitorar',
+      out_for_delivery: 'Urgente',
+      delivered: 'Concluida',
+      canceled: 'Desativada',
+    };
+
+    return labels[status] || 'Atencao';
+  }
+
+  openDeliveryDetails(delivery: Delivery): void {
+    if (!this.deliveryDetailsTemplate) {
+      return;
+    }
+
+    this.selectedDelivery = delivery;
+    this.dialog.open(this.deliveryDetailsTemplate, {
+      width: 'min(560px, calc(100vw - 32px))',
+      panelClass: 'admin-form-dialog',
+      restoreFocus: true,
+      enterAnimationDuration: '220ms',
+      exitAnimationDuration: '180ms',
+    });
   }
 
   pagedDeliveries(): Delivery[] {

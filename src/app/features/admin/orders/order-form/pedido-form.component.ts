@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Client } from '@app/models/client.model';
-import { Order, OrderInsert } from '@app/models/order.model';
+import { Order, OrderUpdate } from '@app/models/order.model';
 import { Product } from '@app/models/product.model';
 import { OrderFormService } from '@app/services/order-form.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
@@ -22,6 +22,7 @@ export class PedidoFormComponent implements OnInit {
   isLoading = false;
   orderId: string | number | undefined;
   isEditMode = false;
+  currentStatus = 'open';
 
   constructor(
     private fb: FormBuilder,
@@ -40,6 +41,7 @@ export class PedidoFormComponent implements OnInit {
     if (data?.order) {
       this.isEditMode = true;
       this.orderId = data.order.id;
+      this.currentStatus = data.order.status || this.currentStatus;
     }
   }
 
@@ -101,6 +103,7 @@ export class PedidoFormComponent implements OnInit {
   private loadOrderData(order: Order): void {
     const selectedClient = this.clients.find(client => String(client.id) === String(order.clientId));
     const selectedProduct = this.products.find(product => String(product.id) === String(order.productId));
+    this.currentStatus = order.status || this.currentStatus;
 
     this.orderForm.patchValue({
       clientId: selectedClient?.id || '',
@@ -119,7 +122,12 @@ export class PedidoFormComponent implements OnInit {
       return;
     }
 
-    const orderData: OrderInsert = {
+    if (!this.isEditMode || !this.orderId) {
+      this.showSnackbar('Criacao manual de pedidos foi desativada.');
+      return;
+    }
+
+    const orderData: OrderUpdate = {
       id: this.orderId === undefined ? undefined : Number(this.orderId),
       clientId: selectedClient.id,
       name: selectedClient.name,
@@ -131,31 +139,17 @@ export class PedidoFormComponent implements OnInit {
       imageClient: selectedClient.imageUrl,
       quantity: 1,
       total_amount: Number(selectedProduct.price || 0),
-      status: 'open',
+      status: this.currentStatus,
     };
 
-    if (this.isEditMode && this.orderId) {
-      this.orderFormService.updateOrder(this.orderId, orderData).subscribe({
-        next: response => {
-          this.showSnackbar('Pedido atualizado com sucesso!');
-          this.dialogRef.close(response);
-        },
-        error: error => {
-          console.error('Erro ao atualizar Pedido:', error);
-          this.showSnackbar('Não foi possível atualizar o pedido agora. Tente novamente.');
-        },
-      });
-      return;
-    }
-
-    this.orderFormService.createOrder(orderData).subscribe({
+    this.orderFormService.updateOrder(this.orderId, orderData).subscribe({
       next: response => {
-        this.showSnackbar('Pedido criado com sucesso!');
+        this.showSnackbar('Pedido atualizado com sucesso!');
         this.dialogRef.close(response);
       },
       error: error => {
-        console.error('Erro ao criar Pedido:', error);
-        this.showSnackbar('Não foi possível criar o pedido agora. Tente novamente.');
+        console.error('Erro ao atualizar Pedido:', error);
+        this.showSnackbar('Não foi possível atualizar o pedido agora. Tente novamente.');
       },
     });
   }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { from, map, Observable, switchMap } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
-import { Order, OrderInsert, OrderUpdate } from '@app/models/order.model';
+import { Order, OrderUpdate } from '@app/models/order.model';
 import { Product } from '@app/models/product.model';
 import { Client } from '@app/models/client.model';
 import { getSupabaseData, getSupabaseList } from '@app/core/supabase/supabase-response';
@@ -34,19 +34,6 @@ export class OrderFormService {
           .eq('store_id', storeId),
       )),
       map(getSupabaseList),
-    );
-  }
-
-  createOrder(order: OrderInsert): Observable<Order> {
-    return from(this.tenantContext.getSelectedStoreId()).pipe(
-      switchMap(storeId => from(
-        supabase
-          .from('orders')
-          .insert({ ...order, store_id: storeId })
-          .select()
-          .single(),
-      )),
-      map(getSupabaseData),
     );
   }
 

@@ -43,10 +43,15 @@
       @for (delivery of pagedDeliveries(); track delivery.id) {
         <article class="delivery-card">
           <div class="delivery-main">
-            <span class="status-pill">{{ statusLabel(delivery.status) }}</span>
+            <div class="status-row">
+              <span [class]="'status-pill ' + statusTone(delivery.status)">{{ statusLabel(delivery.status) }}</span>
+              <span [class]="'severity-pill ' + statusTone(delivery.status)">{{ severityLabel(delivery.status) }}</span>
+            </div>
             <h2>{{ delivery.customer_name || 'Cliente não informado' }}</h2>
             <p>{{ delivery.address || 'Endereço a confirmar' }}</p>
-            <small>Pedido {{ delivery.order_id || 'sem vinculo' }}</small>
+            <button class="order-link" type="button" (click)="openDeliveryDetails(delivery)">
+              Pedido {{ delivery.order_id || 'sem vinculo' }}
+            </button>
             @if (delivery.melhor_envio_protocol || delivery.melhor_envio_order_id) {
               <small>Melhor Envio {{ delivery.melhor_envio_protocol || delivery.melhor_envio_order_id }}</small>
             }
@@ -79,6 +84,16 @@
             </mat-form-field>
           </div>
 
+          <mat-form-field appearance="outline" class="notes-field" subscriptSizing="dynamic">
+            <mat-label>Observacoes</mat-label>
+            <textarea
+              matInput
+              rows="2"
+              [value]="delivery.notes || ''"
+              (change)="updateDelivery(delivery, 'notes', $any($event.target).value)">
+            </textarea>
+          </mat-form-field>
+
           <div class="shipping-summary">
             <span>
               <strong>Serviço</strong>
@@ -105,15 +120,6 @@
             </a>
           }
 
-          <mat-form-field appearance="outline" class="notes-field" subscriptSizing="dynamic">
-            <mat-label>Observações</mat-label>
-            <textarea
-              matInput
-              rows="2"
-              [value]="delivery.notes || ''"
-              (change)="updateDelivery(delivery, 'notes', $any($event.target).value)">
-            </textarea>
-          </mat-form-field>
         </article>
       }
     </div>
@@ -128,3 +134,56 @@
     </mat-paginator>
   }
 </section>
+
+<ng-template #deliveryDetailsTemplate>
+  @if (selectedDelivery; as delivery) {
+    <div class="details-dialog">
+      <header>
+        <div>
+          <p class="eyebrow">Pedido {{ delivery.order_id || 'sem vinculo' }}</p>
+          <h2>{{ delivery.customer_name || 'Cliente nao informado' }}</h2>
+        </div>
+        <span [class]="'status-pill ' + statusTone(delivery.status)">{{ statusLabel(delivery.status) }}</span>
+      </header>
+
+      <div class="details-grid">
+        <span>
+          <strong>Endereco</strong>
+          {{ delivery.address || 'Endereco a confirmar' }}
+        </span>
+        <span>
+          <strong>Transportadora</strong>
+          {{ delivery.carrier || 'Nao informada' }}
+        </span>
+        <span>
+          <strong>Rastreio</strong>
+          {{ delivery.tracking_code || 'Nao informado' }}
+        </span>
+        <span>
+          <strong>Servico</strong>
+          {{ delivery.selected_service_name || 'Nao selecionado' }}
+        </span>
+        <span>
+          <strong>Frete</strong>
+          {{ delivery.shipping_price != null ? ('R$ ' + delivery.shipping_price) : 'A confirmar' }}
+        </span>
+        <span>
+          <strong>Prazo</strong>
+          {{ delivery.shipping_deadline ? delivery.shipping_deadline + ' dias uteis' : 'A confirmar' }}
+        </span>
+        <span>
+          <strong>Etiqueta</strong>
+          {{ delivery.label_status || 'Pendente' }}
+        </span>
+        <span>
+          <strong>Observacoes</strong>
+          {{ delivery.notes || 'Sem observacoes' }}
+        </span>
+      </div>
+
+      <div class="details-actions">
+        <button mat-stroked-button type="button" mat-dialog-close>Fechar</button>
+      </div>
+    </div>
+  }
+</ng-template>

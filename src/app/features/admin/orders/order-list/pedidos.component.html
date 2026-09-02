@@ -3,13 +3,14 @@
     <div>
       <p class="eyebrow">Pedidos</p>
       <h1>Pedidos da loja</h1>
-      <span>Acompanhe compras solicitadas no carrinho e pedidos criados manualmente.</span>
+      <span>Acompanhe compras solicitadas no carrinho e o historico operacional.</span>
     </div>
 
-    <button mat-flat-button class="primary-action" type="button" (click)="openOrderForm()">
-      <mat-icon>add</mat-icon>
-      Novo pedido
-    </button>
+    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+      <mat-label>Buscar pedido</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [formControl]="searchControl" type="text">
+    </mat-form-field>
   </header>
 
   <app-admin-section-tabs [tabs]="orderTabs"></app-admin-section-tabs>
@@ -27,14 +28,20 @@
       <mat-icon aria-hidden="true">receipt_long</mat-icon>
       <div>
         <strong>Nenhum pedido cadastrado</strong>
-        <p>Pedidos criados pelo carrinho ou manualmente aparecem nesta lista.</p>
+        <p>Pedidos criados pelo carrinho aparecem nesta lista.</p>
       </div>
     </div>
   } @else {
     <div class="orders-list">
       @for (order of pagedOrders(); track order.id) {
-        <article class="order-card">
-          <img
+        <article
+          class="order-card"
+          [class.order-card-canceled]="isOrderCanceled(order)">
+          <button
+            class="order-summary-button"
+            type="button"
+            (click)="openOrderDetails(order)">
+            <img
             [ngSrc]="order.imageProd || '/product1.png'"
             width="96"
             height="96"
@@ -42,11 +49,12 @@
             [alt]="order.product | displayText: 'Produto'">
 
           <div class="order-info">
-            <span class="status-pill">{{ statusLabel(order.status) }}</span>
+            <span [class]="'status-pill ' + statusTone(order.status)">{{ statusLabel(order.status) }}</span>
             <h2>{{ order.product | displayText: 'Produto não informado' }}</h2>
             <p>{{ order.name | displayText: 'Cliente não informado' }}</p>
             <small>{{ order.address | displayText: 'Endereço não informado' }}</small>
-          </div>
+            </div>
+          </button>
 
           <div class="order-secondary">
             <div class="order-metrics">
@@ -64,7 +72,7 @@
               <button
                 mat-stroked-button
                 type="button"
-                (click)="openEditForm(order)"
+                (click)="$event.stopPropagation(); openEditForm(order)"
                 [attr.aria-label]="'Editar pedido de ' + (order.name | displayText: 'cliente não informado')">
                 <mat-icon>edit</mat-icon>
                 Editar
@@ -73,10 +81,11 @@
                 mat-stroked-button
                 class="danger-action"
                 type="button"
-                (click)="order.id ? deleteOrder(order.id) : null"
-                [attr.aria-label]="'Excluir pedido de ' + (order.name | displayText: 'cliente não informado')">
-                <mat-icon>delete</mat-icon>
-                Excluir
+                [disabled]="isOrderCanceled(order)"
+                (click)="$event.stopPropagation(); cancelOrder(order)"
+                [attr.aria-label]="'Cancelar pedido de ' + (order.name | displayText: 'cliente não informado')">
+                <mat-icon>block</mat-icon>
+                Cancelar
               </button>
             </div>
           </div>
@@ -94,3 +103,44 @@
     </mat-paginator>
   }
 </section>
+
+<ng-template #orderDetailsTemplate>
+  @if (selectedOrder; as order) {
+    <div class="details-dialog">
+      <header>
+        <div>
+          <p class="eyebrow">Pedido</p>
+          <h2>{{ order.product | displayText: 'Produto nao informado' }}</h2>
+        </div>
+        <span [class]="'status-pill ' + statusTone(order.status)">{{ statusLabel(order.status) }}</span>
+      </header>
+
+      <div class="details-grid">
+        <span>
+          <strong>Cliente</strong>
+          {{ order.name | displayText: 'Cliente nao informado' }}
+        </span>
+        <span>
+          <strong>Total</strong>
+          {{ order.total_amount | brlCurrency }}
+        </span>
+        <span>
+          <strong>Quantidade</strong>
+          {{ order.quantity }}
+        </span>
+        <span>
+          <strong>Endereco</strong>
+          {{ order.address | displayText: 'Endereco nao informado' }}
+        </span>
+      </div>
+
+      <div class="details-actions">
+        <button mat-stroked-button type="button" mat-dialog-close>Fechar</button>
+        <button mat-flat-button class="primary-action" type="button" (click)="openEditForm(order)" mat-dialog-close>
+          <mat-icon>edit</mat-icon>
+          Editar
+        </button>
+      </div>
+    </div>
+  }
+</ng-template>

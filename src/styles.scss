@@ -196,13 +196,13 @@ textarea:not(.mat-mdc-input-element):focus-visible,
   --card-foreground: oklch(0.97 0.003 250);
   --muted: oklch(0.3 0.01 265);
   --muted-foreground: oklch(0.79 0.012 260);
-  --primary: oklch(0.8 0.15 78);
-  --primary-foreground: oklch(0.16 0.012 265);
+  --primary: oklch(0.43 0.018 265);
+  --primary-foreground: oklch(0.97 0.003 250);
   --secondary: oklch(0.34 0.02 265);
   --secondary-foreground: oklch(0.95 0.01 260);
-  --success: oklch(0.82 0.15 150);
+  --success: oklch(0.7 0.045 255);
   --border: oklch(0.38 0.012 265);
-  --ring: oklch(0.8 0.15 78);
+  --ring: oklch(0.72 0.035 255);
 }
 
 .admin-theme-emerald {
@@ -299,7 +299,7 @@ body.admin-theme {
   }
 
   .primary-action,
-  .status-pill,
+  .product-media > .status-pill,
   .upload-button {
     background: var(--primary) !important;
     color: var(--primary-foreground) !important;
@@ -314,7 +314,7 @@ body.admin-theme {
   .primary-action .mat-icon,
   .upload-button mat-icon,
   .upload-button .mat-icon,
-  .status-pill {
+  .product-media > .status-pill {
     color: var(--primary-foreground) !important;
   }
 
