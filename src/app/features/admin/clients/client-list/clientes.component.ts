@@ -151,6 +151,12 @@ export default class ClientesComponent implements OnInit {
     this.pageSize = event.pageSize;
   }
 
+  handleImageError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+    image.closest('.client-media')?.classList.add('has-image-error');
+    image.style.display = 'none';
+  }
+
   private showSnackbar(message: string): void {
     this.snackBar.open(message, 'Fechar', {
       duration: 3000,

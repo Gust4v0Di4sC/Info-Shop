@@ -146,6 +146,14 @@ export class OfferManagementComponent implements OnInit {
     this.pageSize = event.pageSize;
   }
 
+  handleImageError(event: Event, fallback = '/product1.png'): void {
+    const image = event.target as HTMLImageElement;
+
+    if (!image.src.endsWith(fallback)) {
+      image.src = fallback;
+    }
+  }
+
   private patchOffer(offer: Product | null): void {
     if (!offer) {
       this.offerForm.patchValue({

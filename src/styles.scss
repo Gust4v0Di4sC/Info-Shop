@@ -197,7 +197,7 @@ textarea:not(.mat-mdc-input-element):focus-visible,
   --muted: oklch(0.3 0.01 265);
   --muted-foreground: oklch(0.79 0.012 260);
   --primary: oklch(0.8 0.15 78);
-  --primary-foreground: #ffffff;
+  --primary-foreground: oklch(0.16 0.012 265);
   --secondary: oklch(0.34 0.02 265);
   --secondary-foreground: oklch(0.95 0.01 260);
   --success: oklch(0.82 0.15 150);
@@ -253,9 +253,16 @@ body.admin-theme {
 
   .page-header h1,
   .panel-head h2,
+  .state-card strong,
   .metric-card strong,
   .product-head h2,
   .product-head strong,
+  .client-info h2,
+  .order-info h2,
+  .order-metrics strong,
+  .delivery-main h2,
+  .shipping-summary strong,
+  .featured-card strong,
   .compact-row strong,
   .offer-card strong,
   .offer-card p {
@@ -264,10 +271,19 @@ body.admin-theme {
 
   .page-header span,
   .state-card,
+  .state-card p,
   .empty-note,
   .metric-card span,
   .product-head p,
   .description,
+  .client-info p,
+  .order-info p,
+  .order-info small,
+  .order-metrics span,
+  .delivery-main p,
+  .delivery-main small,
+  .shipping-summary span,
+  .featured-card span,
   .compact-row span,
   .offer-card span {
     color: var(--muted-foreground) !important;
@@ -276,7 +292,9 @@ body.admin-theme {
   .eyebrow,
   .panel-head a,
   .card-actions button[mat-stroked-button],
-  .metric-card mat-icon {
+  .metric-card mat-icon,
+  .state-card mat-icon,
+  .empty-note mat-icon {
     color: var(--primary) !important;
   }
 
@@ -284,11 +302,11 @@ body.admin-theme {
   .status-pill,
   .upload-button {
     background: var(--primary) !important;
-    color: #ffffff !important;
-    --mdc-filled-button-label-text-color: #ffffff;
-    --mat-filled-button-label-text-color: #ffffff;
-    --mdc-filled-button-disabled-label-text-color: rgba(255, 255, 255, 0.72);
-    --mat-filled-button-disabled-label-text-color: rgba(255, 255, 255, 0.72);
+    color: var(--primary-foreground) !important;
+    --mdc-filled-button-label-text-color: var(--primary-foreground);
+    --mat-filled-button-label-text-color: var(--primary-foreground);
+    --mdc-filled-button-disabled-label-text-color: color-mix(in oklch, var(--primary-foreground) 62%, transparent);
+    --mat-filled-button-disabled-label-text-color: color-mix(in oklch, var(--primary-foreground) 62%, transparent);
   }
 
   .primary-action .mdc-button__label,
@@ -297,20 +315,20 @@ body.admin-theme {
   .upload-button mat-icon,
   .upload-button .mat-icon,
   .status-pill {
-    color: #ffffff !important;
+    color: var(--primary-foreground) !important;
   }
 
   button.mat-mdc-unelevated-button,
   button.mat-mdc-raised-button,
   button.mat-mdc-fab,
   button.mat-mdc-mini-fab {
-    color: #ffffff !important;
-    --mdc-filled-button-label-text-color: #ffffff;
-    --mat-filled-button-label-text-color: #ffffff;
-    --mdc-protected-button-label-text-color: #ffffff;
-    --mat-protected-button-label-text-color: #ffffff;
-    --mdc-fab-foreground-color: #ffffff;
-    --mat-fab-foreground-color: #ffffff;
+    color: var(--primary-foreground) !important;
+    --mdc-filled-button-label-text-color: var(--primary-foreground);
+    --mat-filled-button-label-text-color: var(--primary-foreground);
+    --mdc-protected-button-label-text-color: var(--primary-foreground);
+    --mat-protected-button-label-text-color: var(--primary-foreground);
+    --mdc-fab-foreground-color: var(--primary-foreground);
+    --mat-fab-foreground-color: var(--primary-foreground);
   }
 
   button.mat-mdc-unelevated-button .mdc-button__label,
@@ -319,7 +337,7 @@ body.admin-theme {
   button.mat-mdc-raised-button mat-icon,
   button.mat-mdc-fab mat-icon,
   button.mat-mdc-mini-fab mat-icon {
-    color: #ffffff !important;
+    color: var(--primary-foreground) !important;
   }
 
   .state-card,
@@ -337,8 +355,12 @@ body.admin-theme {
   }
 
   .compact-row,
+  .empty-note,
   .meta-row span,
-  .search-field .mat-mdc-text-field-wrapper {
+  .search-field .mat-mdc-text-field-wrapper,
+  .stock-fields input,
+  .order-metrics div,
+  .shipping-summary span {
     background: var(--muted) !important;
     border-color: var(--border) !important;
   }

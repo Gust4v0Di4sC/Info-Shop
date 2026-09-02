@@ -65,7 +65,7 @@
             <canvas baseChart [data]="ordersByStatusData" [options]="pieOptions" [type]="'pie'"></canvas>
           </div>
         } @else {
-          <p class="empty-note">Nenhum pedido cadastrado.</p>
+          <p class="empty-note"><mat-icon aria-hidden="true">receipt_long</mat-icon>Nenhum pedido cadastrado.</p>
         }
       </article>
 
@@ -83,7 +83,7 @@
             <canvas baseChart [data]="inventoryByCategoryData" [options]="pieOptions" [type]="'pie'"></canvas>
           </div>
         } @else {
-          <p class="empty-note">Sem estoque cadastrado por categoria.</p>
+          <p class="empty-note"><mat-icon aria-hidden="true">category</mat-icon>Sem estoque cadastrado por categoria.</p>
         }
       </article>
 
@@ -101,7 +101,7 @@
             <canvas baseChart [data]="revenueByMonthData" [options]="revenueByMonthOptions" [type]="'line'"></canvas>
           </div>
         } @else {
-          <p class="empty-note">Sem receita nos últimos meses.</p>
+          <p class="empty-note"><mat-icon aria-hidden="true">monitoring</mat-icon>Sem receita nos ultimos meses.</p>
         }
       </article>
 
@@ -119,7 +119,7 @@
             <canvas baseChart [data]="salesByProductData" [options]="salesByProductOptions" [type]="'bar'"></canvas>
           </div>
         } @else {
-          <p class="empty-note">Sem vendas registradas para comparar produtos.</p>
+          <p class="empty-note"><mat-icon aria-hidden="true">bar_chart</mat-icon>Sem vendas registradas para comparar produtos.</p>
         }
       </article>
 
@@ -137,7 +137,7 @@
             <canvas baseChart [data]="slowMovingData" [options]="slowMovingOptions" [type]="'bar'"></canvas>
           </div>
         } @else {
-          <p class="empty-note">Nenhum produto cadastrado para análise.</p>
+          <p class="empty-note"><mat-icon aria-hidden="true">analytics</mat-icon>Nenhum produto cadastrado para analise.</p>
         }
       </article>
     </div>
@@ -204,7 +204,7 @@
             </div>
           </div>
         } @else {
-          <p class="empty-note">Nenhum produto marcado como oferta.</p>
+          <p class="empty-note"><mat-icon aria-hidden="true">sell</mat-icon>Nenhum produto marcado como oferta.</p>
         }
       </article>
 
@@ -227,7 +227,7 @@
             }
           </div>
         } @else {
-          <p class="empty-note">Nenhum produto abaixo do mínimo.</p>
+          <p class="empty-note"><mat-icon aria-hidden="true">task_alt</mat-icon>Nenhum produto abaixo do minimo.</p>
         }
       </article>
 
@@ -246,6 +246,8 @@
               <span>{{ order.name }} - {{ order.product }}</span>
               <strong>{{ order.total_amount | brlCurrency }}</strong>
             </div>
+          } @empty {
+            <p class="empty-note"><mat-icon aria-hidden="true">receipt_long</mat-icon>Nenhum pedido recente.</p>
           }
         </div>
       </article>
@@ -265,6 +267,8 @@
               <span>{{ delivery.customer_name }}</span>
               <strong>{{ statusLabel(delivery.status) }}</strong>
             </div>
+          } @empty {
+            <p class="empty-note"><mat-icon aria-hidden="true">local_shipping</mat-icon>Nenhuma entrega na fila.</p>
           }
         </div>
       </article>

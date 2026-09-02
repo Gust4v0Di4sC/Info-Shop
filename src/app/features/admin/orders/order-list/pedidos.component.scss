@@ -52,9 +52,41 @@
 }
 
 .state-card {
+  align-items: center;
   color: #667085;
+  display: grid;
+  gap: 14px;
   font-weight: 800;
-  padding: 24px;
+  grid-template-columns: 44px 1fr;
+  min-height: 112px;
+  padding: 22px 24px;
+
+  mat-icon {
+    align-items: center;
+    background: #eef6ff;
+    border-radius: 8px;
+    color: #0f62cf;
+    display: inline-flex;
+    font-size: 24px;
+    height: 44px;
+    justify-content: center;
+    width: 44px;
+  }
+
+  strong {
+    color: #202833;
+    display: block;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  p {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 4px 0 0;
+  }
 }
 
 .orders-list {
@@ -66,12 +98,13 @@
   align-items: center;
   display: grid;
   gap: 18px;
-  grid-template-columns: 86px 1fr 260px 180px;
+  grid-template-columns: 86px minmax(0, 1fr) minmax(300px, 380px);
   padding: 14px;
 
   img {
     aspect-ratio: 1;
     border-radius: 8px;
+    height: 86px;
     object-fit: cover;
     width: 100%;
   }
@@ -85,6 +118,7 @@
     font-size: 17px;
     font-weight: 900;
     margin: 10px 0 4px;
+    overflow-wrap: anywhere;
   }
 
   p,
@@ -94,7 +128,15 @@
     font-size: 13px;
     font-weight: 750;
     margin: 0;
+    overflow-wrap: anywhere;
   }
+}
+
+.order-secondary {
+  align-items: stretch;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(124px, 0.72fr);
 }
 
 .status-pill {
@@ -111,7 +153,7 @@
 .order-metrics {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 
   div {
     background: #f8fafc;
@@ -138,21 +180,24 @@
 }
 
 .card-actions {
-  align-items: center;
-  display: flex;
+  align-items: stretch;
+  display: grid;
   gap: 10px;
-  justify-content: end;
+  grid-template-columns: 1fr;
 
   button[mat-stroked-button] {
     border-radius: 8px;
     color: #0f62cf;
     font-weight: 850;
+    justify-content: center;
+    min-height: 44px;
   }
 }
 
 .danger-action {
-  background: #fff1f3;
-  color: #b42318;
+  background: #fff1f3 !important;
+  border-color: #fecdd3 !important;
+  color: #b42318 !important;
 }
 
 @media (max-width: 1080px) {
@@ -160,8 +205,7 @@
     grid-template-columns: 76px 1fr;
   }
 
-  .order-metrics,
-  .card-actions {
+  .order-secondary {
     grid-column: 2;
   }
 }
@@ -172,7 +216,7 @@
     flex-direction: column;
   }
 
-  .order-metrics {
+  .order-secondary {
     grid-template-columns: 1fr;
   }
 

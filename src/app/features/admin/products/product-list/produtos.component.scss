@@ -38,7 +38,7 @@
 }
 
 .header-actions {
-  align-items: start;
+  align-items: center;
   display: flex;
   gap: 12px;
 }
@@ -50,8 +50,9 @@
     outlined-focus-outline-color: #0f62cf,
   ));
 
-  align-self: start;
-  min-width: 320px;
+  align-self: center;
+  min-width: 280px;
+  width: min(36vw, 360px);
 
   ::ng-deep {
     .mat-mdc-text-field-wrapper {
@@ -86,6 +87,7 @@
   color: #ffffff;
   font-weight: 850;
   height: 44px;
+  white-space: nowrap;
 }
 
 .state-card,
@@ -97,18 +99,53 @@
 }
 
 .state-card {
+  align-items: center;
   color: #667085;
+  display: grid;
+  gap: 14px;
   font-weight: 800;
-  padding: 24px;
+  grid-template-columns: 44px 1fr;
+  min-height: 112px;
+  padding: 22px 24px;
+
+  mat-icon {
+    align-items: center;
+    background: #eef6ff;
+    border-radius: 8px;
+    color: #0f62cf;
+    display: inline-flex;
+    font-size: 24px;
+    height: 44px;
+    justify-content: center;
+    width: 44px;
+  }
+
+  strong {
+    color: #202833;
+    display: block;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  p {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 4px 0 0;
+  }
 }
 
 .products-grid {
   display: grid;
   gap: 18px;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
 }
 
 .product-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -142,6 +179,9 @@
 }
 
 .product-info {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  min-width: 0;
   padding: 16px;
 }
 
@@ -157,6 +197,7 @@
     font-weight: 900;
     line-height: 1.35;
     margin: 0;
+    overflow-wrap: anywhere;
   }
 
   p {
@@ -170,6 +211,7 @@
     color: #202833;
     font-size: 16px;
     font-weight: 950;
+    text-align: right;
     white-space: nowrap;
   }
 }
@@ -208,6 +250,7 @@
   display: flex;
   gap: 10px;
   justify-content: space-between;
+  min-height: 44px;
   margin-top: 18px;
 
   button[mat-stroked-button] {

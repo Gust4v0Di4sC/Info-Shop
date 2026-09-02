@@ -163,6 +163,10 @@ mat-form-field {
   width: 100%;
 }
 
+.compact-address-field {
+  max-width: 520px;
+}
+
 :host ::ng-deep {
   .mat-mdc-text-field-wrapper {
     background: var(--card);
@@ -187,13 +191,50 @@ mat-form-field {
 }
 
 .state-card {
+  align-items: center;
   color: var(--muted-foreground);
+  display: grid;
+  gap: 14px;
   font-weight: 800;
-  padding: 24px;
+  grid-template-columns: 44px 1fr;
+  min-height: 112px;
+  padding: 22px 24px;
+
+  mat-icon {
+    align-items: center;
+    background: var(--secondary);
+    border-radius: 8px;
+    color: var(--primary);
+    display: inline-flex;
+    font-size: 24px;
+    height: 44px;
+    justify-content: center;
+    width: 44px;
+  }
+
+  strong {
+    color: var(--foreground);
+    display: block;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  p {
+    color: var(--muted-foreground);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 4px 0 0;
+  }
 }
 
 .error-state,
 .error-text {
+  color: #b42318;
+}
+
+.error-state mat-icon {
+  background: #fff1f3;
   color: #b42318;
 }
 
@@ -218,5 +259,9 @@ mat-form-field {
   .field-row,
   .package-row {
     grid-template-columns: 1fr;
+  }
+
+  .compact-address-field {
+    max-width: none;
   }
 }

@@ -140,6 +140,14 @@ export default class PedidosComponent implements OnInit {
     this.pageSize = event.pageSize;
   }
 
+  handleImageError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+
+    if (!image.src.endsWith('/product1.png')) {
+      image.src = '/product1.png';
+    }
+  }
+
   deleteOrder(id: string | number): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, this.responsiveDialog.buildConfig({
       desktopWidth: '350px',

@@ -43,13 +43,50 @@
 }
 
 .state-card {
+  align-items: center;
   color: #667085;
+  display: grid;
+  gap: 14px;
   font-weight: 800;
-  padding: 24px;
+  grid-template-columns: 44px 1fr;
+  min-height: 112px;
+  padding: 22px 24px;
+
+  mat-icon {
+    align-items: center;
+    background: #eef6ff;
+    border-radius: 8px;
+    color: #0f62cf;
+    display: inline-flex;
+    font-size: 24px;
+    height: 44px;
+    justify-content: center;
+    width: 44px;
+  }
+
+  strong {
+    color: #202833;
+    display: block;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  p {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 4px 0 0;
+  }
 }
 
 .error-state {
   color: #b42318;
+
+  mat-icon {
+    background: #fff1f3;
+    color: #b42318;
+  }
 }
 
 .offer-layout {
@@ -161,18 +198,27 @@ mat-form-field {
 }
 
 .empty-note {
+  align-items: center;
   color: #667085;
+  display: inline-flex;
   font-size: 14px;
   font-weight: 800;
+  gap: 10px;
   margin: 0;
+
+  mat-icon {
+    color: #0f62cf;
+  }
 }
 
 .featured-panel {
+  display: grid;
+  gap: 18px;
   padding: 20px;
 }
 
 .panel-head {
-  margin-bottom: 16px;
+  margin-bottom: 0;
 
   h2 {
     color: #202833;
@@ -184,7 +230,7 @@ mat-form-field {
 
 .featured-grid {
   display: grid;
-  gap: 14px;
+  gap: 18px;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
 }
 
@@ -201,6 +247,7 @@ mat-form-field {
   img {
     aspect-ratio: 1;
     border-radius: 8px;
+    height: 58px;
     object-fit: cover;
     width: 100%;
   }
@@ -223,6 +270,10 @@ mat-form-field {
   mat-checkbox {
     grid-column: 1 / -1;
   }
+}
+
+:host ::ng-deep .featured-panel mat-paginator {
+  margin-top: 2px;
 }
 
 @media (max-width: 1100px) {

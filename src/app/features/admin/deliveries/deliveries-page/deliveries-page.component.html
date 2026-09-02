@@ -15,11 +15,29 @@
   <app-admin-section-tabs [tabs]="orderTabs"></app-admin-section-tabs>
 
   @if (isLoading) {
-    <div class="state-card">Carregando entregas...</div>
+    <div class="state-card">
+      <mat-icon aria-hidden="true">hourglass_empty</mat-icon>
+      <div>
+        <strong>Carregando entregas</strong>
+        <p>Atualizando a fila logistica.</p>
+      </div>
+    </div>
   } @else if (errorMessage) {
-    <div class="state-card error-state">{{ errorMessage }}</div>
+    <div class="state-card error-state">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <div>
+        <strong>Falha ao carregar entregas</strong>
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>
   } @else if (deliveries.length === 0) {
-    <div class="state-card">Nenhuma entrega criada ainda.</div>
+    <div class="state-card">
+      <mat-icon aria-hidden="true">local_shipping</mat-icon>
+      <div>
+        <strong>Nenhuma entrega criada ainda</strong>
+        <p>Quando um pedido gerar envio, o acompanhamento aparecera aqui.</p>
+      </div>
+    </div>
   } @else {
     <div class="deliveries-list">
       @for (delivery of pagedDeliveries(); track delivery.id) {
@@ -35,7 +53,7 @@
           </div>
 
           <div class="delivery-controls">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>Status</mat-label>
               <mat-select [value]="delivery.status" (selectionChange)="updateDelivery(delivery, 'status', $event.value)">
                 @for (status of statusOptions; track status.value) {
@@ -44,7 +62,7 @@
               </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>Transportadora</mat-label>
               <input
                 matInput
@@ -52,7 +70,7 @@
                 (change)="updateDelivery(delivery, 'carrier', $any($event.target).value)">
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>Código de rastreio</mat-label>
               <input
                 matInput
@@ -87,7 +105,7 @@
             </a>
           }
 
-          <mat-form-field appearance="outline" class="notes-field">
+          <mat-form-field appearance="outline" class="notes-field" subscriptSizing="dynamic">
             <mat-label>Observações</mat-label>
             <textarea
               matInput

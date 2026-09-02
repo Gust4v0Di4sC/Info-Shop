@@ -21,20 +21,32 @@
   </header>
 
   @if (isLoading) {
-    <div class="state-card">Carregando clientes...</div>
+    <div class="state-card">
+      <mat-icon aria-hidden="true">hourglass_empty</mat-icon>
+      <div>
+        <strong>Carregando clientes</strong>
+        <p>Atualizando a base de atendimento.</p>
+      </div>
+    </div>
   } @else if (filteredClients.length === 0) {
-    <div class="state-card">Nenhum cliente encontrado.</div>
+    <div class="state-card">
+      <mat-icon aria-hidden="true">people</mat-icon>
+      <div>
+        <strong>Nenhum cliente encontrado</strong>
+        <p>Revise a busca ou cadastre um cliente manualmente.</p>
+      </div>
+    </div>
   } @else {
     <div class="clients-grid">
       @for (client of pagedClients(); track client.id) {
         <article class="client-card">
           <button
-            class="client-média"
+            class="client-media"
             type="button"
             (click)="openEditForm(client)"
             [attr.aria-label]="'Editar cliente ' + (client.name | displayText: 'sem nome')">
             @if (client.imageUrl) {
-              <img loading="lazy" [src]="client.imageUrl" [alt]="client.name | displayText: 'Cliente'">
+              <img loading="lazy" [src]="client.imageUrl" (error)="handleImageError($event)" [alt]="client.name | displayText: 'Cliente'">
             } @else {
               <mat-icon>person</mat-icon>
             }

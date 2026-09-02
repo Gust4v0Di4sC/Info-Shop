@@ -87,13 +87,50 @@
 }
 
 .state-card {
+  align-items: center;
   color: #667085;
+  display: grid;
+  gap: 14px;
   font-weight: 800;
-  padding: 24px;
+  grid-template-columns: 44px 1fr;
+  min-height: 112px;
+  padding: 22px 24px;
+
+  mat-icon {
+    align-items: center;
+    background: #eef6ff;
+    border-radius: 8px;
+    color: #0f62cf;
+    display: inline-flex;
+    font-size: 24px;
+    height: 44px;
+    justify-content: center;
+    width: 44px;
+  }
+
+  strong {
+    color: #202833;
+    display: block;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  p {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 4px 0 0;
+  }
 }
 
 .error-state {
   color: #b42318;
+
+  mat-icon {
+    background: #fff1f3;
+    color: #b42318;
+  }
 }
 
 .inventory-list {
@@ -111,6 +148,7 @@
   img {
     aspect-ratio: 1;
     border-radius: 8px;
+    height: 92px;
     object-fit: cover;
     width: 100%;
   }
@@ -173,10 +211,10 @@
 }
 
 .quick-actions {
-  align-self: start;
+  align-self: end;
   display: flex;
   justify-content: flex-end;
-  padding-top: 20px;
+  padding-top: 0;
 
   .quick-actions-inner {
     align-items: center;

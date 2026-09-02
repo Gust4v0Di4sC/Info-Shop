@@ -15,9 +15,21 @@
   <app-admin-section-tabs [tabs]="orderTabs"></app-admin-section-tabs>
 
   @if (isLoading) {
-    <div class="state-card">Carregando pedidos...</div>
+    <div class="state-card">
+      <mat-icon aria-hidden="true">hourglass_empty</mat-icon>
+      <div>
+        <strong>Carregando pedidos</strong>
+        <p>Buscando pedidos abertos e historico recente.</p>
+      </div>
+    </div>
   } @else if (filteredOrders.length === 0) {
-    <div class="state-card">Nenhum pedido cadastrado.</div>
+    <div class="state-card">
+      <mat-icon aria-hidden="true">receipt_long</mat-icon>
+      <div>
+        <strong>Nenhum pedido cadastrado</strong>
+        <p>Pedidos criados pelo carrinho ou manualmente aparecem nesta lista.</p>
+      </div>
+    </div>
   } @else {
     <div class="orders-list">
       @for (order of pagedOrders(); track order.id) {
@@ -26,6 +38,7 @@
             [ngSrc]="order.imageProd || '/product1.png'"
             width="96"
             height="96"
+            (error)="handleImageError($event)"
             [alt]="order.product | displayText: 'Produto'">
 
           <div class="order-info">
@@ -35,34 +48,37 @@
             <small>{{ order.address | displayText: 'Endereço não informado' }}</small>
           </div>
 
-          <div class="order-metrics">
-            <div>
-              <span>Quantidade</span>
-              <strong>{{ order.quantity }}</strong>
+          <div class="order-secondary">
+            <div class="order-metrics">
+              <div>
+                <span>Quantidade</span>
+                <strong>{{ order.quantity }}</strong>
+              </div>
+              <div>
+                <span>Total</span>
+                <strong>{{ order.total_amount | brlCurrency }}</strong>
+              </div>
             </div>
-            <div>
-              <span>Total</span>
-              <strong>{{ order.total_amount | brlCurrency }}</strong>
-            </div>
-          </div>
 
-          <div class="card-actions">
-            <button
-              mat-stroked-button
-              type="button"
-              (click)="openEditForm(order)"
-              [attr.aria-label]="'Editar pedido de ' + (order.name | displayText: 'cliente não informado')">
-              <mat-icon>edit</mat-icon>
-              Editar
-            </button>
-            <button
-              mat-icon-button
-              class="danger-action"
-              type="button"
-              (click)="order.id ? deleteOrder(order.id) : null"
-              [attr.aria-label]="'Excluir pedido de ' + (order.name | displayText: 'cliente não informado')">
-              <mat-icon>delete</mat-icon>
-            </button>
+            <div class="card-actions">
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="openEditForm(order)"
+                [attr.aria-label]="'Editar pedido de ' + (order.name | displayText: 'cliente não informado')">
+                <mat-icon>edit</mat-icon>
+                Editar
+              </button>
+              <button
+                mat-stroked-button
+                class="danger-action"
+                type="button"
+                (click)="order.id ? deleteOrder(order.id) : null"
+                [attr.aria-label]="'Excluir pedido de ' + (order.name | displayText: 'cliente não informado')">
+                <mat-icon>delete</mat-icon>
+                Excluir
+              </button>
+            </div>
           </div>
         </article>
       }
