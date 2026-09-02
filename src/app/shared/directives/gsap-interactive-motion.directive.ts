@@ -8,7 +8,8 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { gsap } from 'gsap';
+
+type GsapApi = typeof import('gsap').gsap;
 
 interface BoundElement {
   element: HTMLElement;
@@ -23,6 +24,8 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
   private observer?: MutationObserver;
   private boundElements: BoundElement[] = [];
   private boundSet = new Set<HTMLElement>();
+  private gsap?: GsapApi;
+  private pendingBindFrame = 0;
   private prefersReducedMotion = false;
 
   private readonly interactiveSelector = [
@@ -33,8 +36,6 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
     '.client-card',
     '.order-card',
     '.featured-card',
-    '.inventory-row',
-    '.delivery-card',
     '.category-card',
     '.cart-item',
     '.quick-link',
@@ -56,11 +57,21 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
     this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     this.ngZone.runOutsideAngular(() => {
-      requestAnimationFrame(() => this.bindInteractiveElements());
+      requestAnimationFrame(() => {
+        void this.startBinding();
+      });
+    });
+  }
 
+  private async startBinding(): Promise<void> {
+    const { gsap } = await import('gsap');
+    this.gsap = gsap;
+    this.bindInteractiveElements();
+
+    this.ngZone.runOutsideAngular(() => {
       this.observer = new MutationObserver(() => {
         this.pruneDetachedElements();
-        requestAnimationFrame(() => this.bindInteractiveElements());
+        this.scheduleBindInteractiveElements();
       });
 
       this.observer.observe(this.elementRef.nativeElement, {
@@ -72,12 +83,30 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
 
   ngOnDestroy(): void {
     this.observer?.disconnect();
+    if (this.pendingBindFrame) {
+      cancelAnimationFrame(this.pendingBindFrame);
+    }
     this.boundElements.forEach(bound => this.releaseBoundElement(bound));
     this.boundElements = [];
     this.boundSet.clear();
   }
 
+  private scheduleBindInteractiveElements(): void {
+    if (this.pendingBindFrame) {
+      return;
+    }
+
+    this.pendingBindFrame = requestAnimationFrame(() => {
+      this.pendingBindFrame = 0;
+      this.bindInteractiveElements();
+    });
+  }
+
   private bindInteractiveElements(): void {
+    if (!this.gsap) {
+      return;
+    }
+
     const elements = Array.from(
       this.elementRef.nativeElement.querySelectorAll<HTMLElement>(this.interactiveSelector),
     );
@@ -96,6 +125,11 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
   }
 
   private bindElement(element: HTMLElement): Array<() => void> {
+    const gsap = this.gsap;
+    if (!gsap) {
+      return [];
+    }
+
     const isCard = this.isCardElement(element);
     const isCartAction = this.isCartAction(element);
     const hoverY = this.prefersReducedMotion ? -1 : isCard ? -5 : -2;
@@ -194,7 +228,7 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
   }
 
   private releaseBoundElement(bound: BoundElement): void {
-    gsap.killTweensOf(bound.element);
+    this.gsap?.killTweensOf(bound.element);
     bound.cleanup.forEach(cleanup => cleanup());
     this.boundSet.delete(bound.element);
   }
@@ -206,8 +240,8 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
       element.getAttribute('aria-busy') === 'true' ||
       element.classList.contains('is-loading')
     ) {
-      gsap.killTweensOf(element);
-      gsap.set(element, { clearProps: 'transform' });
+      this.gsap?.killTweensOf(element);
+      this.gsap?.set(element, { clearProps: 'transform' });
       return true;
     }
 
@@ -222,8 +256,6 @@ export class GsapInteractiveMotionDirective implements AfterViewInit, OnDestroy 
       'client-card',
       'order-card',
       'featured-card',
-      'inventory-row',
-      'delivery-card',
       'category-card',
       'cart-item',
       'quick-link',

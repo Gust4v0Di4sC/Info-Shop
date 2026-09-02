@@ -65,9 +65,12 @@ export class AdminShellComponent implements OnInit, OnDestroy {
       }),
     );
 
-    await this.themeService.initialize();
-    await this.tenantContext.initialize();
-    this.adminRole = await this.authService.getAdminRole();
+    const [adminRole] = await Promise.all([
+      this.authService.getAdminRole(),
+      this.themeService.initialize(),
+      this.tenantContext.initialize(),
+    ]);
+    this.adminRole = adminRole;
     this.loadAdminName();
   }
 

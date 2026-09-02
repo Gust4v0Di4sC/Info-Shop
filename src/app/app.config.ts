@@ -43,7 +43,9 @@ export const appConfig: ApplicationConfig = {
     ...sentryProviders,
     {
       provide: APP_INITIALIZER,
-      useFactory: (authService: AuthService) => () => authService.loadUserFromSession(),
+      useFactory: (authService: AuthService) => () => {
+        void authService.loadUserFromSession();
+      },
       deps: [AuthService],
       multi: true,
     },

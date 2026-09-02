@@ -8,7 +8,8 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { gsap } from 'gsap';
+
+type GsapApi = typeof import('gsap').gsap;
 
 @Directive({
   selector: '[appGsapPageMotion]',
@@ -16,6 +17,7 @@ import { gsap } from 'gsap';
 })
 export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
   private observer?: MutationObserver;
+  private gsap?: GsapApi;
   private prefersReducedMotion = false;
 
   constructor(
@@ -32,8 +34,18 @@ export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
     this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     this.ngZone.runOutsideAngular(() => {
-      requestAnimationFrame(() => this.animateLatestView());
+      requestAnimationFrame(() => {
+        void this.startMotion();
+      });
+    });
+  }
 
+  private async startMotion(): Promise<void> {
+    const { gsap } = await import('gsap');
+    this.gsap = gsap;
+    this.animateLatestView();
+
+    this.ngZone.runOutsideAngular(() => {
       this.observer = new MutationObserver(mutations => {
         const hasNewView = mutations.some(mutation =>
           Array.from(mutation.addedNodes).some(node => this.isRoutableElement(node)),
@@ -56,49 +68,54 @@ export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
   }
 
   private hideLatestView(): void {
+    if (!this.gsap) {
+      return;
+    }
+
     const page = this.getLatestPageElement();
 
     if (!page) {
       return;
     }
 
-    gsap.set(page, {
+    this.gsap.set(page, {
       autoAlpha: 0,
-      y: this.prefersReducedMotion ? 4 : 12,
-      filter: this.prefersReducedMotion ? 'none' : 'blur(5px)',
+      y: this.prefersReducedMotion ? 2 : 8,
     });
   }
 
   private animateLatestView(): void {
+    if (!this.gsap) {
+      return;
+    }
+
     const page = this.getLatestPageElement();
 
     if (!page) {
       return;
     }
 
-    gsap.killTweensOf(page);
-    gsap.fromTo(
+    this.gsap.killTweensOf(page);
+    this.gsap.fromTo(
       page,
       {
         autoAlpha: 0,
-        y: this.prefersReducedMotion ? 4 : 12,
-        filter: this.prefersReducedMotion ? 'none' : 'blur(5px)',
+        y: this.prefersReducedMotion ? 2 : 8,
       },
       {
         autoAlpha: 1,
         y: 0,
-        filter: 'blur(0px)',
-        duration: this.prefersReducedMotion ? 0.2 : 0.34,
+        duration: this.prefersReducedMotion ? 0.12 : 0.22,
         ease: 'power2.out',
-        clearProps: 'opacity,visibility,transform,filter',
+        clearProps: 'opacity,visibility,transform',
       },
     );
 
     const details = this.getDetailElements(page);
 
     if (details.length) {
-      gsap.killTweensOf(details);
-      gsap.fromTo(
+      this.gsap.killTweensOf(details);
+      this.gsap.fromTo(
         details,
         {
           autoAlpha: 0,
@@ -107,10 +124,10 @@ export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
         {
           autoAlpha: 1,
           y: 0,
-          duration: this.prefersReducedMotion ? 0.18 : 0.32,
+          duration: this.prefersReducedMotion ? 0.12 : 0.2,
           ease: 'power2.out',
-          stagger: this.prefersReducedMotion ? 0.015 : 0.035,
-          delay: this.prefersReducedMotion ? 0.02 : 0.05,
+          stagger: this.prefersReducedMotion ? 0.005 : 0.015,
+          delay: this.prefersReducedMotion ? 0 : 0.02,
           clearProps: 'opacity,visibility,transform',
         },
       );
@@ -152,7 +169,7 @@ export class GsapPageMotionDirective implements AfterViewInit, OnDestroy {
       '.quick-link',
     ];
 
-    return Array.from(page.querySelectorAll<HTMLElement>(selectors.join(','))).slice(0, 18);
+    return Array.from(page.querySelectorAll<HTMLElement>(selectors.join(','))).slice(0, 12);
   }
 
   private isRoutableElement(node: Node): boolean {

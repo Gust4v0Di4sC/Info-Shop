@@ -19,6 +19,10 @@ interface AuthRegisterResponse extends AuthUserResponse {
 })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<SupabaseUser | null>(null);
+  private sessionLoadPromise: Promise<SupabaseUser | null> | null = null;
+  private adminProfileCache: Admin | null | undefined;
+  private adminProfileCacheUserId = '';
+  private adminProfilePromise: Promise<Admin | null> | null = null;
   private readonly isBrowser: boolean;
   currentUser$ = this.currentUserSubject.asObservable();
 
@@ -32,20 +36,32 @@ export class AuthService {
 
   async loadUserFromSession(): Promise<SupabaseUser | null> {
     if (!this.isBrowser) {
-      this.currentUserSubject.next(null);
+      this.setCurrentUser(null);
       return null;
     }
 
+    if (this.sessionLoadPromise) {
+      return this.sessionLoadPromise;
+    }
+
+    this.sessionLoadPromise = this.fetchUserFromSession().finally(() => {
+      this.sessionLoadPromise = null;
+    });
+
+    return this.sessionLoadPromise;
+  }
+
+  private async fetchUserFromSession(): Promise<SupabaseUser | null> {
     try {
       const response = await firstValueFrom(
         this.http.get<AuthUserResponse>('/api/auth/session', { withCredentials: true }).pipe(
           timeout({ first: 4000 }),
         ),
       );
-      this.currentUserSubject.next(response.user);
+      this.setCurrentUser(response.user);
       return response.user;
     } catch {
-      this.currentUserSubject.next(null);
+      this.setCurrentUser(null);
       return null;
     }
   }
@@ -62,7 +78,7 @@ export class AuthService {
     return this.http
       .post<AuthRegisterResponse>('/api/auth/register', { email, password, fullName }, { withCredentials: true })
       .pipe(
-        tap(response => this.currentUserSubject.next(response.user)),
+        tap(response => this.setCurrentUser(response.user)),
         map(response => ({
           user: response.user,
           session: null,
@@ -87,7 +103,7 @@ export class AuthService {
     return this.http
       .post<AuthUserResponse>('/api/auth/update-password', { password }, { withCredentials: true })
       .pipe(
-        tap(response => this.currentUserSubject.next(response.user)),
+        tap(response => this.setCurrentUser(response.user)),
         map(() => true),
       );
   }
@@ -101,7 +117,7 @@ export class AuthService {
             return false;
           }
 
-          this.currentUserSubject.next(response.user);
+          this.setCurrentUser(response.user);
           return true;
         }),
         catchError(() => of(false)),
@@ -114,7 +130,7 @@ export class AuthService {
         this.http.post<{ ok: boolean }>('/api/auth/logout', {}, { withCredentials: true }),
       );
     } finally {
-      this.currentUserSubject.next(null);
+      this.setCurrentUser(null);
       await this.router.navigate(['/home']);
     }
   }
@@ -177,7 +193,7 @@ export class AuthService {
       throw new Error('Sessão de login não encontrada.');
     }
 
-    this.currentUserSubject.next(response.user);
+    this.setCurrentUser(response.user);
     window.history.replaceState({}, document.title, '/auth/callback');
 
     if (response.type === 'recovery' || type === 'recovery') {
@@ -217,15 +233,45 @@ export class AuthService {
       return null;
     }
 
+    if (this.adminProfileCacheUserId === currentUserId && this.adminProfileCache !== undefined) {
+      return this.adminProfileCache;
+    }
+
+    if (this.adminProfileCacheUserId === currentUserId && this.adminProfilePromise) {
+      return this.adminProfilePromise;
+    }
+
+    this.adminProfileCacheUserId = currentUserId;
+    this.adminProfilePromise = this.fetchAdminProfile(currentUserId).finally(() => {
+      this.adminProfilePromise = null;
+    });
+
+    return this.adminProfilePromise;
+  }
+
+  private async fetchAdminProfile(userId: string): Promise<Admin | null> {
     const { supabase } = await import('@app/core/supabase/supabase.client');
     const { data, error } = await supabase
       .from('admins')
       .select('*')
-      .eq('user_id', currentUserId)
+      .eq('user_id', userId)
       .eq('active', true)
       .maybeSingle();
 
-    return error ? null : data;
+    this.adminProfileCache = error ? null : data;
+    return this.adminProfileCache;
+  }
+
+  private setCurrentUser(user: SupabaseUser | null): void {
+    const nextUserId = user?.id || '';
+
+    if (nextUserId !== this.currentUserSubject.value?.id) {
+      this.adminProfileCache = undefined;
+      this.adminProfileCacheUserId = '';
+      this.adminProfilePromise = null;
+    }
+
+    this.currentUserSubject.next(user);
   }
 
   private getCallbackParam(url: URL, name: string): string | null {

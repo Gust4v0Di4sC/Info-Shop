@@ -4,8 +4,8 @@ import { assertRateLimit } from '../_shared/rate-limit.ts';
 import { createLogContext, logCompleted, logError, logInfo } from '../_shared/observability.ts';
 
 const FALLBACK_ANSWER = 'Nao possuo informacoes a respeito disso.';
-const GEMINI_MODELS = ['gemini-3.7-flash', 'gemini-3.5-flash'];
-const GEMINI_TIMEOUT_MS = 8000;
+const DEFAULT_GEMINI_MODELS = ['gemini-3.7-flash', 'gemini-2.5-flash'];
+const GEMINI_TIMEOUT_MS = 10000;
 const MAX_HARDWARE_LENGTH = 1200;
 const MAX_MESSAGE_LENGTH = 600;
 const MAX_HISTORY_ITEMS = 8;
@@ -134,16 +134,7 @@ async function askGemini(product: ProductRow, request: BenchmarkRequest): Promis
     return buildLocalBenchmarkAnswer(product, request);
   }
 
-  for (const model of GEMINI_MODELS) {
-    const structuredResponse = await safeRequestGemini(apiKey, model, buildGeminiPayload(product, request));
-
-    if (structuredResponse?.ok) {
-      const structuredAnswer = extractAnswer(await parseJsonResponse(structuredResponse));
-      if (structuredAnswer && structuredAnswer !== FALLBACK_ANSWER) {
-        return structuredAnswer;
-      }
-    }
-
+  for (const model of geminiModels()) {
     const textResponse = await safeRequestGemini(apiKey, model, buildGeminiTextPayload(product, request));
 
     if (textResponse?.ok) {
@@ -155,6 +146,11 @@ async function askGemini(product: ProductRow, request: BenchmarkRequest): Promis
   }
 
   return buildLocalBenchmarkAnswer(product, request);
+}
+
+function geminiModels(): string[] {
+  const configuredModel = Deno.env.get('GEMINI_MODEL')?.trim();
+  return Array.from(new Set([configuredModel, ...DEFAULT_GEMINI_MODELS].filter(Boolean) as string[]));
 }
 
 async function safeRequestGemini(
@@ -239,7 +235,7 @@ function buildGeminiPayload(product: ProductRow, request: BenchmarkRequest): Rec
     ],
     generationConfig: {
       temperature: 0.2,
-      maxOutputTokens: 700,
+      maxOutputTokens: 1400,
       responseMimeType: 'application/json',
       responseSchema: {
         type: 'OBJECT',
@@ -267,6 +263,7 @@ function buildGeminiTextPayload(product: ProductRow, request: BenchmarkRequest):
         text: [
           'Voce e o comparador de hardware da InfoShop.',
           'Responda em portugues do Brasil, com analise pratica de upgrade, gargalo, compatibilidade e custo-beneficio.',
+          'Entregue uma resposta completa em 4 a 6 topicos curtos, fechando com uma recomendacao objetiva.',
           'Nao invente numeros precisos de benchmark; compare qualitativamente quando faltarem dados.',
           'Se a pergunta estiver fora de hardware, responda exatamente: ' + FALLBACK_ANSWER,
         ].join('\n'),
