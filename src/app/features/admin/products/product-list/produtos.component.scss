@@ -68,15 +68,31 @@
     }
 
     .mat-mdc-form-field-infix {
+      align-items: center;
+      display: flex;
       min-height: 44px;
-      padding-bottom: 10px;
-      padding-top: 10px;
+      padding: 0;
+    }
+
+    .mat-mdc-input-element {
+      height: 24px;
+      line-height: 24px;
     }
 
     .mat-mdc-form-field-icon-prefix {
       align-items: center;
       display: flex;
-      padding-inline: 12px 4px;
+      height: 44px;
+      padding-inline: 12px 6px;
+
+      .mat-icon {
+        margin: 0;
+      }
+    }
+
+    .mdc-floating-label:not(.mdc-floating-label--float-above) {
+      top: 50%;
+      transform: translateY(-50%);
     }
   }
 }
@@ -101,22 +117,18 @@
 .state-card {
   align-items: center;
   color: #667085;
-  display: grid;
-  gap: 14px;
+  display: flex;
+  gap: 10px;
   font-weight: 800;
-  grid-template-columns: 44px 1fr;
-  min-height: 112px;
-  padding: 22px 24px;
+  min-height: 96px;
+  padding: 18px;
 
   mat-icon {
-    align-items: center;
     background: #eef6ff;
     border-radius: 8px;
     color: #0f62cf;
-    display: inline-flex;
     font-size: 24px;
     height: 44px;
-    justify-content: center;
     width: 44px;
   }
 
@@ -167,15 +179,23 @@
 }
 
 .status-pill {
+  align-items: center;
   background: #0f62cf;
   border-radius: 999px;
   color: #ffffff;
+  display: inline-flex;
   font-size: 11px;
   font-weight: 900;
+  height: 30px;
+  justify-content: center;
   left: 12px;
-  padding: 7px 10px;
+  max-width: calc(100% - 24px);
+  overflow: hidden;
+  padding: 0 10px;
   position: absolute;
+  text-overflow: ellipsis;
   top: 12px;
+  white-space: nowrap;
 }
 
 .product-info {
@@ -235,13 +255,20 @@
   margin-top: 16px;
 
   span {
+    align-items: center;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 999px;
     color: #4f5967;
+    display: inline-flex;
     font-size: 12px;
     font-weight: 850;
-    padding: 6px 9px;
+    height: 28px;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 0 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

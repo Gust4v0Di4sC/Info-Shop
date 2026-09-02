@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 .admin-page {
   display: grid;
   gap: 24px;
@@ -43,6 +45,60 @@
   height: 44px;
 }
 
+.search-field {
+  @include mat.form-field-overrides((
+    outlined-container-shape: 8px,
+    outlined-outline-color: #d9e1eb,
+    outlined-focus-outline-color: #0f62cf,
+  ));
+
+  align-self: center;
+  min-width: 280px;
+  width: min(36vw, 360px);
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background: #ffffff;
+      border-radius: 8px;
+      height: 44px;
+      overflow: hidden;
+    }
+
+    .mat-mdc-form-field-flex {
+      align-items: center;
+      height: 44px;
+    }
+
+    .mat-mdc-form-field-icon-prefix {
+      align-items: center;
+      display: flex;
+      height: 44px;
+      padding-inline: 12px 6px;
+
+      .mat-icon {
+        margin: 0;
+      }
+    }
+
+    .mat-mdc-form-field-infix {
+      align-items: center;
+      display: flex;
+      min-height: 44px;
+      padding: 0;
+    }
+
+    .mat-mdc-input-element {
+      height: 24px;
+      line-height: 24px;
+    }
+
+    .mdc-floating-label:not(.mdc-floating-label--float-above) {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+}
+
 .state-card,
 .order-card {
   background: #ffffff;
@@ -54,22 +110,18 @@
 .state-card {
   align-items: center;
   color: #667085;
-  display: grid;
-  gap: 14px;
+  display: flex;
+  gap: 10px;
   font-weight: 800;
-  grid-template-columns: 44px 1fr;
-  min-height: 112px;
-  padding: 22px 24px;
+  min-height: 96px;
+  padding: 18px;
 
   mat-icon {
-    align-items: center;
     background: #eef6ff;
     border-radius: 8px;
     color: #0f62cf;
-    display: inline-flex;
     font-size: 24px;
     height: 44px;
-    justify-content: center;
     width: 44px;
   }
 
@@ -98,8 +150,35 @@
   align-items: center;
   display: grid;
   gap: 18px;
-  grid-template-columns: 86px minmax(0, 1fr) minmax(300px, 380px);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  min-width: 0;
   padding: 14px;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+
+  &:hover {
+    border-color: #c7d7ea;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.1);
+    transform: translateY(-1px);
+  }
+
+}
+
+.order-card-canceled {
+  opacity: 0.72;
+}
+
+.order-summary-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 86px minmax(0, 1fr);
+  min-width: 0;
+  padding: 0;
+  text-align: left;
 
   img {
     aspect-ratio: 1;
@@ -107,6 +186,11 @@
     height: 86px;
     object-fit: cover;
     width: 100%;
+  }
+
+  &:focus-visible {
+    outline: 3px solid #0f62cf;
+    outline-offset: 3px;
   }
 }
 
@@ -145,9 +229,52 @@
   border-radius: 999px;
   color: #0f62cf;
   display: inline-flex;
+  align-items: center;
+  height: 30px;
+  justify-content: center;
+  max-width: min(220px, 100%);
   font-size: 12px;
   font-weight: 900;
-  padding: 7px 10px;
+  overflow: hidden;
+  padding: 0 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-attention {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #c2410c;
+}
+
+.status-critical {
+  background: #fff1f3;
+  border-color: #fecdd3;
+  color: #b42318;
+}
+
+.status-info {
+  background: #eef6ff;
+  border-color: #bfdbfe;
+  color: #0f62cf;
+}
+
+.status-progress {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #3730a3;
+}
+
+.status-success {
+  background: #ecfdf3;
+  border-color: #bbf7d0;
+  color: #047857;
+}
+
+.status-muted {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #64748b;
 }
 
 .order-metrics {
@@ -198,15 +325,76 @@
   background: #fff1f3 !important;
   border-color: #fecdd3 !important;
   color: #b42318 !important;
+
+  &:disabled {
+    background: #f1f5f9 !important;
+    border-color: #d8dee8 !important;
+    color: #94a3b8 !important;
+  }
+}
+
+.details-dialog {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+
+  header {
+    align-items: start;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+  }
+
+  h2 {
+    color: #202833;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1.25;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.details-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  span {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #4f5967;
+    display: grid;
+    font-size: 13px;
+    font-weight: 750;
+    gap: 5px;
+    min-width: 0;
+    padding: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  strong {
+    color: #202833;
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+}
+
+.details-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
 @media (max-width: 1080px) {
   .order-card {
-    grid-template-columns: 76px 1fr;
+    grid-template-columns: 1fr;
   }
 
   .order-secondary {
-    grid-column: 2;
+    grid-column: auto;
   }
 }
 
@@ -216,12 +404,26 @@
     flex-direction: column;
   }
 
+  .search-field {
+    min-width: 0;
+    width: 100%;
+  }
+
   .order-secondary {
     grid-template-columns: 1fr;
   }
 
   .primary-action {
     width: 100%;
+  }
+
+  .details-grid,
+  .details-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .details-actions {
+    flex-direction: column-reverse;
   }
 
   :host ::ng-deep mat-paginator .mat-mdc-paginator-container {

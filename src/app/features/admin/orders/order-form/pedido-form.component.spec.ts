@@ -20,7 +20,6 @@ describe('PedidoFormComponent', () => {
           useValue: {
             getClients: () => of([]),
             getProducts: () => of([]),
-            createOrder: () => of({}),
             updateOrder: () => of({}),
           },
         },

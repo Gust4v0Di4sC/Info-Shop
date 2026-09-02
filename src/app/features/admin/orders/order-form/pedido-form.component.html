@@ -1,11 +1,11 @@
 <form class="admin-form" [formGroup]="orderForm" (ngSubmit)="onSubmit()">
   <header class="dialog-header">
     <div class="title-icon">
-      <mat-icon>{{ isEditMode ? 'edit_note' : 'receipt_long' }}</mat-icon>
+      <mat-icon>edit_note</mat-icon>
     </div>
     <div>
       <p class="eyebrow">Pedidos</p>
-      <h2>{{ isEditMode ? 'Editar pedido' : 'Novo pedido' }}</h2>
+      <h2>Editar pedido</h2>
       <span>Selecione o cliente e o produto; os dados de entrega são preenchidos automaticamente.</span>
     </div>
   </header>
@@ -64,8 +64,8 @@
       Cancelar
     </button>
     <button class="primary-action" mat-flat-button type="submit">
-      <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
-      {{ isEditMode ? 'Salvar pedido' : 'Criar pedido' }}
+      <mat-icon>save</mat-icon>
+      Salvar pedido
     </button>
   </mat-dialog-actions>
 </form>

@@ -17,7 +17,7 @@ describe('PedidosComponent', () => {
           provide: OrderService,
           useValue: {
             getOrders: () => of([]),
-            deleteOrder: () => of(undefined),
+            cancelOrder: () => of({}),
           },
         },
         {

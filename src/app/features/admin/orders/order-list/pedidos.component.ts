@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -12,21 +13,26 @@ import { ConfirmDialogComponent } from '@app/shared/dialogs/confirm-dialog/confi
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { DisplayTextPipe } from '@app/shared/pipes/display-text.pipe';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-pedidos',
-  imports: [SharedMaterialModule, AdminSectionTabsComponent, NgOptimizedImage, DisplayTextPipe, BrlCurrencyPipe],
+  imports: [SharedMaterialModule, ReactiveFormsModule, AdminSectionTabsComponent, NgOptimizedImage, DisplayTextPipe, BrlCurrencyPipe],
   templateUrl: './pedidos.component.html',
   styleUrl: './pedidos.component.scss',
 })
 export default class PedidosComponent implements OnInit {
+  @ViewChild('orderDetailsTemplate') private orderDetailsTemplate?: TemplateRef<unknown>;
+
   readonly orderTabs: AdminSectionTab[] = [
     { label: 'Pedidos', icon: 'receipt_long', route: '/orders' },
     { label: 'Entregas', icon: 'local_shipping', route: '/deliveries' },
   ];
 
+  searchControl = new FormControl('');
   orders: Order[] = [];
   filteredOrders: Order[] = [];
+  selectedOrder: Order | null = null;
   isLoading = false;
   pageIndex = 0;
   pageSize = 4;
@@ -44,6 +50,13 @@ export default class PedidosComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOrders();
+
+    this.searchControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+    ).subscribe(searchTerm => {
+      this.applySearch(searchTerm || '');
+    });
   }
 
   onMouseEnter(imageUrl: string, event: MouseEvent) {
@@ -65,7 +78,7 @@ export default class PedidosComponent implements OnInit {
     this.orderService.getOrders().subscribe({
       next: (rawOrders: Order[]) => {
         this.orders = rawOrders.filter(order => order.id !== undefined);
-        this.filteredOrders = this.orders;
+        this.applySearch(this.searchControl.value || '');
         this.resetPagination();
         this.isLoading = false;
       },
@@ -74,24 +87,6 @@ export default class PedidosComponent implements OnInit {
         this.showSnackbar('Não foi possível carregar os pedidos agora.');
         this.isLoading = false;
       },
-    });
-  }
-
-  openOrderForm(order?: Order): void {
-    const dialogRef = this.dialog.open(PedidoFormComponent, this.responsiveDialog.buildConfig({
-      desktopWidth: '720px',
-      autoFocus: 'first-tabbable',
-      restoreFocus: true,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '300ms',
-      data: order ? { order } : {},
-      panelClass: 'admin-form-dialog',
-    }));
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.loadOrders();
-      }
     });
   }
 
@@ -115,6 +110,21 @@ export default class PedidosComponent implements OnInit {
     });
   }
 
+  openOrderDetails(order: Order): void {
+    if (!this.orderDetailsTemplate) {
+      return;
+    }
+
+    this.selectedOrder = order;
+    this.dialog.open(this.orderDetailsTemplate, this.responsiveDialog.buildConfig({
+      desktopWidth: '560px',
+      panelClass: 'admin-form-dialog',
+      restoreFocus: true,
+      enterAnimationDuration: '220ms',
+      exitAnimationDuration: '180ms',
+    }));
+  }
+
   statusLabel(status: string): string {
     const labels: Record<string, string> = {
       open: 'Aberto',
@@ -128,6 +138,25 @@ export default class PedidosComponent implements OnInit {
     };
 
     return labels[status] || status;
+  }
+
+  statusTone(status: string): string {
+    const tones: Record<string, string> = {
+      open: 'status-attention',
+      payment_pending: 'status-attention',
+      payment_failed: 'status-critical',
+      confirmed: 'status-info',
+      preparing: 'status-info',
+      shipped: 'status-progress',
+      delivered: 'status-success',
+      canceled: 'status-muted',
+    };
+
+    return tones[status] || 'status-info';
+  }
+
+  isOrderCanceled(order: Order): boolean {
+    return order.status === 'canceled';
   }
 
   pagedOrders(): Order[] {
@@ -148,26 +177,32 @@ export default class PedidosComponent implements OnInit {
     }
   }
 
-  deleteOrder(id: string | number): void {
+  cancelOrder(order: Order): void {
+    if (!order.id || this.isOrderCanceled(order)) {
+      return;
+    }
+
     const dialogRef = this.dialog.open(ConfirmDialogComponent, this.responsiveDialog.buildConfig({
       desktopWidth: '350px',
       panelClass: 'custom-modal',
       restoreFocus: true,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '300ms',
-      data: { message: 'Tem certeza que deseja excluir este item?' },
+      data: { message: 'Cancelar este pedido? Ele ficara retido no historico, mas desativado.' },
     }));
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.orderService.deleteOrder(id).subscribe({
-          next: () => {
+        this.orderService.cancelOrder(order.id).subscribe({
+          next: updatedOrder => {
+            this.orders = this.orders.map(item => item.id === updatedOrder.id ? updatedOrder : item);
+            this.applySearch(this.searchControl.value || '');
             this.loadOrders();
-            this.showSnackbar('Pedido excluído com sucesso');
+            this.showSnackbar('Pedido cancelado e mantido no historico.');
           },
           error: error => {
-            console.error('Error deleting order:', error);
-            this.showSnackbar('Não foi possível excluir o pedido agora. Tente novamente.');
+            console.error('Error canceling order:', error);
+            this.showSnackbar('Nao foi possivel cancelar o pedido agora. Tente novamente.');
           },
         });
       }
@@ -184,5 +219,23 @@ export default class PedidosComponent implements OnInit {
 
   private resetPagination(): void {
     this.pageIndex = 0;
+  }
+
+  private applySearch(searchTerm: string): void {
+    const normalized = searchTerm.trim().toLowerCase();
+
+    if (!normalized) {
+      this.filteredOrders = this.orders;
+      this.resetPagination();
+      return;
+    }
+
+    this.filteredOrders = this.orders.filter(order =>
+      (order.name || '').toLowerCase().includes(normalized) ||
+      (order.product || '').toLowerCase().includes(normalized) ||
+      (order.address || '').toLowerCase().includes(normalized) ||
+      (order.status || '').toLowerCase().includes(normalized),
+    );
+    this.resetPagination();
   }
 }
