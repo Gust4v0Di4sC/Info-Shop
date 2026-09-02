@@ -24,6 +24,7 @@ export class AdminThemeService {
 
   private readonly personalization = signal<AdminPersonalization>(DEFAULT_PERSONALIZATION);
   private readonly previewThemeId = signal<AdminThemeId | null>(null);
+  private initializePromise: Promise<void> | null = null;
   private readonly isBrowser: boolean;
 
   readonly currentThemeId = computed(() => this.previewThemeId() || this.personalization().themeId);
@@ -48,6 +49,18 @@ export class AdminThemeService {
   }
 
   async initialize(): Promise<void> {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    if (!this.initializePromise) {
+      this.initializePromise = this.initializeBrowser();
+    }
+
+    return this.initializePromise;
+  }
+
+  private async initializeBrowser(): Promise<void> {
     if (!this.isBrowser) {
       return;
     }
