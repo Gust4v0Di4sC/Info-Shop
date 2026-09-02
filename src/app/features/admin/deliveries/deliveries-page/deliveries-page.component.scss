@@ -54,13 +54,50 @@
 }
 
 .state-card {
+  align-items: center;
   color: #667085;
+  display: grid;
+  gap: 14px;
   font-weight: 800;
-  padding: 24px;
+  grid-template-columns: 44px 1fr;
+  min-height: 112px;
+  padding: 22px 24px;
+
+  mat-icon {
+    align-items: center;
+    background: #eef6ff;
+    border-radius: 8px;
+    color: #0f62cf;
+    display: inline-flex;
+    font-size: 24px;
+    height: 44px;
+    justify-content: center;
+    width: 44px;
+  }
+
+  strong {
+    color: #202833;
+    display: block;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  p {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 4px 0 0;
+  }
 }
 
 .error-state {
   color: #b42318;
+
+  mat-icon {
+    background: #fff1f3;
+    color: #b42318;
+  }
 }
 
 .deliveries-list {
@@ -69,9 +106,10 @@
 }
 
 .delivery-card {
+  align-items: start;
   display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(240px, 0.8fr) minmax(420px, 1.2fr);
+  gap: 20px;
+  grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.35fr);
   padding: 18px;
 }
 
@@ -116,14 +154,16 @@
 .delivery-controls {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(168px, 220px));
+  justify-content: end;
+  min-width: 0;
 }
 
 .shipping-summary {
   display: grid;
   gap: 10px;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
 
   span {
     background: #f8fafc;
@@ -172,10 +212,13 @@ mat-form-field {
     outlined-outline-color: #d9e1eb,
     outlined-focus-outline-color: #0f62cf,
   ));
+
+  width: 100%;
 }
 
 .notes-field {
   grid-column: 2;
+  justify-self: stretch;
 }
 
 @media (max-width: 1080px) {
@@ -196,6 +239,7 @@ mat-form-field {
 
   .delivery-controls {
     grid-template-columns: 1fr;
+    justify-content: stretch;
   }
 
   .shipping-summary {

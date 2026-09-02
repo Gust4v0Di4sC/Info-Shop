@@ -15,9 +15,21 @@
   <app-admin-section-tabs [tabs]="profileTabs"></app-admin-section-tabs>
 
   @if (isLoading) {
-    <div class="state-card">Carregando perfil administrativo...</div>
+    <div class="state-card">
+      <mat-icon aria-hidden="true">hourglass_empty</mat-icon>
+      <div>
+        <strong>Carregando perfil</strong>
+        <p>Buscando dados administrativos e remetente da loja.</p>
+      </div>
+    </div>
   } @else if (errorMessage && !profileForm.getRawValue().email) {
-    <div class="state-card error-state">{{ errorMessage }}</div>
+    <div class="state-card error-state">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <div>
+        <strong>Falha ao carregar perfil</strong>
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>
   } @else {
     <form class="profile-grid" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
       <aside class="profile-card">
@@ -75,10 +87,10 @@
           </mat-form-field>
         </div>
 
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-form-field appearance="outline" class="compact-address-field" subscriptSizing="dynamic">
           <mat-label>Endereço</mat-label>
           <mat-icon matPrefix>home_pin</mat-icon>
-          <textarea matInput formControlName="address" rows="3"></textarea>
+          <textarea matInput formControlName="address" rows="2"></textarea>
         </mat-form-field>
 
         <div class="section-title operational-title">

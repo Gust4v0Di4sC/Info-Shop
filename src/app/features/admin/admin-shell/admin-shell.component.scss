@@ -46,7 +46,7 @@
 }
 
 :host ::ng-deep .admin-sidebar .mdc-list-item__primary-text {
-  color: #ffffff;
+  color: var(--primary-foreground);
   width: 100%;
 }
 
@@ -54,7 +54,7 @@
   align-items: center;
   background: transparent;
   border: 0;
-  color: #ffffff;
+  color: var(--primary-foreground);
   cursor: pointer;
   display: flex;
   gap: 12px;
@@ -104,14 +104,14 @@
   .nav-link {
     background: rgba(255, 255, 255, 0.12);
     border-radius: 8px;
-    color: #ffffff;
+    color: var(--primary-foreground);
     font-weight: 800;
     height: 48px;
     padding: 0;
     transition: background 180ms ease, box-shadow 180ms ease;
 
     mat-icon {
-      color: #ffffff;
+      color: var(--primary-foreground);
       flex: 0 0 auto;
       margin: 0;
     }
@@ -120,10 +120,10 @@
     &:hover {
       background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
       box-shadow: 0 10px 24px rgba(2, 0, 36, 0.24);
-      color: #ffffff;
+      color: var(--primary-foreground);
 
       mat-icon {
-        color: #ffffff;
+        color: var(--primary-foreground);
       }
     }
   }
@@ -145,7 +145,7 @@
 }
 
 .nav-label {
-  color: #ffffff;
+  color: var(--primary-foreground);
   display: none;
   line-height: 1;
   white-space: nowrap;
@@ -164,8 +164,8 @@
 
 .logout-button {
   @include mat.button-overrides((
-    outlined-outline-color: rgba(255, 255, 255, 0.45),
-    outlined-label-text-color: #ffffff,
+    outlined-outline-color: color-mix(in oklch, var(--primary-foreground) 46%, transparent),
+    outlined-label-text-color: var(--primary-foreground),
   ));
 
   border-radius: 8px;

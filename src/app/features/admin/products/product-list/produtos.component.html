@@ -23,15 +23,27 @@
   <app-admin-section-tabs [tabs]="productTabs"></app-admin-section-tabs>
 
   @if (isLoading) {
-    <div class="state-card">Carregando produtos...</div>
+    <div class="state-card">
+      <mat-icon aria-hidden="true">hourglass_empty</mat-icon>
+      <div>
+        <strong>Carregando produtos</strong>
+        <p>Buscando o catalogo da loja.</p>
+      </div>
+    </div>
   } @else if (filteredProducts.length === 0) {
-    <div class="state-card">Nenhum produto encontrado.</div>
+    <div class="state-card">
+      <mat-icon aria-hidden="true">inventory_2</mat-icon>
+      <div>
+        <strong>Nenhum produto encontrado</strong>
+        <p>Revise a busca ou cadastre um novo produto para exibir aqui.</p>
+      </div>
+    </div>
   } @else {
     <div class="products-grid">
       @for (product of pagedProducts(); track product.id) {
         <article class="product-card">
           <button
-            class="product-média"
+            class="product-media"
             type="button"
             (click)="openEditForm(product)"
             [attr.aria-label]="'Editar produto ' + (product.name | displayText: 'sem nome')">
@@ -40,6 +52,7 @@
               width="317"
               height="238"
               sizes="(max-width: 900px) 100vw, 33vw"
+              (error)="handleImageError($event)"
               [alt]="product.name | displayText: 'Produto'">
             <span class="status-pill">{{ stockStatus(product) }}</span>
           </button>

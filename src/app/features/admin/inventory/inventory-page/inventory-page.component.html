@@ -16,9 +16,29 @@
   <app-admin-section-tabs [tabs]="productTabs"></app-admin-section-tabs>
 
   @if (isLoading) {
-    <div class="state-card">Carregando estoque...</div>
+    <div class="state-card">
+      <mat-icon aria-hidden="true">hourglass_empty</mat-icon>
+      <div>
+        <strong>Carregando estoque</strong>
+        <p>Sincronizando quantidades dos produtos.</p>
+      </div>
+    </div>
   } @else if (errorMessage) {
-    <div class="state-card error-state">{{ errorMessage }}</div>
+    <div class="state-card error-state">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <div>
+        <strong>Falha ao carregar estoque</strong>
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>
+  } @else if (filteredProducts.length === 0) {
+    <div class="state-card">
+      <mat-icon aria-hidden="true">inventory</mat-icon>
+      <div>
+        <strong>Nenhum produto no estoque</strong>
+        <p>Cadastre produtos antes de controlar total, reservado e minimo de alerta.</p>
+      </div>
+    </div>
   } @else {
     <div class="inventory-list">
       @for (product of pagedProducts(); track product.id) {
@@ -27,6 +47,7 @@
             [ngSrc]="product.imageUrl || '/product1.png'"
             width="96"
             height="96"
+            (error)="handleImageError($event)"
             [alt]="product.name">
 
           <div class="product-info">
@@ -55,7 +76,7 @@
                 (change)="updateStock(product, 'stock_reserved', $any($event.target).value)">
             </label>
             <label>
-              Mínimo
+              Minimo de alerta
               <input
                 type="number"
                 min="0"
