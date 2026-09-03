@@ -87,11 +87,31 @@
           </mat-form-field>
         </div>
 
-        <mat-form-field appearance="outline" class="compact-address-field" subscriptSizing="dynamic">
-          <mat-label>Endereço</mat-label>
-          <mat-icon matPrefix>home_pin</mat-icon>
-          <textarea matInput formControlName="address" rows="2"></textarea>
-        </mat-form-field>
+        <div class="field-row address-row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Rua</mat-label>
+            <mat-icon matPrefix>home_pin</mat-icon>
+            <input matInput formControlName="address_street" type="text" autocomplete="address-line1">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Bairro</mat-label>
+            <mat-icon matPrefix>location_city</mat-icon>
+            <input matInput formControlName="address_district" type="text" autocomplete="address-level3">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>CEP</mat-label>
+            <mat-icon matPrefix>markunread_mailbox</mat-icon>
+            <input matInput formControlName="address_postal_code" type="text" inputmode="numeric" maxlength="9" autocomplete="postal-code" (input)="formatUserPostalCodeField()">
+            @if (isFetchingUserCep) {
+              <mat-hint>Buscando endereco...</mat-hint>
+            }
+            @if (userCepMessage) {
+              <mat-hint class="error-text">{{ userCepMessage }}</mat-hint>
+            }
+          </mat-form-field>
+        </div>
 
         <div class="section-title operational-title">
           <p class="eyebrow">Operação</p>

@@ -1,6 +1,6 @@
-@if (visibleTabs().length > 1) {
+@if (visibleTabs.length > 1) {
   <nav class="section-tabs" aria-label="Seções administrativas">
-    @for (tab of visibleTabs(); track tab.route) {
+    @for (tab of visibleTabs; track tab.route) {
       <a
         mat-button
         class="section-tab"

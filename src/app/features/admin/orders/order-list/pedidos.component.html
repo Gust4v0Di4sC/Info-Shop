@@ -33,7 +33,7 @@
     </div>
   } @else {
     <div class="orders-list">
-      @for (order of pagedOrders(); track order.id) {
+      @for (order of pagedOrders; track order.id) {
         <article
           class="order-card"
           [class.order-card-canceled]="isOrderCanceled(order)">

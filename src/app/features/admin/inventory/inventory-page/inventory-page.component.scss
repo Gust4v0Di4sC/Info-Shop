@@ -2,11 +2,11 @@
 
 .admin-page {
   display: grid;
-  gap: 18px;
+  gap: 24px;
 }
 
 .page-header {
-  align-items: center;
+  align-items: end;
   display: flex;
   gap: 20px;
   justify-content: space-between;
@@ -45,7 +45,8 @@
   ));
 
   align-self: center;
-  min-width: 320px;
+  min-width: 280px;
+  width: min(36vw, 360px);
 
   ::ng-deep {
     .mat-mdc-text-field-wrapper {
@@ -61,19 +62,31 @@
     }
 
     .mat-mdc-form-field-infix {
+      align-items: center;
+      display: flex;
       min-height: 44px;
-      padding-bottom: 10px;
-      padding-top: 10px;
+      padding: 0;
+    }
+
+    .mat-mdc-input-element {
+      height: 24px;
+      line-height: 24px;
     }
 
     .mat-mdc-form-field-icon-prefix {
       align-items: center;
       display: flex;
-      padding-inline: 12px 4px;
+      height: 44px;
+      padding-inline: 12px 6px;
+
+      .mat-icon {
+        margin: 0;
+      }
     }
 
-    .mat-mdc-form-field-subscript-wrapper {
-      display: none;
+    .mdc-floating-label:not(.mdc-floating-label--float-above) {
+      top: 50%;
+      transform: translateY(-50%);
     }
   }
 }
@@ -142,7 +155,7 @@
   align-items: center;
   display: grid;
   column-gap: 18px;
-  grid-template-columns: 92px minmax(220px, 1fr) minmax(480px, 1.1fr) 96px;
+  grid-template-columns: 92px minmax(220px, 1fr) minmax(480px, 1.15fr);
   padding: 12px 16px;
 
   img {
@@ -183,7 +196,8 @@
 
 .stock-fields {
   display: grid;
-  gap: 16px;
+  align-items: end;
+  gap: 12px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 
   label {
@@ -191,8 +205,9 @@
     display: grid;
     font-size: 12px;
     font-weight: 850;
-    gap: 6px;
+    gap: 7px;
     line-height: 14px;
+    min-width: 0;
     text-transform: uppercase;
   }
 
@@ -208,26 +223,16 @@
     padding: 0 10px;
     width: 100%;
   }
-}
 
-.quick-actions {
-  align-self: end;
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 0;
-
-  .quick-actions-inner {
-    align-items: center;
-    display: flex;
-    gap: 8px;
-    height: 42px;
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
   }
 
-  button {
-    background: #eef6ff;
-    color: #0f62cf;
-    height: 42px;
-    width: 42px;
+  input[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
   }
 }
 
@@ -241,13 +246,8 @@
   }
 
   .stock-fields,
-  .quick-actions {
+  .product-info {
     grid-column: 2;
-  }
-
-  .quick-actions {
-    justify-content: flex-start;
-    padding-top: 0;
   }
 }
 

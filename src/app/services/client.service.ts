@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, map, Observable, switchMap } from 'rxjs';
+import { from, map, Observable, switchMap, take } from 'rxjs';
 import { Client, ClientInsert, ClientUpdate } from '@app/models/client.model';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { getSupabaseData, getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
@@ -13,6 +13,7 @@ export class ClientService {
 
   searchClients(term: string): Observable<Client[]> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
+      take(1),
       switchMap(storeId => from(
         supabase
           .from('clients')
@@ -26,6 +27,7 @@ export class ClientService {
 
   getClients(): Observable<Client[]> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
+      take(1),
       switchMap(storeId => from(
         supabase
           .from('clients')

@@ -41,7 +41,7 @@
     </div>
   } @else {
     <div class="inventory-list">
-      @for (product of pagedProducts(); track product.id) {
+      @for (product of pagedProducts; track product.id) {
         <article class="inventory-row">
           <img
             [ngSrc]="product.imageUrl || '/product1.png'"
@@ -83,17 +83,6 @@
                 [value]="product.stock_minimum"
                 (change)="updateStock(product, 'stock_minimum', $any($event.target).value)">
             </label>
-          </div>
-
-          <div class="quick-actions">
-            <div class="quick-actions-inner">
-              <button mat-icon-button type="button" (click)="adjustStock(product, -1)" aria-label="Reduzir estoque">
-                <mat-icon>remove</mat-icon>
-              </button>
-              <button mat-icon-button type="button" (click)="adjustStock(product, 1)" aria-label="Adicionar estoque">
-                <mat-icon>add</mat-icon>
-              </button>
-            </div>
           </div>
         </article>
       }

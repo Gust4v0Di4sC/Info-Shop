@@ -6,6 +6,11 @@
 }
 
 .page-header {
+  align-items: end;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+
   h1 {
     color: #202833;
     font-size: 34px;
@@ -140,7 +145,7 @@ mat-form-field {
 
 .landing-preview {
   align-items: center;
-  background: #071523;
+  background: linear-gradient(135deg, #071523 0%, #10243a 100%);
   color: #ffffff;
   display: grid;
   gap: 24px;
@@ -199,15 +204,22 @@ mat-form-field {
 
 .empty-note {
   align-items: center;
-  color: #667085;
+  align-self: center;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.78) !important;
   display: inline-flex;
-  font-size: 14px;
-  font-weight: 800;
-  gap: 10px;
+  font-size: 13px;
+  font-weight: 750;
+  gap: 12px;
+  justify-self: start;
   margin: 0;
+  min-height: 48px;
+  padding: 0 14px;
 
   mat-icon {
-    color: #0f62cf;
+    color: #94c5ff !important;
   }
 }
 

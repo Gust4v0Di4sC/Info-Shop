@@ -38,15 +38,21 @@
     </div>
   } @else {
     <div class="clients-grid">
-      @for (client of pagedClients(); track client.id) {
+      @for (client of pagedClients; track client.id) {
         <article class="client-card">
           <button
             class="client-media"
             type="button"
             (click)="openEditForm(client)"
             [attr.aria-label]="'Editar cliente ' + (client.name | displayText: 'sem nome')">
-            @if (client.imageUrl) {
-              <img loading="lazy" [src]="client.imageUrl" (error)="handleImageError($event)" [alt]="client.name | displayText: 'Cliente'">
+            @if (client.imageUrl; as imageUrl) {
+              <img
+                [ngSrc]="imageUrl"
+                width="317"
+                height="238"
+                sizes="(max-width: 900px) 100vw, 33vw"
+                (error)="handleImageError($event)"
+                [alt]="client.name | displayText: 'Cliente'">
             } @else {
               <mat-icon>person</mat-icon>
             }

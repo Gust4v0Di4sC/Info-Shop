@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
@@ -8,7 +8,7 @@ import { ProductFormService } from '@app/services/product-form.service';
 import { ProductService } from '@app/services/product.service';
 import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-inventory-page',
@@ -16,7 +16,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
   templateUrl: './inventory-page.component.html',
   styleUrl: './inventory-page.component.scss'
 })
-export class InventoryPageComponent implements OnInit {
+export class InventoryPageComponent implements OnInit, OnDestroy {
   readonly productTabs: AdminSectionTab[] = [
     { label: 'Produtos', icon: 'storefront', route: '/products' },
     { label: 'Estoque', icon: 'inventory_2', route: '/stock' },
@@ -26,11 +26,13 @@ export class InventoryPageComponent implements OnInit {
   searchControl = new FormControl('');
   products: Product[] = [];
   filteredProducts: Product[] = [];
+  pagedProducts: Product[] = [];
   isLoading = true;
   errorMessage = '';
   pageIndex = 0;
   pageSize = 3;
   readonly pageSizeOptions = [3, 4, 6];
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private productService: ProductService,
@@ -44,14 +46,15 @@ export class InventoryPageComponent implements OnInit {
     this.searchControl.valueChanges.pipe(
       debounceTime(250),
       distinctUntilChanged(),
+      takeUntil(this.destroy$),
     ).subscribe(term => {
-      const normalized = (term || '').toLowerCase();
-      this.filteredProducts = this.products.filter(product =>
-        product.name.toLowerCase().includes(normalized) ||
-        (product.model || '').toLowerCase().includes(normalized),
-      );
-      this.resetPagination();
+      this.applySearch(term || '');
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadProducts(): void {
@@ -61,8 +64,7 @@ export class InventoryPageComponent implements OnInit {
     this.productService.getProducts().subscribe({
       next: products => {
         this.products = products;
-        this.filteredProducts = products;
-        this.resetPagination();
+        this.applySearch(this.searchControl.value || '');
         this.isLoading = false;
       },
       error: () => {
@@ -78,17 +80,13 @@ export class InventoryPageComponent implements OnInit {
     this.productFormService.updateProduct(product.id, { [field]: nextValue }).subscribe({
       next: updated => {
         this.products = this.products.map(item => item.id === updated.id ? updated : item);
-        this.filteredProducts = this.filteredProducts.map(item => item.id === updated.id ? updated : item);
+        this.applySearch(this.searchControl.value || '', false);
         this.showSnackbar('Estoque atualizado.');
       },
       error: () => {
         this.showSnackbar('Não foi possível atualizar o estoque agora. Tente novamente.');
       },
     });
-  }
-
-  adjustStock(product: Product, delta: number): void {
-    this.updateStock(product, 'stock_quantity', String(product.stock_quantity + delta));
   }
 
   availableStock(product: Product): number {
@@ -107,14 +105,10 @@ export class InventoryPageComponent implements OnInit {
     return 'Disponível';
   }
 
-  pagedProducts(): Product[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.filteredProducts.slice(start, start + this.pageSize);
-  }
-
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
+    this.updatePagedProducts();
   }
 
   handleImageError(event: Event): void {
@@ -133,8 +127,26 @@ export class InventoryPageComponent implements OnInit {
     });
   }
 
-  private resetPagination(): void {
-    this.pageIndex = 0;
+  private applySearch(searchTerm: string, resetPage = true): void {
+    const normalized = searchTerm.trim().toLowerCase();
+
+    this.filteredProducts = normalized
+      ? this.products.filter(product =>
+        product.name.toLowerCase().includes(normalized) ||
+        (product.model || '').toLowerCase().includes(normalized),
+      )
+      : this.products;
+
+    if (resetPage) {
+      this.pageIndex = 0;
+    }
+
+    this.updatePagedProducts();
+  }
+
+  private updatePagedProducts(): void {
+    const start = this.pageIndex * this.pageSize;
+    this.pagedProducts = this.filteredProducts.slice(start, start + this.pageSize);
   }
 
 }

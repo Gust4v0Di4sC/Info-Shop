@@ -22,6 +22,7 @@ export class DeliveriesPageComponent implements OnInit {
   ];
 
   deliveries: Delivery[] = [];
+  pagedDeliveries: Delivery[] = [];
   selectedDelivery: Delivery | null = null;
   isLoading = true;
   errorMessage = '';
@@ -48,6 +49,7 @@ export class DeliveriesPageComponent implements OnInit {
       next: deliveries => {
         this.deliveries = deliveries;
         this.resetPagination();
+        this.updatePagedDeliveries();
         this.isLoading = false;
       },
       error: () => {
@@ -66,6 +68,7 @@ export class DeliveriesPageComponent implements OnInit {
     this.deliveryService.updateDelivery(delivery.id, update).subscribe({
       next: updated => {
         this.deliveries = this.deliveries.map(item => item.id === updated.id ? updated : item);
+        this.updatePagedDeliveries();
         this.showSnackbar('Entrega atualizada.');
       },
       error: () => {
@@ -119,14 +122,10 @@ export class DeliveriesPageComponent implements OnInit {
     });
   }
 
-  pagedDeliveries(): Delivery[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.deliveries.slice(start, start + this.pageSize);
-  }
-
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
+    this.updatePagedDeliveries();
   }
 
   private showSnackbar(message: string): void {
@@ -139,6 +138,11 @@ export class DeliveriesPageComponent implements OnInit {
 
   private resetPagination(): void {
     this.pageIndex = 0;
+  }
+
+  private updatePagedDeliveries(): void {
+    const start = this.pageIndex * this.pageSize;
+    this.pagedDeliveries = this.deliveries.slice(start, start + this.pageSize);
   }
 
 }

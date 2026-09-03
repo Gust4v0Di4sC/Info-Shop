@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
@@ -12,22 +13,24 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
 import { CpfCnpjPipe } from '@app/shared/pipes/cpf-cnpj.pipe';
 import { DisplayTextPipe } from '@app/shared/pipes/display-text.pipe';
 import { PhoneBrPipe } from '@app/shared/pipes/phone-br.pipe';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-clientes',
-  imports: [SharedMaterialModule, ReactiveFormsModule, CpfCnpjPipe, DisplayTextPipe, PhoneBrPipe],
+  imports: [SharedMaterialModule, ReactiveFormsModule, NgOptimizedImage, CpfCnpjPipe, DisplayTextPipe, PhoneBrPipe],
   templateUrl: './clientes.component.html',
   styleUrl: './clientes.component.scss',
 })
-export default class ClientesComponent implements OnInit {
+export default class ClientesComponent implements OnInit, OnDestroy {
   searchControl = new FormControl('');
   clients: Client[] = [];
   filteredClients: Client[] = [];
+  pagedClients: Client[] = [];
   isLoading = false;
   pageIndex = 0;
   pageSize = 3;
   readonly pageSizeOptions = [3, 6, 9];
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private dialog: MatDialog,
@@ -42,22 +45,15 @@ export default class ClientesComponent implements OnInit {
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
+      takeUntil(this.destroy$),
     ).subscribe(searchTerm => {
-      if (!searchTerm) {
-        this.filteredClients = this.clients;
-        this.resetPagination();
-        return;
-      }
-
-      const normalized = searchTerm.toLowerCase();
-      this.filteredClients = this.clients.filter(client =>
-        client.name.toLowerCase().includes(normalized) ||
-        (client.address || '').toLowerCase().includes(normalized) ||
-        (client.email || '').toLowerCase().includes(normalized) ||
-        (client.cpf || '').toLowerCase().includes(normalized),
-      );
-      this.resetPagination();
+      this.applySearch(searchTerm || '');
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   openClientForm(client?: Client): void {
@@ -103,8 +99,7 @@ export default class ClientesComponent implements OnInit {
     this.clientService.getClients().subscribe({
       next: (rawClients: Client[]) => {
         this.clients = rawClients.filter(client => client.id !== undefined);
-        this.filteredClients = this.clients;
-        this.resetPagination();
+        this.applySearch(this.searchControl.value || '');
         this.isLoading = false;
       },
       error: error => {
@@ -129,7 +124,8 @@ export default class ClientesComponent implements OnInit {
       if (result) {
         this.clientService.deleteClient(id).subscribe({
           next: () => {
-            this.loadClients();
+            this.clients = this.clients.filter(client => client.id !== Number(id));
+            this.applySearch(this.searchControl.value || '', false);
             this.showSnackbar('Cliente excluído com sucesso');
           },
           error: error => {
@@ -141,14 +137,10 @@ export default class ClientesComponent implements OnInit {
     });
   }
 
-  pagedClients(): Client[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.filteredClients.slice(start, start + this.pageSize);
-  }
-
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
+    this.updatePagedClients();
   }
 
   handleImageError(event: Event): void {
@@ -165,7 +157,27 @@ export default class ClientesComponent implements OnInit {
     });
   }
 
-  private resetPagination(): void {
-    this.pageIndex = 0;
+  private applySearch(searchTerm: string, resetPage = true): void {
+    const normalized = searchTerm.trim().toLowerCase();
+
+    this.filteredClients = normalized
+      ? this.clients.filter(client =>
+        client.name.toLowerCase().includes(normalized) ||
+        (client.address || '').toLowerCase().includes(normalized) ||
+        (client.email || '').toLowerCase().includes(normalized) ||
+        (client.cpf || '').toLowerCase().includes(normalized),
+      )
+      : this.clients;
+
+    if (resetPage) {
+      this.pageIndex = 0;
+    }
+
+    this.updatePagedClients();
+  }
+
+  private updatePagedClients(): void {
+    const start = this.pageIndex * this.pageSize;
+    this.pagedClients = this.filteredClients.slice(start, start + this.pageSize);
   }
 }

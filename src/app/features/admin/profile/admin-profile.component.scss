@@ -159,12 +159,12 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-mat-form-field {
-  width: 100%;
+.address-row {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(140px, 0.55fr);
 }
 
-.compact-address-field {
-  max-width: 520px;
+mat-form-field {
+  width: 100%;
 }
 
 :host ::ng-deep {
@@ -257,11 +257,8 @@ mat-form-field {
 
 @media (max-width: 680px) {
   .field-row,
-  .package-row {
+  .package-row,
+  .address-row {
     grid-template-columns: 1fr;
-  }
-
-  .compact-address-field {
-    max-width: none;
   }
 }

@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable, Injector, Optional, REQUEST } from '@angular/core';
-import { from, map, Observable, switchMap } from 'rxjs';
+import { from, map, Observable, switchMap, take } from 'rxjs';
 import { Product } from '@app/models/product.model';
 
 @Injectable({
@@ -21,6 +21,7 @@ export class ProductService {
   searchProducts(term: string): Observable<Product[]> {
     return from(this.adminDependencies()).pipe(
       switchMap(({ tenantContext, supabase, getSupabaseList }) => tenantContext.selectedStoreIdRequired$().pipe(
+        take(1),
         switchMap(storeId => from(
           supabase
             .from('products')
@@ -40,6 +41,7 @@ export class ProductService {
   getProducts(): Observable<Product[]> {
     return from(this.adminDependencies()).pipe(
       switchMap(({ tenantContext, supabase, getSupabaseList }) => tenantContext.selectedStoreIdRequired$().pipe(
+        take(1),
         switchMap(storeId => from(
           supabase
             .from('products')
@@ -56,6 +58,7 @@ export class ProductService {
   deleteProduct(id: string | number): Observable<void> {
     return from(this.adminDependencies()).pipe(
       switchMap(({ tenantContext, supabase, throwSupabaseError }) => tenantContext.selectedStoreIdRequired$().pipe(
+        take(1),
         switchMap(storeId => from(
           supabase
             .from('products')

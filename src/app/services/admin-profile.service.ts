@@ -57,20 +57,20 @@ export class AdminProfileService {
   private async loadCurrentAdminProfile(): Promise<AdminProfile> {
     const authUser = await this.getAuthUser();
 
-    const userResult = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', authUser.id)
-      .single();
-
-    const adminResult = await supabase
-      .from('admins')
-      .select('*')
-      .eq('user_id', authUser.id)
-      .eq('active', true)
-      .single();
-
-    const store = await this.loadSelectedStore();
+    const [userResult, adminResult, store] = await Promise.all([
+      supabase
+        .from('users')
+        .select('*')
+        .eq('id', authUser.id)
+        .single(),
+      supabase
+        .from('admins')
+        .select('*')
+        .eq('user_id', authUser.id)
+        .eq('active', true)
+        .single(),
+      this.loadSelectedStore(),
+    ]);
 
     return {
       user: getSupabaseData(userResult),
@@ -82,36 +82,36 @@ export class AdminProfileService {
   private async updateAdminProfile(profile: AdminProfileUpdate): Promise<AdminProfile> {
     const authUser = await this.getAuthUser();
 
-    const userResult = await supabase
-      .from('users')
-      .update(profile.user)
-      .eq('id', authUser.id)
-      .select()
-      .single();
-
-    const adminResult = await supabase.rpc('update_admin_profile', {
-      region_value: profile.admin.region,
-      store_name_value: profile.admin.store_name,
-    });
-
     const storeId = await this.tenantContext.getSelectedStoreId();
-    const storeResult = await supabase.rpc('update_store_shipping', {
-      store_id_value: storeId,
-      sender_document_value: profile.store.sender_document ?? '',
-      sender_email_value: profile.store.sender_email ?? '',
-      sender_phone_value: profile.store.sender_phone ?? '',
-      sender_postal_code_value: profile.store.sender_postal_code ?? '',
-      sender_address_value: profile.store.sender_address ?? '',
-      sender_number_value: profile.store.sender_number ?? '',
-      sender_complement_value: profile.store.sender_complement ?? '',
-      sender_district_value: profile.store.sender_district ?? '',
-      sender_city_value: profile.store.sender_city ?? '',
-      sender_state_value: profile.store.sender_state ?? '',
-      default_package_weight_value: profile.store.default_package_weight,
-      default_package_width_value: profile.store.default_package_width,
-      default_package_height_value: profile.store.default_package_height,
-      default_package_length_value: profile.store.default_package_length,
-    });
+    const [userResult, adminResult, storeResult] = await Promise.all([
+      supabase
+        .from('users')
+        .update(profile.user)
+        .eq('id', authUser.id)
+        .select()
+        .single(),
+      supabase.rpc('update_admin_profile', {
+        region_value: profile.admin.region,
+        store_name_value: profile.admin.store_name,
+      }),
+      supabase.rpc('update_store_shipping', {
+        store_id_value: storeId,
+        sender_document_value: profile.store.sender_document ?? '',
+        sender_email_value: profile.store.sender_email ?? '',
+        sender_phone_value: profile.store.sender_phone ?? '',
+        sender_postal_code_value: profile.store.sender_postal_code ?? '',
+        sender_address_value: profile.store.sender_address ?? '',
+        sender_number_value: profile.store.sender_number ?? '',
+        sender_complement_value: profile.store.sender_complement ?? '',
+        sender_district_value: profile.store.sender_district ?? '',
+        sender_city_value: profile.store.sender_city ?? '',
+        sender_state_value: profile.store.sender_state ?? '',
+        default_package_weight_value: profile.store.default_package_weight,
+        default_package_width_value: profile.store.default_package_width,
+        default_package_height_value: profile.store.default_package_height,
+        default_package_length_value: profile.store.default_package_length,
+      }),
+    ]);
 
     return {
       user: getSupabaseData(userResult),

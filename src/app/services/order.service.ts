@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, map, switchMap } from 'rxjs';
+import { from, Observable, map, switchMap, take } from 'rxjs';
 import { Order, OrderUpdate } from '@app/models/order.model';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { getSupabaseData, getSupabaseList } from '@app/core/supabase/supabase-response';
@@ -14,6 +14,7 @@ export class OrderService {
   /** Buscar pedidos por termo (nome ou produto) */
   searchOrders(term: string): Observable<Order[]> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
+      take(1),
       switchMap(storeId => from(
         supabase
           .from('orders')
@@ -28,6 +29,7 @@ export class OrderService {
   /** Listar todos os pedidos */
   getOrders(): Observable<Order[]> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
+      take(1),
       switchMap(storeId => from(
         supabase
           .from('orders')

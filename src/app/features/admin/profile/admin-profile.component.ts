@@ -9,6 +9,12 @@ import { ViaCepService } from '@app/services/via-cep.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { formatCep, formatCpfCnpj, formatPhone, onlyDigits } from '@app/shared/utils/input-masks';
 
+interface AdminAddressForm {
+  street: string;
+  district: string;
+  postalCode: string;
+}
+
 @Component({
   selector: 'app-admin-profile',
   imports: [ReactiveFormsModule, SharedMaterialModule, AdminSectionTabsComponent],
@@ -29,6 +35,8 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
   createdAt = '';
   isFetchingSenderCep = false;
   senderCepMessage = '';
+  isFetchingUserCep = false;
+  userCepMessage = '';
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -42,7 +50,9 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
       full_name: ['', [Validators.required, Validators.minLength(3)]],
       phone: [''],
       document: [''],
-      address: [''],
+      address_street: [''],
+      address_district: [''],
+      address_postal_code: [''],
       region: ['', [Validators.required, Validators.minLength(2)]],
       store_name: ['', [Validators.required, Validators.minLength(2)]],
       sender_document: [''],
@@ -63,6 +73,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.bindUserPostalCodeAutocomplete();
     this.bindSenderPostalCodeAutocomplete();
     this.loadProfile();
   }
@@ -80,12 +91,15 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
       next: profile => {
         this.adminRole = normalizeAdminRole(profile.admin.role);
         this.createdAt = profile.admin.created_at;
+        const userAddress = this.parseAddress(profile.user.address);
         this.profileForm.patchValue({
           email: profile.user.email,
           full_name: profile.user.full_name || '',
           phone: formatPhone(profile.user.phone || ''),
           document: formatCpfCnpj(profile.user.document || ''),
-          address: profile.user.address || '',
+          address_street: userAddress.street,
+          address_district: userAddress.district,
+          address_postal_code: formatCep(userAddress.postalCode),
           region: profile.admin.region,
           store_name: profile.admin.store_name,
           sender_document: formatCpfCnpj(profile.store?.sender_document || ''),
@@ -102,7 +116,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
           default_package_width: profile.store?.default_package_width || 16,
           default_package_height: profile.store?.default_package_height || 4,
           default_package_length: profile.store?.default_package_length || 24,
-        });
+        }, { emitEvent: false });
         this.isLoading = false;
       },
       error: () => {
@@ -126,7 +140,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
         full_name: this.profileForm.value.full_name,
         phone: this.profileForm.value.phone || null,
         document: this.profileForm.value.document || null,
-        address: this.profileForm.value.address || null,
+        address: this.buildAddress(),
       },
       admin: {
         region: this.profileForm.value.region,
@@ -152,11 +166,14 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
       next: profile => {
         this.adminRole = normalizeAdminRole(profile.admin.role);
         this.createdAt = profile.admin.created_at;
+        const userAddress = this.parseAddress(profile.user.address);
         this.profileForm.patchValue({
           full_name: profile.user.full_name || '',
           phone: formatPhone(profile.user.phone || ''),
           document: formatCpfCnpj(profile.user.document || ''),
-          address: profile.user.address || '',
+          address_street: userAddress.street,
+          address_district: userAddress.district,
+          address_postal_code: formatCep(userAddress.postalCode),
           region: profile.admin.region,
           store_name: profile.admin.store_name,
           sender_document: formatCpfCnpj(profile.store?.sender_document || ''),
@@ -173,7 +190,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
           default_package_width: profile.store?.default_package_width || 16,
           default_package_height: profile.store?.default_package_height || 4,
           default_package_length: profile.store?.default_package_length || 24,
-        });
+        }, { emitEvent: false });
         this.isSaving = false;
         this.showFeedback('Perfil administrativo atualizado.');
       },
@@ -212,6 +229,10 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
 
   formatDocumentField(): void {
     this.formatControl('document', formatCpfCnpj);
+  }
+
+  formatUserPostalCodeField(): void {
+    this.formatControl('address_postal_code', formatCep);
   }
 
   formatSenderDocumentField(): void {
@@ -266,6 +287,107 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
       }, { emitEvent: false });
       this.senderCepMessage = '';
     });
+  }
+
+  private bindUserPostalCodeAutocomplete(): void {
+    this.profileForm.get('address_postal_code')?.valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap(value => {
+        const postalCode = onlyDigits(String(value || ''));
+
+        if (postalCode.length !== 8) {
+          this.isFetchingUserCep = false;
+          this.userCepMessage = '';
+          return of(null);
+        }
+
+        this.isFetchingUserCep = true;
+        this.userCepMessage = '';
+
+        return this.viaCepService.lookup(postalCode).pipe(
+          finalize(() => {
+            this.isFetchingUserCep = false;
+          }),
+        );
+      }),
+      takeUntil(this.destroy$),
+    ).subscribe(address => {
+      if (!address) {
+        const postalCode = onlyDigits(String(this.profileForm.get('address_postal_code')?.value || ''));
+        if (postalCode.length === 8) {
+          this.userCepMessage = 'CEP nao encontrado. Confira os numeros ou preencha manualmente.';
+        }
+        return;
+      }
+
+      this.profileForm.patchValue({
+        address_street: address.street || this.profileForm.value.address_street || '',
+        address_district: address.district || this.profileForm.value.address_district || '',
+      }, { emitEvent: false });
+      this.userCepMessage = '';
+    });
+  }
+
+  private buildAddress(): string | null {
+    const address: AdminAddressForm = {
+      street: this.profileForm.value.address_street || '',
+      district: this.profileForm.value.address_district || '',
+      postalCode: formatCep(this.profileForm.value.address_postal_code || ''),
+    };
+
+    const addressEntries: Array<[string, string]> = [
+      ['Rua', address.street],
+      ['Bairro', address.district],
+      ['CEP', address.postalCode],
+    ];
+
+    const formatted = addressEntries
+      .filter(([, value]) => Boolean(value))
+      .map(([label, value]) => `${label}: ${value}`)
+      .join('\n');
+
+    return formatted || null;
+  }
+
+  private parseAddress(address: string | null): AdminAddressForm {
+    const fields: AdminAddressForm = {
+      street: '',
+      district: '',
+      postalCode: '',
+    };
+
+    if (!address) {
+      return fields;
+    }
+
+    const labelMap: Record<string, keyof AdminAddressForm> = {
+      rua: 'street',
+      endereco: 'street',
+      endereço: 'street',
+      bairro: 'district',
+      cep: 'postalCode',
+    };
+
+    for (const line of address.split(/\r?\n| - /)) {
+      const [rawLabel, ...rawValue] = line.split(':');
+      const label = rawLabel.trim().toLowerCase();
+      const field = labelMap[label];
+
+      if (field && rawValue.length) {
+        fields[field] = rawValue.join(':').trim();
+      }
+    }
+
+    if (!fields.postalCode) {
+      fields.postalCode = onlyDigits(address).slice(-8);
+    }
+
+    if (!fields.street) {
+      fields.street = address.replace(/cep[:\s-]*\d{5}-?\d{3}/i, '').trim();
+    }
+
+    return fields;
   }
 
   private formatControl(controlName: string, formatter: (value: string) => string): void {
