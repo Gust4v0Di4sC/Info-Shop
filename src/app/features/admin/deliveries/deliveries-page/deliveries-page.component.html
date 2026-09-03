@@ -40,7 +40,7 @@
     </div>
   } @else {
     <div class="deliveries-list">
-      @for (delivery of pagedDeliveries(); track delivery.id) {
+      @for (delivery of pagedDeliveries; track delivery.id) {
         <article class="delivery-card">
           <div class="delivery-main">
             <div class="status-row">
@@ -50,6 +50,7 @@
             <h2>{{ delivery.customer_name || 'Cliente não informado' }}</h2>
             <p>{{ delivery.address || 'Endereço a confirmar' }}</p>
             <button class="order-link" type="button" (click)="openDeliveryDetails(delivery)">
+              <mat-icon aria-hidden="true">open_in_new</mat-icon>
               Pedido {{ delivery.order_id || 'sem vinculo' }}
             </button>
             @if (delivery.melhor_envio_protocol || delivery.melhor_envio_order_id) {

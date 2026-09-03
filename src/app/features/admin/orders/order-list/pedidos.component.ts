@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,7 +13,7 @@ import { ConfirmDialogComponent } from '@app/shared/dialogs/confirm-dialog/confi
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { DisplayTextPipe } from '@app/shared/pipes/display-text.pipe';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-pedidos',
@@ -21,7 +21,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
   templateUrl: './pedidos.component.html',
   styleUrl: './pedidos.component.scss',
 })
-export default class PedidosComponent implements OnInit {
+export default class PedidosComponent implements OnInit, OnDestroy {
   @ViewChild('orderDetailsTemplate') private orderDetailsTemplate?: TemplateRef<unknown>;
 
   readonly orderTabs: AdminSectionTab[] = [
@@ -32,6 +32,7 @@ export default class PedidosComponent implements OnInit {
   searchControl = new FormControl('');
   orders: Order[] = [];
   filteredOrders: Order[] = [];
+  pagedOrders: Order[] = [];
   selectedOrder: Order | null = null;
   isLoading = false;
   pageIndex = 0;
@@ -40,6 +41,7 @@ export default class PedidosComponent implements OnInit {
   hoveredImage: string | null = null;
   hoveredImageX = 0;
   hoveredImageY = 0;
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private dialog: MatDialog,
@@ -54,9 +56,15 @@ export default class PedidosComponent implements OnInit {
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
+      takeUntil(this.destroy$),
     ).subscribe(searchTerm => {
       this.applySearch(searchTerm || '');
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onMouseEnter(imageUrl: string, event: MouseEvent) {
@@ -79,7 +87,6 @@ export default class PedidosComponent implements OnInit {
       next: (rawOrders: Order[]) => {
         this.orders = rawOrders.filter(order => order.id !== undefined);
         this.applySearch(this.searchControl.value || '');
-        this.resetPagination();
         this.isLoading = false;
       },
       error: error => {
@@ -159,14 +166,10 @@ export default class PedidosComponent implements OnInit {
     return order.status === 'canceled';
   }
 
-  pagedOrders(): Order[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.filteredOrders.slice(start, start + this.pageSize);
-  }
-
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
+    this.updatePagedOrders();
   }
 
   handleImageError(event: Event): void {
@@ -196,8 +199,7 @@ export default class PedidosComponent implements OnInit {
         this.orderService.cancelOrder(order.id).subscribe({
           next: updatedOrder => {
             this.orders = this.orders.map(item => item.id === updatedOrder.id ? updatedOrder : item);
-            this.applySearch(this.searchControl.value || '');
-            this.loadOrders();
+            this.applySearch(this.searchControl.value || '', false);
             this.showSnackbar('Pedido cancelado e mantido no historico.');
           },
           error: error => {
@@ -221,12 +223,15 @@ export default class PedidosComponent implements OnInit {
     this.pageIndex = 0;
   }
 
-  private applySearch(searchTerm: string): void {
+  private applySearch(searchTerm: string, resetPage = true): void {
     const normalized = searchTerm.trim().toLowerCase();
 
     if (!normalized) {
       this.filteredOrders = this.orders;
-      this.resetPagination();
+      if (resetPage) {
+        this.resetPagination();
+      }
+      this.updatePagedOrders();
       return;
     }
 
@@ -236,6 +241,14 @@ export default class PedidosComponent implements OnInit {
       (order.address || '').toLowerCase().includes(normalized) ||
       (order.status || '').toLowerCase().includes(normalized),
     );
-    this.resetPagination();
+    if (resetPage) {
+      this.resetPagination();
+    }
+    this.updatePagedOrders();
+  }
+
+  private updatePagedOrders(): void {
+    const start = this.pageIndex * this.pageSize;
+    this.pagedOrders = this.filteredOrders.slice(start, start + this.pageSize);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,7 +12,8 @@ import { ConfirmDialogComponent } from '@app/shared/dialogs/confirm-dialog/confi
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { DisplayTextPipe } from '@app/shared/pipes/display-text.pipe';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { ProdutoFormComponent } from '@app/features/admin/products/product-form/produto-form.component';
 
@@ -22,7 +23,7 @@ import { ProdutoFormComponent } from '@app/features/admin/products/product-form/
   templateUrl: './produtos.component.html',
   styleUrl: './produtos.component.scss',
 })
-export default class ProdutosComponent implements OnInit {
+export default class ProdutosComponent implements OnInit, OnDestroy {
   readonly productTabs: AdminSectionTab[] = [
     { label: 'Produtos', icon: 'storefront', route: '/products' },
     { label: 'Estoque', icon: 'inventory_2', route: '/stock' },
@@ -32,10 +33,12 @@ export default class ProdutosComponent implements OnInit {
   searchControl = new FormControl('');
   products: Product[] = [];
   filteredProducts: Product[] = [];
+  pagedProducts: Product[] = [];
   isLoading = false;
   pageIndex = 0;
   pageSize = 3;
   readonly pageSizeOptions = [3, 6, 9];
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private dialog: MatDialog,
@@ -50,21 +53,15 @@ export default class ProdutosComponent implements OnInit {
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
+      takeUntil(this.destroy$),
     ).subscribe(searchTerm => {
-      if (!searchTerm) {
-        this.filteredProducts = this.products;
-        this.resetPagination();
-        return;
-      }
-
-      const normalized = searchTerm.toLowerCase();
-      this.filteredProducts = this.products.filter(product =>
-        product.name.toLowerCase().includes(normalized) ||
-        (product.description || '').toLowerCase().includes(normalized) ||
-        (product.model || '').toLowerCase().includes(normalized),
-      );
-      this.resetPagination();
+      this.applySearch(searchTerm || '');
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadProducts(): void {
@@ -72,8 +69,7 @@ export default class ProdutosComponent implements OnInit {
     this.productService.getProducts().subscribe({
       next: (rawProducts: Product[]) => {
         this.products = rawProducts.filter(product => product.id !== undefined);
-        this.filteredProducts = this.products;
-        this.resetPagination();
+        this.applySearch(this.searchControl.value || '');
         this.isLoading = false;
       },
       error: error => {
@@ -134,14 +130,10 @@ export default class ProdutosComponent implements OnInit {
     return 'Em estoque';
   }
 
-  pagedProducts(): Product[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.filteredProducts.slice(start, start + this.pageSize);
-  }
-
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
+    this.updatePagedProducts();
   }
 
   handleImageError(event: Event): void {
@@ -166,7 +158,8 @@ export default class ProdutosComponent implements OnInit {
       if (result) {
         this.productService.deleteProduct(id).subscribe({
           next: () => {
-            this.loadProducts();
+            this.products = this.products.filter(product => product.id !== Number(id));
+            this.applySearch(this.searchControl.value || '', false);
             this.showSnackbar('Produto excluído com sucesso');
           },
           error: error => {
@@ -186,7 +179,26 @@ export default class ProdutosComponent implements OnInit {
     });
   }
 
-  private resetPagination(): void {
-    this.pageIndex = 0;
+  private applySearch(searchTerm: string, resetPage = true): void {
+    const normalized = searchTerm.trim().toLowerCase();
+
+    this.filteredProducts = normalized
+      ? this.products.filter(product =>
+        product.name.toLowerCase().includes(normalized) ||
+        (product.description || '').toLowerCase().includes(normalized) ||
+        (product.model || '').toLowerCase().includes(normalized),
+      )
+      : this.products;
+
+    if (resetPage) {
+      this.pageIndex = 0;
+    }
+
+    this.updatePagedProducts();
+  }
+
+  private updatePagedProducts(): void {
+    const start = this.pageIndex * this.pageSize;
+    this.pagedProducts = this.filteredProducts.slice(start, start + this.pageSize);
   }
 }

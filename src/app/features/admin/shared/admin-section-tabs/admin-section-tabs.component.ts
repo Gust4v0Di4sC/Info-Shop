@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
 import { ADMIN_ROLE_ACCESS, AdminRole } from '@app/models/admin.model';
@@ -16,23 +16,32 @@ export interface AdminSectionTab {
   templateUrl: './admin-section-tabs.component.html',
   styleUrl: './admin-section-tabs.component.scss',
 })
-export class AdminSectionTabsComponent implements OnInit {
+export class AdminSectionTabsComponent implements OnChanges, OnInit {
   private authService = inject(AuthService);
 
   @Input({ required: true }) tabs: AdminSectionTab[] = [];
 
   adminRole: AdminRole | null = null;
+  visibleTabs: AdminSectionTab[] = [];
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tabs']) {
+      this.updateVisibleTabs();
+    }
+  }
 
   async ngOnInit(): Promise<void> {
     this.adminRole = await this.authService.getAdminRole();
+    this.updateVisibleTabs();
   }
 
-  visibleTabs(): AdminSectionTab[] {
+  private updateVisibleTabs(): void {
     if (!this.adminRole) {
-      return [];
+      this.visibleTabs = [];
+      return;
     }
 
     const allowedRoutes = ADMIN_ROLE_ACCESS[this.adminRole];
-    return this.tabs.filter(tab => allowedRoutes.includes(tab.route));
+    this.visibleTabs = this.tabs.filter(tab => allowedRoutes.includes(tab.route));
   }
 }

@@ -40,7 +40,7 @@
     </div>
   } @else {
     <div class="products-grid">
-      @for (product of pagedProducts(); track product.id) {
+      @for (product of pagedProducts; track product.id) {
         <article class="product-card">
           <button
             class="product-media"

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, map, Observable, switchMap, timeout } from 'rxjs';
+import { from, map, Observable, switchMap, take, timeout } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { AuthService } from '@app/core/auth/auth.service';
 import { Delivery, DeliveryUpdate } from '@app/models/delivery.model';
@@ -36,6 +36,7 @@ export class DeliveryService {
 
   getDeliveries(): Observable<Delivery[]> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
+      take(1),
       switchMap(storeId => from(
         supabase
           .from('deliveries')

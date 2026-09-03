@@ -215,27 +215,38 @@
 }
 
 .order-link {
-  background: transparent;
-  border: 0;
+  align-items: center;
+  background: #eef6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
   color: #0f62cf;
   cursor: pointer;
   display: inline-flex;
   font-size: 12px;
   font-weight: 900;
+  gap: 6px;
+  min-height: 30px;
   margin: 10px 0 0;
-  padding: 0;
+  padding: 0 10px;
   text-align: left;
 
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
+
   &:hover {
-    text-decoration: underline;
+    background: #dbeafe;
+    border-color: #93c5fd;
   }
 }
 
 .delivery-controls {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(3, minmax(168px, 220px));
-  justify-content: end;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  justify-content: stretch;
   min-width: 0;
 }
 
@@ -299,6 +310,10 @@ mat-form-field {
 .notes-field {
   grid-column: 2;
   justify-self: stretch;
+
+  textarea {
+    resize: vertical;
+  }
 }
 
 .details-dialog {

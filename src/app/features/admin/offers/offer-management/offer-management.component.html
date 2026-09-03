@@ -78,7 +78,7 @@
       </mat-card>
 
       <article class="landing-preview">
-        @if (selectedProduct(); as product) {
+        @if (selectedProduct; as product) {
           <div class="preview-copy">
             <span>{{ offerForm.value.offerBadge }}</span>
             <h2>{{ product.name }}</h2>
@@ -96,7 +96,7 @@
         } @else {
           <div class="empty-note">
             <mat-icon aria-hidden="true">sell</mat-icon>
-            <span>Selecione um produto para visualizar a faixa promocional.</span>
+            <span>Escolha um produto para conferir a prévia da oferta.</span>
           </div>
         }
       </article>
@@ -111,7 +111,7 @@
       </div>
 
       <div class="featured-grid">
-        @for (product of pagedProducts(); track product.id) {
+        @for (product of pagedProducts; track product.id) {
           <article class="featured-card">
             <img
               [ngSrc]="product.imageUrl || '/product1.png'"

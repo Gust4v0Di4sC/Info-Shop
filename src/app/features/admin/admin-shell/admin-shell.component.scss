@@ -317,6 +317,7 @@
 }
 
 :host ::ng-deep .admin-content .admin-page {
+  align-content: start;
   min-height: calc(100dvh - 54px);
   padding-bottom: 108px;
 }

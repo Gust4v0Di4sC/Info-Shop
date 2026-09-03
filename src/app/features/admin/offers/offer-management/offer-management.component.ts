@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
@@ -8,7 +8,7 @@ import { OfferService } from '@app/services/offer.service';
 import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-offer-management',
@@ -16,7 +16,7 @@ import { combineLatest } from 'rxjs';
   templateUrl: './offer-management.component.html',
   styleUrl: './offer-management.component.scss'
 })
-export class OfferManagementComponent implements OnInit {
+export class OfferManagementComponent implements OnInit, OnDestroy {
   readonly productTabs: AdminSectionTab[] = [
     { label: 'Produtos', icon: 'storefront', route: '/products' },
     { label: 'Estoque', icon: 'inventory_2', route: '/stock' },
@@ -24,7 +24,9 @@ export class OfferManagementComponent implements OnInit {
   ];
 
   products: Product[] = [];
+  pagedProducts: Product[] = [];
   activeOffer: Product | null = null;
+  selectedProduct: Product | null = null;
   offerForm: FormGroup;
   isLoading = true;
   isSaving = false;
@@ -32,6 +34,7 @@ export class OfferManagementComponent implements OnInit {
   pageIndex = 0;
   pageSize = 3;
   readonly pageSizeOptions = [3, 6, 9];
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -49,6 +52,17 @@ export class OfferManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+
+    this.offerForm.get('productId')?.valueChanges.pipe(
+      takeUntil(this.destroy$),
+    ).subscribe(() => {
+      this.updateSelectedProduct();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadData(): void {
@@ -64,6 +78,8 @@ export class OfferManagementComponent implements OnInit {
         this.activeOffer = offer;
         this.patchOffer(offer);
         this.resetPagination();
+        this.updateSelectedProduct();
+        this.updatePagedProducts();
         this.isLoading = false;
       },
       error: () => {
@@ -95,6 +111,8 @@ export class OfferManagementComponent implements OnInit {
           is_offer: item.id === product.id,
           is_featured: item.id === product.id ? true : item.is_featured,
         }));
+        this.updateSelectedProduct();
+        this.updatePagedProducts();
         this.showSnackbar('Oferta atualizada na landing page.');
         this.isSaving = false;
       },
@@ -111,6 +129,8 @@ export class OfferManagementComponent implements OnInit {
         this.activeOffer = null;
         this.products = this.products.map(product => ({ ...product, is_offer: false }));
         this.offerForm.patchValue({ productId: '' });
+        this.updateSelectedProduct();
+        this.updatePagedProducts();
         this.showSnackbar('Oferta removida da landing page.');
       },
       error: () => {
@@ -123,6 +143,8 @@ export class OfferManagementComponent implements OnInit {
     this.offerService.updateFeatured(product.id, checked).subscribe({
       next: updated => {
         this.products = this.products.map(item => item.id === updated.id ? updated : item);
+        this.updateSelectedProduct();
+        this.updatePagedProducts();
         this.showSnackbar('Destaque atualizado.');
       },
       error: () => {
@@ -131,19 +153,10 @@ export class OfferManagementComponent implements OnInit {
     });
   }
 
-  selectedProduct(): Product | null {
-    const productId = this.offerForm.value.productId;
-    return this.products.find(product => String(product.id) === String(productId)) || null;
-  }
-
-  pagedProducts(): Product[] {
-    const start = this.pageIndex * this.pageSize;
-    return this.products.slice(start, start + this.pageSize);
-  }
-
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
+    this.updatePagedProducts();
   }
 
   handleImageError(event: Event, fallback = '/product1.png'): void {
@@ -185,6 +198,16 @@ export class OfferManagementComponent implements OnInit {
 
   private resetPagination(): void {
     this.pageIndex = 0;
+  }
+
+  private updateSelectedProduct(): void {
+    const productId = this.offerForm.value.productId;
+    this.selectedProduct = this.products.find(product => String(product.id) === String(productId)) || null;
+  }
+
+  private updatePagedProducts(): void {
+    const start = this.pageIndex * this.pageSize;
+    this.pagedProducts = this.products.slice(start, start + this.pageSize);
   }
 
 }
