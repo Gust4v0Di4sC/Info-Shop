@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ChartData, ChartOptions } from 'chart.js';
@@ -12,6 +12,7 @@ import {
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { DELIVERY_STATUS_LABELS } from '@app/models/delivery.model';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -21,7 +22,7 @@ import { DELIVERY_STATUS_LABELS } from '@app/models/delivery.model';
   styleUrl: './admin-dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy {
   overview: AdminOverview | null = null;
   isLoading = true;
   errorMessage = '';
@@ -139,6 +140,8 @@ export class AdminDashboardComponent implements OnInit {
   };
 
   private readonly chartColors = ['#0f62cf', '#00a88f', '#f59e0b', '#ef4444', '#7c3aed', '#475569', '#14b8a6', '#f97316'];
+  private readonly destroy$ = new Subject<void>();
+  private overviewSubscription?: Subscription;
 
   constructor(
     private dashboardService: AdminDashboardService,
@@ -149,11 +152,20 @@ export class AdminDashboardComponent implements OnInit {
     this.loadOverview();
   }
 
+  ngOnDestroy(): void {
+    this.overviewSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadOverview(): void {
+    this.overviewSubscription?.unsubscribe();
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.dashboardService.getOverview().subscribe({
+    this.overviewSubscription = this.dashboardService.getOverview().pipe(
+      takeUntil(this.destroy$),
+    ).subscribe({
       next: overview => {
         this.overview = overview;
         this.buildChartData(overview);

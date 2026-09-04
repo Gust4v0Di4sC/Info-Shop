@@ -2,7 +2,7 @@
   <header class="page-header">
     <div>
       <p class="eyebrow">Entregas</p>
-      <h1>Acompanhamento logístico</h1>
+      <h1>Acompanhamento logistico</h1>
       <span>Pedidos criados por clientes e administradores entram nesta fila automaticamente.</span>
     </div>
 
@@ -42,25 +42,38 @@
     <div class="deliveries-list">
       @for (delivery of pagedDeliveries; track delivery.id) {
         <article class="delivery-card">
-          <div class="delivery-main">
-            <div class="status-row">
-              <span [class]="'status-pill ' + statusTone(delivery.status)">{{ statusLabel(delivery.status) }}</span>
-              <span [class]="'severity-pill ' + statusTone(delivery.status)">{{ severityLabel(delivery.status) }}</span>
+          <header class="delivery-card-header">
+            <div class="delivery-heading">
+              <div class="status-row">
+                <span [class]="'status-pill ' + statusTone(delivery.status)">{{ statusLabel(delivery.status) }}</span>
+                <span [class]="'severity-pill ' + statusTone(delivery.status)">{{ severityLabel(delivery.status) }}</span>
+                <small>{{ registeredLabel(delivery.created_at) }}</small>
+              </div>
+
+              <h2>Pedido {{ delivery.order_id ? '#' + delivery.order_id : 'sem vinculo' }} <span>|</span> {{ delivery.customer_name || 'Cliente nao informado' }}</h2>
+              <p>
+                <mat-icon aria-hidden="true">location_on</mat-icon>
+                {{ delivery.address || 'Endereco a confirmar' }}
+              </p>
             </div>
-            <h2>{{ delivery.customer_name || 'Cliente não informado' }}</h2>
-            <p>{{ delivery.address || 'Endereço a confirmar' }}</p>
-            <button class="order-link" type="button" (click)="openDeliveryDetails(delivery)">
-              <mat-icon aria-hidden="true">open_in_new</mat-icon>
-              Pedido {{ delivery.order_id || 'sem vinculo' }}
-            </button>
-            @if (delivery.melhor_envio_protocol || delivery.melhor_envio_order_id) {
-              <small>Melhor Envio {{ delivery.melhor_envio_protocol || delivery.melhor_envio_order_id }}</small>
-            }
-          </div>
+
+            <div class="delivery-actions">
+              @if (delivery.tracking_url) {
+                <a class="secondary-action" [href]="delivery.tracking_url" target="_blank" rel="noopener">
+                  <mat-icon aria-hidden="true">open_in_new</mat-icon>
+                  Abrir rastreio
+                </a>
+              }
+              <button mat-flat-button class="save-action" type="button" (click)="openDeliveryDetails(delivery)">
+                <mat-icon aria-hidden="true">visibility</mat-icon>
+                Ver detalhes
+              </button>
+            </div>
+          </header>
 
           <div class="delivery-controls">
             <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>Status</mat-label>
+              <mat-label>Status da operacao</mat-label>
               <mat-select [value]="delivery.status" (selectionChange)="updateDelivery(delivery, 'status', $event.value)">
                 @for (status of statusOptions; track status.value) {
                   <mat-option [value]="status.value">{{ status.label }}</mat-option>
@@ -77,7 +90,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>Código de rastreio</mat-label>
+              <mat-label>Codigo de rastreio</mat-label>
               <input
                 matInput
                 [value]="delivery.tracking_code || ''"
@@ -86,7 +99,7 @@
           </div>
 
           <mat-form-field appearance="outline" class="notes-field" subscriptSizing="dynamic">
-            <mat-label>Observacoes</mat-label>
+            <mat-label>Observacoes de expedicao e notas internas</mat-label>
             <textarea
               matInput
               rows="2"
@@ -96,31 +109,31 @@
           </mat-form-field>
 
           <div class="shipping-summary">
-            <span>
-              <strong>Serviço</strong>
-              {{ delivery.selected_service_name || 'Não selecionado' }}
+            <span class="summary-card summary-info">
+              <mat-icon aria-hidden="true">deployed_code</mat-icon>
+              <strong>Servico</strong>
+              <b>{{ delivery.selected_service_name || 'Nao selecionado' }}</b>
+              <small>{{ delivery.melhor_envio_protocol || delivery.melhor_envio_order_id || 'Aguardando cotacao' }}</small>
             </span>
-            <span>
+            <span class="summary-card summary-success">
+              <mat-icon aria-hidden="true">paid</mat-icon>
               <strong>Frete</strong>
-              {{ delivery.shipping_price != null ? ('R$ ' + delivery.shipping_price) : 'A confirmar' }}
+              <b>{{ delivery.shipping_price != null ? (delivery.shipping_price | brlCurrency) : 'A confirmar' }}</b>
+              <small>FOB / Por conta da expedicao</small>
             </span>
-            <span>
-              <strong>Prazo</strong>
-              {{ delivery.shipping_deadline ? delivery.shipping_deadline + ' dias uteis' : 'A confirmar' }}
+            <span class="summary-card summary-purple">
+              <mat-icon aria-hidden="true">schedule</mat-icon>
+              <strong>Prazo estimado</strong>
+              <b>{{ delivery.shipping_deadline ? delivery.shipping_deadline + ' dias uteis' : 'A confirmar' }}</b>
+              <small>{{ delivery.estimated_delivery_date ? 'Data estimada registrada' : 'Calculado pos-coleta' }}</small>
             </span>
-            <span>
+            <span [class]="'summary-card ' + labelTone(delivery.label_status)">
+              <mat-icon aria-hidden="true">sell</mat-icon>
               <strong>Etiqueta</strong>
-              {{ delivery.label_status || 'Pendente' }}
+              <b>{{ delivery.label_status || 'Pendente' }}</b>
+              <small>{{ delivery.tracking_url ? 'Rastreio disponivel' : 'Nao impressa / Gerar PDF' }}</small>
             </span>
           </div>
-
-          @if (delivery.tracking_url) {
-            <a class="tracking-link" [href]="delivery.tracking_url" target="_blank" rel="noopener">
-              <mat-icon>open_in_new</mat-icon>
-              Abrir rastreio
-            </a>
-          }
-
         </article>
       }
     </div>
@@ -131,7 +144,7 @@
       [pageSize]="pageSize"
       [pageSizeOptions]="pageSizeOptions"
       (page)="onPageChange($event)"
-      aria-label="Paginação de entregas">
+      aria-label="Paginacao de entregas">
     </mat-paginator>
   }
 </section>
@@ -166,7 +179,7 @@
         </span>
         <span>
           <strong>Frete</strong>
-          {{ delivery.shipping_price != null ? ('R$ ' + delivery.shipping_price) : 'A confirmar' }}
+          {{ delivery.shipping_price != null ? (delivery.shipping_price | brlCurrency) : 'A confirmar' }}
         </span>
         <span>
           <strong>Prazo</strong>

@@ -42,17 +42,20 @@
             type="button"
             (click)="openOrderDetails(order)">
             <img
-            [ngSrc]="order.imageProd || '/product1.png'"
-            width="96"
-            height="96"
-            (error)="handleImageError($event)"
-            [alt]="order.product | displayText: 'Produto'">
+              [ngSrc]="order.imageProd || '/product1.png'"
+              width="96"
+              height="96"
+              (error)="handleImageError($event)"
+              [alt]="order.product | displayText: 'Produto'">
 
-          <div class="order-info">
-            <span [class]="'status-pill ' + statusTone(order.status)">{{ statusLabel(order.status) }}</span>
-            <h2>{{ order.product | displayText: 'Produto não informado' }}</h2>
-            <p>{{ order.name | displayText: 'Cliente não informado' }}</p>
-            <small>{{ order.address | displayText: 'Endereço não informado' }}</small>
+            <div class="order-info">
+              <span [class]="'status-pill ' + statusTone(order.status)">{{ statusLabel(order.status) }}</span>
+              <h2>{{ order.quantity }}x {{ order.product | displayText: 'Produto nao informado' }}</h2>
+              <p>{{ order.name | displayText: 'Cliente nao informado' }}</p>
+              <small>
+                <mat-icon aria-hidden="true">location_on</mat-icon>
+                {{ order.address | displayText: 'Endereco nao informado' }}
+              </small>
             </div>
           </button>
 
@@ -73,7 +76,7 @@
                 mat-stroked-button
                 type="button"
                 (click)="$event.stopPropagation(); openEditForm(order)"
-                [attr.aria-label]="'Editar pedido de ' + (order.name | displayText: 'cliente não informado')">
+                [attr.aria-label]="'Editar pedido de ' + (order.name | displayText: 'cliente nao informado')">
                 <mat-icon>edit</mat-icon>
                 Editar
               </button>
@@ -83,7 +86,7 @@
                 type="button"
                 [disabled]="isOrderCanceled(order)"
                 (click)="$event.stopPropagation(); cancelOrder(order)"
-                [attr.aria-label]="'Cancelar pedido de ' + (order.name | displayText: 'cliente não informado')">
+                [attr.aria-label]="'Cancelar pedido de ' + (order.name | displayText: 'cliente nao informado')">
                 <mat-icon>block</mat-icon>
                 Cancelar
               </button>
@@ -99,7 +102,7 @@
       [pageSize]="pageSize"
       [pageSizeOptions]="pageSizeOptions"
       (page)="onPageChange($event)"
-      aria-label="Paginação de pedidos">
+      aria-label="Paginacao de pedidos">
     </mat-paginator>
   }
 </section>

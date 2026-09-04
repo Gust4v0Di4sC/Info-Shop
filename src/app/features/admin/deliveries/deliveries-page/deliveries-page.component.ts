@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -6,14 +6,16 @@ import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/
 import { Delivery, DELIVERY_STATUS_LABELS } from '@app/models/delivery.model';
 import { DeliveryService } from '@app/services/delivery.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
+import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-deliveries-page',
-  imports: [SharedMaterialModule, AdminSectionTabsComponent],
+  imports: [SharedMaterialModule, AdminSectionTabsComponent, BrlCurrencyPipe],
   templateUrl: './deliveries-page.component.html',
   styleUrl: './deliveries-page.component.scss'
 })
-export class DeliveriesPageComponent implements OnInit {
+export class DeliveriesPageComponent implements OnInit, OnDestroy {
   @ViewChild('deliveryDetailsTemplate') private deliveryDetailsTemplate?: TemplateRef<unknown>;
 
   readonly orderTabs: AdminSectionTab[] = [
@@ -30,6 +32,8 @@ export class DeliveriesPageComponent implements OnInit {
   pageSize = 2;
   readonly pageSizeOptions = [2, 4, 6];
   statusOptions = Object.entries(DELIVERY_STATUS_LABELS).map(([value, label]) => ({ value, label }));
+  private readonly destroy$ = new Subject<void>();
+  private deliveriesSubscription?: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -41,11 +45,20 @@ export class DeliveriesPageComponent implements OnInit {
     this.loadDeliveries();
   }
 
+  ngOnDestroy(): void {
+    this.deliveriesSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadDeliveries(): void {
+    this.deliveriesSubscription?.unsubscribe();
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.deliveryService.getDeliveries().subscribe({
+    this.deliveriesSubscription = this.deliveryService.getDeliveries().pipe(
+      takeUntil(this.destroy$),
+    ).subscribe({
       next: deliveries => {
         this.deliveries = deliveries;
         this.resetPagination();
@@ -105,6 +118,47 @@ export class DeliveriesPageComponent implements OnInit {
     };
 
     return labels[status] || 'Atencao';
+  }
+
+  registeredLabel(createdAt: string): string {
+    const createdTime = new Date(createdAt).getTime();
+
+    if (Number.isNaN(createdTime)) {
+      return 'Pedido registrado recentemente';
+    }
+
+    const elapsedMinutes = Math.max(0, Math.floor((Date.now() - createdTime) / 60000));
+
+    if (elapsedMinutes < 1) {
+      return 'Pedido registrado agora';
+    }
+
+    if (elapsedMinutes < 60) {
+      return `Pedido registrado ha ${elapsedMinutes} min`;
+    }
+
+    const elapsedHours = Math.floor(elapsedMinutes / 60);
+
+    if (elapsedHours < 24) {
+      return `Pedido registrado ha ${elapsedHours} h`;
+    }
+
+    const elapsedDays = Math.floor(elapsedHours / 24);
+    return `Pedido registrado ha ${elapsedDays} d`;
+  }
+
+  labelTone(labelStatus: string | null): string {
+    const normalized = (labelStatus || '').toLowerCase();
+
+    if (normalized.includes('impresso') || normalized.includes('gerado')) {
+      return 'summary-success';
+    }
+
+    if (normalized.includes('erro') || normalized.includes('falha')) {
+      return 'summary-critical';
+    }
+
+    return 'summary-attention';
   }
 
   openDeliveryDetails(delivery: Delivery): void {

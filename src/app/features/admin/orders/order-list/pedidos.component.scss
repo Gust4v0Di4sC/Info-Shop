@@ -117,11 +117,16 @@
   padding: 18px;
 
   mat-icon {
+    align-items: center;
     background: #eef6ff;
     border-radius: 8px;
     color: #0f62cf;
+    display: inline-flex;
     font-size: 24px;
     height: 44px;
+    justify-content: center;
+    line-height: 1;
+    overflow: hidden;
     width: 44px;
   }
 
@@ -150,9 +155,9 @@
   align-items: center;
   display: grid;
   gap: 18px;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  grid-template-columns: minmax(0, 1fr) auto;
   min-width: 0;
-  padding: 14px;
+  padding: 20px;
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 
   &:hover {
@@ -160,7 +165,6 @@
     box-shadow: 0 18px 36px rgba(15, 23, 42, 0.1);
     transform: translateY(-1px);
   }
-
 }
 
 .order-card-canceled {
@@ -175,7 +179,7 @@
   cursor: pointer;
   display: grid;
   gap: 18px;
-  grid-template-columns: 86px minmax(0, 1fr);
+  grid-template-columns: 78px minmax(0, 1fr);
   min-width: 0;
   padding: 0;
   text-align: left;
@@ -183,7 +187,7 @@
   img {
     aspect-ratio: 1;
     border-radius: 8px;
-    height: 86px;
+    height: 78px;
     object-fit: cover;
     width: 100%;
   }
@@ -199,8 +203,9 @@
 
   h2 {
     color: #202833;
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 900;
+    line-height: 1.28;
     margin: 10px 0 4px;
     overflow-wrap: anywhere;
   }
@@ -208,33 +213,51 @@
   p,
   small {
     color: #667085;
-    display: block;
     font-size: 13px;
     font-weight: 750;
     margin: 0;
     overflow-wrap: anywhere;
+  }
+
+  p {
+    display: block;
+  }
+
+  small {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+
+    mat-icon {
+      color: #667085;
+      font-size: 16px;
+      height: 16px;
+      line-height: 16px;
+      width: 16px;
+    }
   }
 }
 
 .order-secondary {
   align-items: stretch;
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  grid-template-columns: minmax(240px, 1fr) 136px;
+  min-width: min(100%, 414px);
 }
 
 .status-pill {
+  align-items: center;
   background: #eef6ff;
   border: 1px solid #bfdbfe;
   border-radius: 999px;
   color: #0f62cf;
   display: inline-flex;
-  align-items: center;
+  font-size: 12px;
+  font-weight: 900;
   height: 30px;
   justify-content: center;
   max-width: min(220px, 100%);
-  font-size: 12px;
-  font-weight: 900;
   overflow: hidden;
   padding: 0 10px;
   text-overflow: ellipsis;
@@ -279,31 +302,40 @@
 
 .order-metrics {
   display: grid;
-  gap: 10px;
-  grid-template-columns: 1fr;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
 
   div {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: #eef2f7;
+    border: 0;
     border-radius: 8px;
-    min-height: 58px;
-    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100px;
+    min-width: 0;
+    padding: 14px 16px;
   }
 
   span {
     color: #667085;
     display: block;
-    font-size: 12px;
-    font-weight: 850;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
   strong {
     color: #202833;
     display: block;
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 950;
-    margin-top: 5px;
+    line-height: 1.18;
+    margin-top: 8px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -318,7 +350,7 @@
     color: #0f62cf;
     font-weight: 850;
     justify-content: center;
-    min-height: 58px;
+    min-height: 44px;
     width: 100%;
   }
 }
@@ -372,8 +404,8 @@
     font-weight: 750;
     gap: 5px;
     min-width: 0;
-    padding: 12px;
     overflow-wrap: anywhere;
+    padding: 12px;
   }
 
   strong {
@@ -397,6 +429,16 @@
 
   .order-secondary {
     grid-column: auto;
+    grid-template-columns: minmax(0, 1fr) 136px;
+    min-width: 0;
+  }
+
+  .order-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    strong {
+      font-size: 16px;
+    }
   }
 }
 
@@ -413,6 +455,14 @@
 
   .order-secondary {
     grid-template-columns: 1fr;
+  }
+
+  .order-summary-button {
+    grid-template-columns: 64px minmax(0, 1fr);
+
+    img {
+      height: 64px;
+    }
   }
 
   .primary-action {

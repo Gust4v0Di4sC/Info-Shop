@@ -41,7 +41,6 @@ export class ProductService {
   getProducts(): Observable<Product[]> {
     return from(this.adminDependencies()).pipe(
       switchMap(({ tenantContext, supabase, getSupabaseList }) => tenantContext.selectedStoreIdRequired$().pipe(
-        take(1),
         switchMap(storeId => from(
           supabase
             .from('products')

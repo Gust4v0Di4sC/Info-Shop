@@ -3,17 +3,16 @@ const { existsSync, readdirSync, rmSync } = require('node:fs');
 const { join } = require('node:path');
 
 const distPath = join(__dirname, '..', 'dist', 'info-shop-angular', 'browser');
-const sentryCli = join(
-  __dirname,
-  '..',
-  'node_modules',
-  '.bin',
-  process.platform === 'win32' ? 'sentry-cli.cmd' : 'sentry-cli',
-);
+const sentryCli = join(__dirname, '..', 'node_modules', '@sentry', 'cli', 'bin', 'sentry-cli');
 
 const release = process.env.SENTRY_RELEASE || process.env.COMMIT_REF || '';
 const requiredEnv = ['SENTRY_AUTH_TOKEN', 'SENTRY_ORG', 'SENTRY_PROJECT'];
 const missingEnv = requiredEnv.filter(name => !process.env[name]);
+
+if (process.env.SKIP_SENTRY_SOURCEMAPS === 'true') {
+  console.warn('Skipping Sentry sourcemap upload. SKIP_SENTRY_SOURCEMAPS=true.');
+  process.exit(0);
+}
 
 if (!release) {
   missingEnv.push('SENTRY_RELEASE or COMMIT_REF');
@@ -55,7 +54,7 @@ if (process.env.KEEP_SOURCEMAPS !== 'true') {
 
 function run(args, options = {}) {
   try {
-    execFileSync(sentryCli, args, { stdio: 'inherit' });
+    execFileSync(process.execPath, [sentryCli, ...args], { stdio: 'inherit' });
   } catch (error) {
     if (options.optional) {
       console.warn(`Optional sentry-cli command failed: ${args.join(' ')}`);

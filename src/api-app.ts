@@ -8,6 +8,7 @@ import { environment } from './environments/environment';
 const isProduction = process.env['NODE_ENV'] === 'production' || process.env['ENVIRONMENT'] === 'production';
 const supabaseUrl = process.env['SUPABASE_URL'] || environment.supabaseUrl;
 const supabaseAnonKey = process.env['SUPABASE_ANON_KEY'] || process.env['SUPABASE_KEY'] || environment.supabaseAnonKey;
+const sentryDsn = process.env['SENTRY_DSN'] || environment.sentryDsn;
 const allowedProxyPrefixes = ['/rest/v1/', '/storage/v1/', '/functions/v1/'];
 const stateChangingMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 const publicProductSelect = [
@@ -80,6 +81,16 @@ app.use('/api', (req, res, next) => {
 });
 
 app.use('/api/auth', express.json({ limit: '16kb' }));
+
+app.get('/api/health', (_req, res) => {
+  noStore(res).json({
+    ok: true,
+    runtime: 'express-bff',
+    environment: process.env['ENVIRONMENT'] || process.env['NODE_ENV'] || (isProduction ? 'production' : 'development'),
+    production: isProduction,
+    supabaseConfigured: Boolean(supabaseUrl && supabaseAnonKey),
+  });
+});
 
 app.get('/api/auth/session', asyncHandler(async (req, res) => {
   try {
@@ -430,6 +441,16 @@ app.use('/api/supabase', asyncHandler(async (req, res) => {
       return;
     }
 
+    if (isUnexpectedHtmlSupabaseResponse(req, upstream)) {
+      res.status(upstream.ok ? 502 : upstream.status);
+      res.setHeader('Content-Type', 'application/json');
+      noStore(res);
+      res.send(JSON.stringify({
+        message: 'Supabase retornou HTML para uma rota que deveria responder JSON. Verifique SUPABASE_URL e as regras do ambiente local.',
+      }));
+      return;
+    }
+
     noStore(res);
     res.send(upstreamBuffer);
   } catch (error) {
@@ -446,6 +467,10 @@ app.use('/api/supabase', asyncHandler(async (req, res) => {
     errorResponse(res, error, 502);
   }
 }));
+
+app.use('/api', (_req, res) => {
+  noStore(res).status(404).json({ message: 'Rota de API nao encontrada.' });
+});
 
 interface LocalSupabaseFunctionFallback {
   status: number;
@@ -648,6 +673,16 @@ function contentSecurityPolicy(): string {
   const scriptSources = ["'self'", "'unsafe-inline'"];
   const workerSources = ["'self'", 'blob:'];
   const connectSources = ["'self'", 'https://*.supabase.co', 'https://viacep.com.br'];
+  const imageSources = ["'self'", 'data:', 'blob:', 'https://*.supabase.co', 'https://lh3.googleusercontent.com'];
+  const supabaseOrigin = configuredSupabaseOrigin();
+
+  if (supabaseOrigin && !connectSources.includes(supabaseOrigin)) {
+    connectSources.push(supabaseOrigin);
+  }
+
+  if (supabaseOrigin && !imageSources.includes(supabaseOrigin)) {
+    imageSources.push(supabaseOrigin);
+  }
 
   const sentryOrigin = sentryDsnOrigin();
   if (sentryOrigin) {
@@ -667,7 +702,7 @@ function contentSecurityPolicy(): string {
     `script-src ${scriptSources.join(' ')}`,
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data:",
-    "img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com",
+    `img-src ${imageSources.join(' ')}`,
     `connect-src ${connectSources.join(' ')}`,
     `worker-src ${workerSources.join(' ')}`,
     "form-action 'self'",
@@ -681,15 +716,35 @@ function contentSecurityPolicy(): string {
 }
 
 function sentryDsnOrigin(): string | null {
-  if (!environment.sentryDsn) {
+  if (!sentryDsn) {
     return null;
   }
 
   try {
-    return new URL(environment.sentryDsn).origin;
+    return new URL(sentryDsn).origin;
   } catch {
     return null;
   }
+}
+
+function configuredSupabaseOrigin(): string | null {
+  if (!supabaseUrl) {
+    return null;
+  }
+
+  try {
+    return new URL(supabaseUrl).origin;
+  } catch {
+    return null;
+  }
+}
+
+function isUnexpectedHtmlSupabaseResponse(req: Request, upstream: globalThis.Response): boolean {
+  if (!req.path.startsWith('/rest/v1/') && !req.path.startsWith('/functions/v1/')) {
+    return false;
+  }
+
+  return (upstream.headers.get('content-type') || '').toLowerCase().includes('text/html');
 }
 
 function createRequestSupabaseClient(req: Request, res: Response) {

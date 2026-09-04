@@ -8,7 +8,7 @@ import { ProductFormService } from '@app/services/product-form.service';
 import { ProductService } from '@app/services/product.service';
 import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
-import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-inventory-page',
@@ -33,6 +33,7 @@ export class InventoryPageComponent implements OnInit, OnDestroy {
   pageSize = 3;
   readonly pageSizeOptions = [3, 4, 6];
   private readonly destroy$ = new Subject<void>();
+  private productsSubscription?: Subscription;
 
   constructor(
     private productService: ProductService,
@@ -53,15 +54,19 @@ export class InventoryPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.productsSubscription?.unsubscribe();
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   loadProducts(): void {
+    this.productsSubscription?.unsubscribe();
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.productService.getProducts().subscribe({
+    this.productsSubscription = this.productService.getProducts().pipe(
+      takeUntil(this.destroy$),
+    ).subscribe({
       next: products => {
         this.products = products;
         this.applySearch(this.searchControl.value || '');

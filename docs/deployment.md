@@ -35,13 +35,19 @@ Build de produção:
 npm run build
 ```
 
+Build SSR local, usando o Express BFF de `src/server.local.ts`:
+
+```bash
+npm run build:ssr:local
+```
+
 Build com observabilidade:
 
 ```bash
 npm run build:observability
 ```
 
-O script de observabilidade envia sourcemaps ao Sentry e remove `.map` do artefato publicado, salvo quando `KEEP_SOURCEMAPS=true`.
+O script de observabilidade envia sourcemaps ao Sentry e remove `.map` do artefato publicado, salvo quando `KEEP_SOURCEMAPS=true`. Para validações locais/CI que não devem publicar sourcemaps, use `SKIP_SENTRY_SOURCEMAPS=true`.
 
 ## Environments Angular
 
@@ -52,9 +58,16 @@ O script de observabilidade envia sourcemaps ao Sentry e remove `.map` do artefa
 
 Fontes de configuração:
 
-- variáveis de ambiente do processo;
-- `.env.local`;
-- fallbacks definidos no script.
+- `.env.development.local` para desenvolvimento local;
+- `.env.production.local` para checks locais production-like;
+- variaveis de ambiente do processo, incluindo Netlify;
+- `.env.local` como fallback compartilhado.
+
+Variaveis especificas por ambiente podem ser usadas para evitar mistura entre local e producao:
+
+- `DEV_SUPABASE_URL`, `DEV_SUPABASE_ANON_KEY`;
+- `LOCAL_SUPABASE_URL`, `LOCAL_SUPABASE_ANON_KEY`;
+- `PROD_SUPABASE_URL`, `PROD_SUPABASE_ANON_KEY`.
 
 Variáveis públicas:
 
@@ -95,6 +108,30 @@ Regeneração de tipos:
 npm run supabase:types:local
 npm run supabase:types:linked
 ```
+
+## Desenvolvimento Local
+
+Comandos recomendados:
+
+```bash
+npm run dev          # Angular dev server com SSR local e Express BFF
+npm run dev:netlify  # Netlify Dev com redirects/functions
+npm run start:ssr    # bundle production-like servido pelo Express local
+```
+
+`npm run dev` usa o target `serve:local`, que combina `development,local` no Angular e evita o handler Netlify-only de `src/server.ts`.
+
+## CI
+
+A workflow `.github/workflows/netlify-ci.yml` roda em pull requests e pushes para `main`:
+
+1. `npm ci`
+2. `npm run typecheck:netlify`
+3. `npm run build:ssr:local`
+4. `npm run ci:smoke:local`
+5. `npm run build`
+6. `npm run netlify:build` com `SKIP_SENTRY_SOURCEMAPS=true`
+7. E2E publico quando `SUPABASE_URL` e `SUPABASE_ANON_KEY` estiverem configuradas como secrets.
 
 ## Operação
 

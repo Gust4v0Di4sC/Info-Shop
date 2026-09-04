@@ -106,22 +106,39 @@ Instale as dependências:
 npm install
 ```
 
-Configure `.env.local`:
+Configure `.env.development.local` para desenvolvimento:
 
 ```env
-SUPABASE_URL=https://your-project-ref.supabase.co
-SUPABASE_KEY=your-anon-public-key
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_ANON_KEY=your-local-anon-public-key
+PUBLIC_SITE_URL=http://127.0.0.1:4200
 ```
 
-Rode o SSR local:
+Use `.env.production.local` apenas para simular build de producao contra servicos reais. No Netlify, configure `SUPABASE_URL` e `SUPABASE_ANON_KEY` nas variaveis do site.
+
+Rode o desenvolvimento local com Angular dev server usando o BFF Express local:
 
 ```bash
 npm run dev
 ```
 
-Por padrão, o servidor local usa `http://localhost:4300`, a menos que `PORT` ou `LOCAL_DEV_PORT` seja definido.
+Por padrao, abre em `http://127.0.0.1:4200` e usa `src/server.local.ts`.
 
-Para rodar somente o servidor de desenvolvimento SPA:
+Para testar o fluxo mais proximo do Netlify, com redirects e functions locais:
+
+```bash
+npm run dev:netlify
+```
+
+Para gerar e subir um bundle SSR local sem watch:
+
+```bash
+npm run start:ssr:dev
+```
+
+Por padrao, esse servidor usa `http://localhost:4300`, a menos que `PORT` ou `LOCAL_DEV_PORT` seja definido.
+
+Para rodar somente o servidor SPA sem BFF Express:
 
 ```bash
 npm run start:spa
@@ -131,14 +148,20 @@ npm run start:spa
 
 ```bash
 npm run build                 # build de produção Angular
+npm run build:ssr:local       # build local com src/server.local.ts
 npm run build:observability   # build + upload de sourcemaps Sentry
+npx netlify build             # valida netlify.toml/functions localmente
 npm run typecheck:netlify     # typecheck das funções Netlify
+npm run ci:verify             # typecheck + build local SSR + build producao
+npm run ci:smoke:local        # sobe SSR local e valida /api/health
 npm run test                  # testes unitários Karma/Jasmine
 npm run e2e                   # testes Playwright
 npm run supabase:start        # sobe Supabase local
 npm run supabase:db:reset     # reaplica migrations localmente
 npm run supabase:types:local  # regenera tipos a partir do Supabase local
 ```
+
+Para validar o build do Netlify sem publicar sourcemaps no Sentry localmente, use `SKIP_SENTRY_SOURCEMAPS=true`.
 
 ## Segurança e Variáveis
 
