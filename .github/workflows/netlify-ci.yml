@@ -42,6 +42,7 @@ jobs:
         run: npm run build:ssr:local
 
       - name: Smoke local Express SSR
+        timeout-minutes: 5
         run: npm run ci:smoke:local
 
       - name: Build production Angular target

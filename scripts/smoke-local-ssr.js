@@ -16,6 +16,7 @@ const child = spawn(npmCommand, ['run', npmScript], {
     PUBLIC_SITE_URL: baseUrl,
   },
   shell: process.platform === 'win32',
+  detached: process.platform !== 'win32',
   stdio: ['ignore', 'pipe', 'pipe'],
   windowsHide: true,
 });
@@ -41,8 +42,9 @@ child.on('exit', code => {
 waitForHealth()
   .then(() => {
     completed = true;
-    stopChild();
     console.log(`Local SSR smoke check passed at ${baseUrl}/api/health.`);
+    stopChild();
+    process.exit(0);
   })
   .catch(error => {
     completed = true;
@@ -111,7 +113,11 @@ function stopChild() {
     return;
   }
 
-  child.kill('SIGTERM');
+  try {
+    process.kill(-child.pid, 'SIGTERM');
+  } catch {
+    child.kill('SIGTERM');
+  }
 }
 
 function delay(ms) {
