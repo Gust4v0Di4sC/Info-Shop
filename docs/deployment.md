@@ -130,8 +130,14 @@ A workflow `.github/workflows/netlify-ci.yml` roda em pull requests e pushes par
 3. `npm run build:ssr:local`
 4. `npm run ci:smoke:local`
 5. `npm run build`
-6. `npm run netlify:build` com `SKIP_SENTRY_SOURCEMAPS=true`
-7. E2E publico quando `SUPABASE_URL` e `SUPABASE_ANON_KEY` estiverem configuradas como secrets.
+6. valida secrets `NETLIFY_SITE_ID` e `NETLIFY_AUTH_TOKEN`
+7. `npm run netlify:build` com `SKIP_SENTRY_SOURCEMAPS=true`
+8. E2E publico quando `SUPABASE_URL` e `SUPABASE_ANON_KEY` estiverem configuradas como secrets.
+
+Secrets exigidos para o build Netlify no GitHub Actions:
+
+- `NETLIFY_SITE_ID`: ID do site Netlify usado pelo CLI em checkouts limpos.
+- `NETLIFY_AUTH_TOKEN`: personal access token do Netlify para carregar contexto do site durante o build.
 
 ## Operação
 

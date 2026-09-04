@@ -48,8 +48,24 @@ jobs:
       - name: Build production Angular target
         run: npm run build
 
+      - name: Validate Netlify secrets
+        run: |
+          if [ -z "$NETLIFY_SITE_ID" ]; then
+            echo "::error::Missing GitHub secret NETLIFY_SITE_ID. Add the Netlify site ID in repository secrets."
+            exit 1
+          fi
+          if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
+            echo "::error::Missing GitHub secret NETLIFY_AUTH_TOKEN. Add a Netlify personal access token in repository secrets."
+            exit 1
+          fi
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
       - name: Build with Netlify
         env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           SKIP_SENTRY_SOURCEMAPS: "true"
         run: npm run netlify:build
 
