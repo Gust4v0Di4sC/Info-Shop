@@ -124,11 +124,16 @@
   padding: 18px;
 
   mat-icon {
+    align-items: center;
     background: #eef6ff;
     border-radius: 8px;
     color: #0f62cf;
+    display: inline-flex;
     font-size: 24px;
     height: 44px;
+    justify-content: center;
+    line-height: 1;
+    overflow: hidden;
     width: 44px;
   }
 

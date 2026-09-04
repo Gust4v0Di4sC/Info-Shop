@@ -189,20 +189,21 @@ textarea:not(.mat-mdc-input-element):focus-visible,
 }
 
 .admin-theme-graphite {
-  --background: oklch(0.21 0.008 265);
-  --surface: oklch(0.25 0.01 265);
-  --foreground: oklch(0.97 0.003 250);
-  --card: oklch(0.26 0.01 265);
-  --card-foreground: oklch(0.97 0.003 250);
-  --muted: oklch(0.3 0.01 265);
-  --muted-foreground: oklch(0.79 0.012 260);
-  --primary: oklch(0.43 0.018 265);
-  --primary-foreground: oklch(0.97 0.003 250);
-  --secondary: oklch(0.34 0.02 265);
-  --secondary-foreground: oklch(0.95 0.01 260);
-  --success: oklch(0.7 0.045 255);
-  --border: oklch(0.38 0.012 265);
-  --ring: oklch(0.72 0.035 255);
+  color-scheme: dark;
+  --background: oklch(0.18 0.008 265);
+  --surface: oklch(0.24 0.01 265);
+  --foreground: oklch(0.98 0.003 250);
+  --card: oklch(0.27 0.01 265);
+  --card-foreground: oklch(0.98 0.003 250);
+  --muted: oklch(0.33 0.012 265);
+  --muted-foreground: oklch(0.9 0.01 260);
+  --primary: oklch(0.68 0.075 255);
+  --primary-foreground: oklch(0.16 0.008 265);
+  --secondary: oklch(0.39 0.018 265);
+  --secondary-foreground: oklch(0.98 0.003 250);
+  --success: oklch(0.76 0.085 155);
+  --border: oklch(0.47 0.014 265);
+  --ring: oklch(0.78 0.06 255);
 }
 
 .admin-theme-emerald {
@@ -257,9 +258,14 @@ body.admin-theme {
   .metric-card strong,
   .product-head h2,
   .product-head strong,
+  .product-info strong,
   .client-info h2,
   .order-info h2,
   .order-metrics strong,
+  .delivery-heading h2,
+  .summary-card b,
+  .details-dialog h2,
+  .details-grid strong,
   .delivery-main h2,
   .shipping-summary strong,
   .featured-card strong,
@@ -275,11 +281,20 @@ body.admin-theme {
   .empty-note,
   .metric-card span,
   .product-head p,
+  .product-info span,
+  .product-info p,
   .description,
   .client-info p,
   .order-info p,
   .order-info small,
   .order-metrics span,
+  .delivery-heading p,
+  .delivery-heading p mat-icon,
+  .status-row small,
+  .summary-card,
+  .summary-card strong,
+  .summary-card small,
+  .details-grid span,
   .delivery-main p,
   .delivery-main small,
   .shipping-summary span,
@@ -347,6 +362,9 @@ body.admin-theme {
   .client-card,
   .order-card,
   .delivery-card,
+  .inventory-row,
+  .offer-form-card,
+  .featured-panel,
   .featured-card,
   .summary {
     background: var(--card) !important;
@@ -360,9 +378,84 @@ body.admin-theme {
   .search-field .mat-mdc-text-field-wrapper,
   .stock-fields input,
   .order-metrics div,
-  .shipping-summary span {
+  .shipping-summary span,
+  .summary-card,
+  .details-grid span,
+  mat-form-field .mat-mdc-text-field-wrapper {
     background: var(--muted) !important;
     border-color: var(--border) !important;
+  }
+
+  .stock-fields label,
+  mat-checkbox {
+    color: var(--foreground) !important;
+  }
+
+  mat-form-field,
+  .mat-mdc-select-value,
+  .mat-mdc-select-arrow,
+  .mat-mdc-input-element,
+  .stock-fields input,
+  .mat-mdc-floating-label,
+  .mat-mdc-form-field-icon-prefix,
+  .mat-mdc-form-field-icon-suffix,
+  mat-paginator,
+  .mat-mdc-paginator-range-label,
+  .mat-mdc-paginator-page-size-label {
+    color: var(--foreground) !important;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    --mdc-outlined-text-field-input-text-color: var(--foreground);
+    --mdc-outlined-text-field-label-text-color: var(--muted-foreground);
+    --mdc-outlined-text-field-hover-label-text-color: var(--foreground);
+    --mdc-outlined-text-field-focus-label-text-color: var(--primary);
+    --mdc-outlined-text-field-outline-color: var(--border);
+    --mdc-outlined-text-field-hover-outline-color: var(--ring);
+    --mdc-outlined-text-field-focus-outline-color: var(--ring);
+    --mat-select-enabled-trigger-text-color: var(--foreground);
+    --mat-select-enabled-arrow-color: var(--foreground);
+  }
+
+  .mat-mdc-form-field-subscript-wrapper,
+  .mat-mdc-paginator-icon,
+  .mat-mdc-icon-button {
+    color: var(--muted-foreground) !important;
+  }
+}
+
+.admin-theme-graphite {
+  .admin-form-dialog .mat-mdc-dialog-surface {
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--foreground) !important;
+  }
+
+  .details-actions button[mat-stroked-button],
+  .secondary-action {
+    border-color: var(--border) !important;
+    color: var(--primary) !important;
+  }
+
+  .danger-action,
+  .card-actions button.danger-action {
+    background: oklch(0.28 0.035 20) !important;
+    border-color: oklch(0.52 0.095 20) !important;
+    color: oklch(0.88 0.065 20) !important;
+    --mdc-outlined-button-label-text-color: oklch(0.88 0.065 20);
+    --mat-outlined-button-label-text-color: oklch(0.88 0.065 20);
+
+    mat-icon,
+    .mat-icon,
+    .mdc-button__label {
+      color: oklch(0.88 0.065 20) !important;
+    }
+
+    &:disabled {
+      background: var(--muted) !important;
+      border-color: var(--border) !important;
+      color: color-mix(in oklch, var(--muted-foreground) 60%, transparent) !important;
+    }
   }
 }
 

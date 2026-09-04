@@ -47,10 +47,7 @@
             [attr.aria-label]="'Editar cliente ' + (client.name | displayText: 'sem nome')">
             @if (client.imageUrl; as imageUrl) {
               <img
-                [ngSrc]="imageUrl"
-                width="317"
-                height="238"
-                sizes="(max-width: 900px) 100vw, 33vw"
+                [src]="imageUrl"
                 (error)="handleImageError($event)"
                 [alt]="client.name | displayText: 'Cliente'">
             } @else {

@@ -63,11 +63,16 @@
   padding: 18px;
 
   mat-icon {
+    align-items: center;
     background: #eef6ff;
     border-radius: 8px;
     color: #0f62cf;
+    display: inline-flex;
     font-size: 24px;
     height: 44px;
+    justify-content: center;
+    line-height: 1;
+    overflow: hidden;
     width: 44px;
   }
 
@@ -102,37 +107,98 @@
 }
 
 .delivery-card {
-  align-items: start;
   display: grid;
-  gap: 20px;
-  grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.35fr);
-  padding: 18px;
+  gap: 18px;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+  padding: 0;
 }
 
-.delivery-main {
+.delivery-card-header {
+  align-items: start;
+  border-bottom: 1px solid #edf1f6;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 18px 20px 16px;
+}
+
+.delivery-heading {
   min-width: 0;
 
   h2 {
     color: #202833;
     font-size: 18px;
     font-weight: 900;
-    margin: 12px 0 8px;
+    line-height: 1.3;
+    margin: 10px 0 6px;
+    overflow-wrap: anywhere;
+
+    span {
+      color: #cbd5e1;
+      font-weight: 850;
+    }
   }
 
   p {
+    align-items: center;
     color: #4f5967;
+    display: flex;
     font-size: 14px;
     font-weight: 700;
+    gap: 6px;
     line-height: 1.4;
     margin: 0;
+    overflow-wrap: anywhere;
+
+    mat-icon {
+      color: #8aa0bc;
+      font-size: 16px;
+      height: 16px;
+      line-height: 16px;
+      width: 16px;
+    }
+  }
+}
+
+.delivery-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+
+  .secondary-action,
+  .save-action {
+    align-items: center;
+    border-radius: 8px;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 850;
+    gap: 7px;
+    min-height: 36px;
+    padding: 0 13px;
+    text-decoration: none;
+    white-space: nowrap;
   }
 
-  small {
-    color: #667085;
-    display: block;
-    font-size: 12px;
-    font-weight: 750;
-    margin-top: 10px;
+  .secondary-action {
+    background: #ffffff;
+    border: 1px solid #d8e0ea;
+    color: #344054;
+  }
+
+  .save-action {
+    background: #0f62cf;
+    color: #ffffff;
+  }
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    line-height: 16px;
+    width: 16px;
   }
 }
 
@@ -141,20 +207,26 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+
+  small {
+    color: #8aa0bc;
+    font-size: 12px;
+    font-weight: 750;
+  }
 }
 
 .status-pill {
+  align-items: center;
   background: #eef6ff;
   border: 1px solid #bfdbfe;
   border-radius: 999px;
   color: #0f62cf;
   display: inline-flex;
-  align-items: center;
+  font-size: 12px;
+  font-weight: 900;
   height: 30px;
   justify-content: center;
   max-width: min(220px, 100%);
-  font-size: 12px;
-  font-weight: 900;
   overflow: hidden;
   padding: 0 10px;
   text-overflow: ellipsis;
@@ -214,87 +286,94 @@
   color: #64748b;
 }
 
-.order-link {
-  align-items: center;
-  background: #eef6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 999px;
-  color: #0f62cf;
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 12px;
-  font-weight: 900;
-  gap: 6px;
-  min-height: 30px;
-  margin: 10px 0 0;
-  padding: 0 10px;
-  text-align: left;
-
-  mat-icon {
-    font-size: 16px;
-    height: 16px;
-    width: 16px;
-  }
-
-  &:hover {
-    background: #dbeafe;
-    border-color: #93c5fd;
-  }
-}
-
 .delivery-controls {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   justify-content: stretch;
   min-width: 0;
+  padding: 0 20px;
 }
 
 .shipping-summary {
   display: grid;
-  gap: 10px;
-  grid-column: 1 / -1;
+  gap: 12px;
   grid-template-columns: repeat(4, minmax(150px, 1fr));
+  padding: 0 20px 20px;
+}
 
-  span {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    color: #4f5967;
-    display: grid;
-    font-size: 13px;
-    font-weight: 750;
-    gap: 4px;
-    min-height: 62px;
-    padding: 10px;
+.summary-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #4f5967;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: 20px minmax(0, 1fr);
+  min-height: 86px;
+  min-width: 0;
+  padding: 14px;
+
+  mat-icon {
+    align-items: center;
+    border-radius: 6px;
+    display: inline-flex;
+    font-size: 16px;
+    grid-row: 1 / span 3;
+    height: 20px;
+    justify-content: center;
+    line-height: 20px;
+    width: 20px;
   }
 
   strong {
-    color: #202833;
-    font-size: 12px;
+    color: #52637a;
+    font-size: 11px;
     font-weight: 900;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
     text-transform: uppercase;
+  }
+
+  b {
+    color: #202833;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  small {
+    color: #8aa0bc;
+    font-size: 11px;
+    font-weight: 750;
+    line-height: 1.35;
   }
 }
 
-.tracking-link {
-  align-items: center;
-  border: 1px solid #d8dee8;
-  border-radius: 8px;
-  color: #202833;
-  display: inline-flex;
-  font-size: 13px;
-  font-weight: 850;
-  gap: 8px;
-  grid-column: 1 / -1;
-  justify-self: start;
-  min-height: 40px;
-  padding: 0 14px;
-  text-decoration: none;
+.summary-info mat-icon {
+  background: #eef6ff;
+  color: #0f62cf;
+}
 
-  mat-icon {
-    color: #0f62cf;
-  }
+.summary-success mat-icon {
+  background: #ecfdf3;
+  color: #047857;
+}
+
+.summary-purple mat-icon {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.summary-attention mat-icon {
+  background: #fff7ed;
+  color: #f59e0b;
+}
+
+.summary-critical mat-icon {
+  background: #fff1f3;
+  color: #b42318;
 }
 
 mat-form-field {
@@ -308,8 +387,8 @@ mat-form-field {
 }
 
 .notes-field {
-  grid-column: 2;
   justify-self: stretch;
+  padding: 0 20px;
 
   textarea {
     resize: vertical;
@@ -371,12 +450,12 @@ mat-form-field {
 }
 
 @media (max-width: 1080px) {
-  .delivery-card {
-    grid-template-columns: 1fr;
+  .delivery-card-header {
+    flex-direction: column;
   }
 
-  .notes-field {
-    grid-column: auto;
+  .delivery-actions {
+    justify-content: flex-start;
   }
 }
 
@@ -393,5 +472,17 @@ mat-form-field {
 
   .shipping-summary {
     grid-template-columns: 1fr;
+  }
+
+  .delivery-actions {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+
+    .secondary-action,
+    .save-action {
+      justify-content: center;
+      width: 100%;
+    }
   }
 }
