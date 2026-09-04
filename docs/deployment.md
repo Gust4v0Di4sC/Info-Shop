@@ -14,7 +14,7 @@ Configuração em `netlify.toml`:
 Node configurado:
 
 ```text
-22.22.0
+24
 ```
 
 Redirect importante:

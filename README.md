@@ -92,7 +92,7 @@ As capturas abaixo foram geradas a partir do SSR local com dados mockados para d
 
 ## Requisitos
 
-- Node.js `>=22.22.0`, conforme `package.json`.
+- Node.js `>=24.0.0`, conforme `package.json`.
 - npm.
 - Supabase CLI para ambiente local de banco e Edge Functions.
 - Conta/projeto Supabase configurado.

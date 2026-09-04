@@ -4,7 +4,7 @@
   functions = "netlify/functions"
 
 [build.environment]
-  NODE_VERSION = "22.22.0"
+  NODE_VERSION = "24"
   NODE_ENV = "production"
   ENVIRONMENT = "production"
 

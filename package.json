@@ -2,7 +2,7 @@
   "name": "info-shop-angular",
   "version": "0.0.0",
   "engines": {
-    "node": ">=22.22.0"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "ng": "ng",
@@ -26,6 +26,7 @@
     "build:observability": "npm run build && npm run sentry:sourcemaps",
     "netlify:build": "netlify build",
     "netlify:dev": "netlify dev",
+    "pretypecheck:netlify": "node set.env",
     "typecheck:netlify": "tsc --project tsconfig.netlify.json",
     "ci:verify": "npm run typecheck:netlify && npm run build:ssr:local && npm run build",
     "ci:smoke:local": "node scripts/smoke-local-ssr.js",
