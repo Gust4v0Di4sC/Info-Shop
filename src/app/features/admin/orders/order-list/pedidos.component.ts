@@ -13,7 +13,7 @@ import { ConfirmDialogComponent } from '@app/shared/dialogs/confirm-dialog/confi
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { DisplayTextPipe } from '@app/shared/pipes/display-text.pipe';
-import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-pedidos',
@@ -42,6 +42,7 @@ export default class PedidosComponent implements OnInit, OnDestroy {
   hoveredImageX = 0;
   hoveredImageY = 0;
   private readonly destroy$ = new Subject<void>();
+  private ordersSubscription?: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -63,6 +64,7 @@ export default class PedidosComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.ordersSubscription?.unsubscribe();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -82,8 +84,11 @@ export default class PedidosComponent implements OnInit, OnDestroy {
   }
 
   loadOrders(): void {
+    this.ordersSubscription?.unsubscribe();
     this.isLoading = true;
-    this.orderService.getOrders().subscribe({
+    this.ordersSubscription = this.orderService.getOrders().pipe(
+      takeUntil(this.destroy$),
+    ).subscribe({
       next: (rawOrders: Order[]) => {
         this.orders = rawOrders.filter(order => order.id !== undefined);
         this.applySearch(this.searchControl.value || '');

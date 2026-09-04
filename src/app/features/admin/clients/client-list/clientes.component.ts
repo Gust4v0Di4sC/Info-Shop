@@ -1,4 +1,3 @@
-import { NgOptimizedImage } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,11 +12,11 @@ import { SharedMaterialModule } from '@app/shared/material/shared-material.modul
 import { CpfCnpjPipe } from '@app/shared/pipes/cpf-cnpj.pipe';
 import { DisplayTextPipe } from '@app/shared/pipes/display-text.pipe';
 import { PhoneBrPipe } from '@app/shared/pipes/phone-br.pipe';
-import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-clientes',
-  imports: [SharedMaterialModule, ReactiveFormsModule, NgOptimizedImage, CpfCnpjPipe, DisplayTextPipe, PhoneBrPipe],
+  imports: [SharedMaterialModule, ReactiveFormsModule, CpfCnpjPipe, DisplayTextPipe, PhoneBrPipe],
   templateUrl: './clientes.component.html',
   styleUrl: './clientes.component.scss',
 })
@@ -31,6 +30,7 @@ export default class ClientesComponent implements OnInit, OnDestroy {
   pageSize = 3;
   readonly pageSizeOptions = [3, 6, 9];
   private readonly destroy$ = new Subject<void>();
+  private clientsSubscription?: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -52,6 +52,7 @@ export default class ClientesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.clientsSubscription?.unsubscribe();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -95,8 +96,11 @@ export default class ClientesComponent implements OnInit, OnDestroy {
   }
 
   loadClients(): void {
+    this.clientsSubscription?.unsubscribe();
     this.isLoading = true;
-    this.clientService.getClients().subscribe({
+    this.clientsSubscription = this.clientService.getClients().pipe(
+      takeUntil(this.destroy$),
+    ).subscribe({
       next: (rawClients: Client[]) => {
         this.clients = rawClients.filter(client => client.id !== undefined);
         this.applySearch(this.searchControl.value || '');

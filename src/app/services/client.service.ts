@@ -27,7 +27,6 @@ export class ClientService {
 
   getClients(): Observable<Client[]> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
-      take(1),
       switchMap(storeId => from(
         supabase
           .from('clients')

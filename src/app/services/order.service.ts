@@ -29,7 +29,6 @@ export class OrderService {
   /** Listar todos os pedidos */
   getOrders(): Observable<Order[]> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
-      take(1),
       switchMap(storeId => from(
         supabase
           .from('orders')

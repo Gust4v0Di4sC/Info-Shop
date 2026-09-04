@@ -12,7 +12,7 @@ import { ConfirmDialogComponent } from '@app/shared/dialogs/confirm-dialog/confi
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
 import { DisplayTextPipe } from '@app/shared/pipes/display-text.pipe';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { ProdutoFormComponent } from '@app/features/admin/products/product-form/produto-form.component';
@@ -39,6 +39,7 @@ export default class ProdutosComponent implements OnInit, OnDestroy {
   pageSize = 3;
   readonly pageSizeOptions = [3, 6, 9];
   private readonly destroy$ = new Subject<void>();
+  private productsSubscription?: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -60,13 +61,17 @@ export default class ProdutosComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.productsSubscription?.unsubscribe();
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   loadProducts(): void {
+    this.productsSubscription?.unsubscribe();
     this.isLoading = true;
-    this.productService.getProducts().subscribe({
+    this.productsSubscription = this.productService.getProducts().pipe(
+      takeUntil(this.destroy$),
+    ).subscribe({
       next: (rawProducts: Product[]) => {
         this.products = rawProducts.filter(product => product.id !== undefined);
         this.applySearch(this.searchControl.value || '');

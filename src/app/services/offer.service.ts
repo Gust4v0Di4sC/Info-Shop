@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, map, Observable, switchMap, take } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { Product } from '@app/models/product.model';
 import { getSupabaseData, getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
@@ -20,7 +20,6 @@ export class OfferService {
 
   getProducts(): Observable<Product[]> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
-      take(1),
       switchMap(storeId => from(
         supabase
           .from('products')
@@ -34,7 +33,6 @@ export class OfferService {
 
   getActiveOffer(): Observable<Product | null> {
     return this.tenantContext.selectedStoreIdRequired$().pipe(
-      take(1),
       switchMap(storeId => from(this.loadActiveOffer(storeId))),
     );
   }

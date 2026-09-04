@@ -8,7 +8,7 @@ import { OfferService } from '@app/services/offer.service';
 import { AdminSectionTab, AdminSectionTabsComponent } from '@app/features/admin/shared/admin-section-tabs/admin-section-tabs.component';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { BrlCurrencyPipe } from '@app/shared/pipes/brl-currency.pipe';
-import { combineLatest, Subject, takeUntil } from 'rxjs';
+import { combineLatest, Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-offer-management',
@@ -35,6 +35,7 @@ export class OfferManagementComponent implements OnInit, OnDestroy {
   pageSize = 3;
   readonly pageSizeOptions = [3, 6, 9];
   private readonly destroy$ = new Subject<void>();
+  private dataSubscription?: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -61,18 +62,22 @@ export class OfferManagementComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.dataSubscription?.unsubscribe();
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   loadData(): void {
+    this.dataSubscription?.unsubscribe();
     this.isLoading = true;
     this.errorMessage = '';
 
-    combineLatest({
+    this.dataSubscription = combineLatest({
       products: this.offerService.getProducts(),
       offer: this.offerService.getActiveOffer(),
-    }).subscribe({
+    }).pipe(
+      takeUntil(this.destroy$),
+    ).subscribe({
       next: ({ products, offer }) => {
         this.products = products;
         this.activeOffer = offer;
