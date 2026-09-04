@@ -7,14 +7,15 @@ import { Database } from './database.types';
 const supabaseUrl = environment.supabaseUrl?.trim();
 const supabaseAnonKey = environment.supabaseAnonKey?.trim();
 const isBrowser = typeof window !== 'undefined';
-const runtimeSupabaseUrl = supabaseUrl || (isBrowser ? '' : 'https://example.supabase.co');
+const hasSupabaseConfig = Boolean(supabaseUrl && supabaseAnonKey && isValidSupabaseUrl(supabaseUrl));
+const runtimeSupabaseUrl = hasSupabaseConfig ? supabaseUrl : (isBrowser ? '' : 'http://127.0.0.1');
 const runtimeSupabaseAnonKey = supabaseAnonKey || (isBrowser ? '' : 'anon-key');
 const SLOW_SUPABASE_REQUEST_THRESHOLD_MS = 2000;
 const RETRYABLE_SUPABASE_STATUSES = new Set([502, 503, 504]);
 const SUPABASE_RETRY_DELAYS_MS = [500, 1500, 3000];
 
-if (isBrowser && (!runtimeSupabaseUrl || !runtimeSupabaseAnonKey)) {
-  throw new Error('Supabase URL e anon key precisam estar configuradas no environment.');
+if (isBrowser && !hasSupabaseConfig) {
+  throw new Error('Supabase URL e anon key precisam estar configuradas corretamente no environment.');
 }
 
 export const supabase: SupabaseClient<Database> = createClient<Database>(
@@ -34,6 +35,16 @@ export const supabase: SupabaseClient<Database> = createClient<Database>(
 );
 
 async function proxiedSupabaseFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  if (!hasSupabaseConfig) {
+    return new Response(
+      JSON.stringify({ message: 'Supabase nao configurado para este ambiente.' }),
+      {
+        status: 503,
+        headers: { 'content-type': 'application/json; charset=utf-8' },
+      },
+    );
+  }
+
   if (typeof window === 'undefined') {
     return fetch(input, init);
   }
@@ -222,4 +233,17 @@ function sanitizedUrl(value: string): string {
 
 function delay(milliseconds: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+function isValidSupabaseUrl(value: string | undefined): value is string {
+  if (!value) {
+    return false;
+  }
+
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
 }

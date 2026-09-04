@@ -89,11 +89,14 @@
             "production": {
               "buildTarget": "info-shop-angular:build:production"
             },
+            "local": {
+              "buildTarget": "info-shop-angular:build:development,local"
+            },
             "development": {
               "buildTarget": "info-shop-angular:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "local"
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"

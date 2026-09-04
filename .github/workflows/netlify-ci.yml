@@ -1,0 +1,70 @@
+name: Netlify CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: netlify-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Build and local smoke
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      PUBLIC_SITE_URL: http://127.0.0.1:4100
+      ENABLE_BROWSER_SENTRY: "false"
+      SENTRY_ENVIRONMENT: ci
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck Netlify function
+        run: npm run typecheck:netlify
+
+      - name: Build local SSR target
+        run: npm run build:ssr:local
+
+      - name: Smoke local Express SSR
+        run: npm run ci:smoke:local
+
+      - name: Build production Angular target
+        run: npm run build
+
+      - name: Build with Netlify
+        env:
+          SKIP_SENTRY_SOURCEMAPS: "true"
+        run: npm run netlify:build
+
+      - name: Detect E2E secrets
+        id: e2e-env
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_ANON_KEY" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Playwright Chromium
+        if: steps.e2e-env.outputs.run == 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Run public E2E
+        if: steps.e2e-env.outputs.run == 'true'
+        run: npm run e2e:public -- --project=chromium

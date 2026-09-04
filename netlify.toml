@@ -5,6 +5,23 @@
 
 [build.environment]
   NODE_VERSION = "22.22.0"
+  NODE_ENV = "production"
+  ENVIRONMENT = "production"
+
+[dev]
+  command = "npm run dev"
+  targetPort = 4200
+  port = 8888
+  framework = "#custom"
+
+[context.dev.environment]
+  NODE_ENV = "development"
+  ENVIRONMENT = "development"
+  PUBLIC_SITE_URL = "http://localhost:8888"
+
+[context.deploy-preview.environment]
+  NODE_ENV = "production"
+  ENVIRONMENT = "deploy-preview"
 
 [functions]
   node_bundler = "esbuild"
