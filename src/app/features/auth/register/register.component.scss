@@ -30,11 +30,20 @@
 }
 
 .back-link {
-  color: #111827;
+  @include mat.button-overrides((
+    outlined-label-text-color: #ffffff,
+    outlined-outline-color: #0f62cf,
+  ));
+
+  background: #0f62cf;
+  border-radius: 12px;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 850;
+  height: 46px;
+  padding: 0 18px;
 
   mat-icon {
+    color: #ffffff;
     margin-right: 6px;
   }
 }
