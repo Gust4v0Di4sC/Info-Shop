@@ -58,6 +58,50 @@ describe('AuthService', () => {
     await expectAsync(resultPromise).toBeResolvedTo(true);
   });
 
+  it('should send client login intent by default', async () => {
+    const resultPromise = firstValueFrom(service.login('cliente@teste.com', 'secret123'));
+    const request = httpMock.expectOne('/api/auth/login');
+
+    expect(request.request.method).toBe('POST');
+    expect(request.request.withCredentials).toBeTrue();
+    expect(request.request.body).toEqual({
+      email: 'cliente@teste.com',
+      password: 'secret123',
+      loginType: 'client',
+    });
+
+    request.flush({
+      user: {
+        id: 'client-user-id',
+        email: 'cliente@teste.com',
+        user_metadata: {},
+      },
+    });
+
+    await expectAsync(resultPromise).toBeResolvedTo(true);
+  });
+
+  it('should send admin login intent when requested', async () => {
+    const resultPromise = firstValueFrom(service.login('admin@teste.com', 'secret123', 'admin'));
+    const request = httpMock.expectOne('/api/auth/login');
+
+    expect(request.request.body).toEqual({
+      email: 'admin@teste.com',
+      password: 'secret123',
+      loginType: 'admin',
+    });
+
+    request.flush({
+      user: {
+        id: 'admin-user-id',
+        email: 'admin@teste.com',
+        user_metadata: {},
+      },
+    });
+
+    await expectAsync(resultPromise).toBeResolvedTo(true);
+  });
+
   it('should route recovery callbacks from query params to new password page', async () => {
     const navigateSpy = spyOn(router, 'navigate').and.resolveTo(true);
     window.history.pushState(

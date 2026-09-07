@@ -18,6 +18,8 @@ O BFF usa `@supabase/ssr` para gravar cookies:
 - `Secure` em produção
 - `path=/`
 
+Contas administrativas exigem um cookie adicional, assinado no BFF, com validade de 30 minutos. Em producao, configure `ADMIN_SESSION_SECRET` ou `SESSION_SECRET`; a anon key do Supabase nao pode ser usada como segredo de assinatura.
+
 ## Proteção do BFF
 
 `src/api-app.ts` aplica:

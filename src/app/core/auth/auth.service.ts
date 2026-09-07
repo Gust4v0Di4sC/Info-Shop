@@ -10,6 +10,10 @@ interface AuthUserResponse {
   user: SupabaseUser | null;
 }
 
+interface AuthAdminResponse {
+  admin: Admin | null;
+}
+
 interface AuthRegisterResponse extends AuthUserResponse {
   needsEmailConfirmation: boolean;
 }
@@ -108,9 +112,9 @@ export class AuthService {
       );
   }
 
-  login(email: string, password: string) {
+  login(email: string, password: string, loginType: 'client' | 'admin' = 'client') {
     return this.http
-      .post<AuthUserResponse>('/api/auth/login', { email, password }, { withCredentials: true })
+      .post<AuthUserResponse>('/api/auth/login', { email, password, loginType }, { withCredentials: true })
       .pipe(
         map(response => {
           if (!response.user) {
@@ -250,16 +254,21 @@ export class AuthService {
   }
 
   private async fetchAdminProfile(userId: string): Promise<Admin | null> {
-    const { supabase } = await import('@app/core/supabase/supabase.client');
-    const { data, error } = await supabase
-      .from('admins')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('active', true)
-      .maybeSingle();
+    try {
+      const response = await firstValueFrom(
+        this.http.get<AuthAdminResponse>('/api/auth/admin-session', { withCredentials: true }).pipe(
+          timeout({ first: 4000 }),
+        ),
+      );
 
-    this.adminProfileCache = error ? null : data;
-    return this.adminProfileCache;
+      const admin = response.admin?.user_id === userId ? response.admin : null;
+      this.adminProfileCache = admin;
+      return admin;
+    } catch {
+      this.setCurrentUser(null);
+      this.adminProfileCache = null;
+      return null;
+    }
   }
 
   private setCurrentUser(user: SupabaseUser | null): void {

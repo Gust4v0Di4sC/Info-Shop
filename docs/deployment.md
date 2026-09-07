@@ -82,6 +82,7 @@ Variáveis públicas:
 
 Devem ficar em ambientes de servidor ou Edge Functions:
 
+- `ADMIN_SESSION_SECRET` ou `SESSION_SECRET`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `MP_ACCESS_TOKEN`
 - `MP_WEBHOOK_SECRET`
