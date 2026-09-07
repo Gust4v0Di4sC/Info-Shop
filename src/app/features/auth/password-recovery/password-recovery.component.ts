@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
-import { AdminThemeService } from '@app/core/theme/admin-theme.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 
 @Component({
@@ -20,21 +19,16 @@ export class PasswordRecoveryComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    readonly themeService: AdminThemeService,
-    private router: Router,
     private snackBar: MatSnackBar,
+    private dialogRef: MatDialogRef<PasswordRecoveryComponent>,
   ) {
     this.recoveryForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });
   }
 
-  goToLogin(): void {
-    this.router.navigate(['/home']);
-  }
-
-  goToStore(): void {
-    this.router.navigate(['/']);
+  close(): void {
+    this.dialogRef.close();
   }
 
   onSubmit(): void {

@@ -1,4 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, Injector, PLATFORM_ID, computed, signal } from '@angular/core';
 import {
   ADMIN_THEME_OPTIONS,
@@ -7,6 +8,12 @@ import {
   DEFAULT_ADMIN_THEME_ID,
   normalizeAdminThemeId,
 } from '@app/models/admin-theme.model';
+import { firstValueFrom } from 'rxjs';
+
+interface PublicPersonalizationResponse {
+  themeId: string;
+  storeLogoUrl: string | null;
+}
 
 const DEFAULT_PERSONALIZATION: AdminPersonalization = {
   themeId: DEFAULT_ADMIN_THEME_ID,
@@ -69,7 +76,7 @@ export class AdminThemeService {
 
     authService.currentUser$.subscribe(user => {
       if (!user) {
-        this.setPersonalization(DEFAULT_PERSONALIZATION);
+        void this.loadPublicPersonalization();
         return;
       }
 
@@ -83,7 +90,7 @@ export class AdminThemeService {
       return;
     }
 
-    this.setPersonalization(DEFAULT_PERSONALIZATION);
+    await this.loadPublicPersonalization();
   }
 
   previewTheme(themeId: AdminThemeId): void {
@@ -155,6 +162,21 @@ export class AdminThemeService {
       themeId: normalizeAdminThemeId(data.theme_id),
       storeLogoUrl: data.store_logo_url,
     });
+  }
+
+  private async loadPublicPersonalization(): Promise<void> {
+    try {
+      const personalization = await firstValueFrom(
+        this.injector.get(HttpClient).get<PublicPersonalizationResponse>('/api/public/personalization'),
+      );
+
+      this.setPersonalization({
+        themeId: normalizeAdminThemeId(personalization.themeId),
+        storeLogoUrl: personalization.storeLogoUrl,
+      });
+    } catch {
+      this.setPersonalization(DEFAULT_PERSONALIZATION);
+    }
   }
 
   private setPersonalization(personalization: AdminPersonalization): void {
