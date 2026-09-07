@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
 import { AdminThemeService } from '@app/core/theme/admin-theme.service';
+import { PasswordRecoveryComponent } from '@app/features/auth/password-recovery/password-recovery.component';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { firstValueFrom } from 'rxjs';
 
@@ -26,6 +28,7 @@ export default class HomeComponent implements OnInit {
     readonly themeService: AdminThemeService,
     private router: Router,
     private snackBar: MatSnackBar,
+    private dialog: MatDialog,
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -48,7 +51,12 @@ export default class HomeComponent implements OnInit {
   }
 
   goToPasswordRecovery(): void {
-    this.router.navigate(['/recuperar-senha']);
+    this.dialog.open(PasswordRecoveryComponent, {
+      width: '520px',
+      maxWidth: 'calc(100vw - 32px)',
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
+    });
   }
 
   async loginWithGoogle() {
@@ -80,7 +88,9 @@ export default class HomeComponent implements OnInit {
     const { email, password } = this.loginForm.value;
 
     try {
-      const success = await firstValueFrom(this.authService.login(email, password));
+      const success = await firstValueFrom(
+        this.authService.login(email, password, this.isAdminView ? 'admin' : 'client'),
+      );
 
       if (!success) {
         this.snackBar.open('E-mail ou senha incorretos. Confira os dados e tente novamente.', 'Fechar', {

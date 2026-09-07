@@ -30,13 +30,18 @@
 .drawer-brand {
   align-items: center;
   border-radius: 8px;
-  color: #0f62cf;
   display: inline-flex;
-  font-size: 20px;
-  font-weight: 900;
   min-height: 48px;
   padding: 0 16px;
   text-decoration: none;
+
+  img {
+    display: block;
+    height: 45px;
+    max-width: 180px;
+    object-fit: contain;
+    width: auto;
+  }
 }
 
 :host ::ng-deep .public-drawer .mat-mdc-list-item {

@@ -10,6 +10,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { supabaseImageLoader } from '@app/core/images/supabase-image-loader';
 import { telemetryInterceptor } from '@app/core/observability/telemetry.interceptor';
 import { AuthService } from '@app/core/auth/auth.service';
+import { provideAdminTheme } from '@app/core/theme/admin-theme.provider';
 import { environment } from '@environments/environment';
 
 const sentryProviders: Provider[] = environment.sentryDsn
@@ -50,6 +51,7 @@ export const appConfig: ApplicationConfig = {
       multi: true,
     },
     { provide: IMAGE_LOADER, useValue: supabaseImageLoader },
+    provideAdminTheme(),
     provideServiceWorker('ngsw-worker.js', {
       enabled: serviceWorkerEnabled,
       registrationStrategy: 'registerWhenStable:30000',

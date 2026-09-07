@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { MatSidenav } from '@angular/material/sidenav';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
 import { ResponsiveLayoutService } from '@app/core/layout/responsive-layout.service';
+import { AdminThemeService } from '@app/core/theme/admin-theme.service';
 import { FooterComponent } from '@app/features/public/components/footer/footer.component';
 import { HeaderComponent } from '@app/features/public/components/header/header.component';
 import { GsapInteractiveMotionDirective } from '@app/shared/directives/gsap-interactive-motion.directive';
@@ -20,6 +22,7 @@ interface PublicNavItem {
   imports: [
     FooterComponent,
     HeaderComponent,
+    NgOptimizedImage,
     RouterLink,
     RouterOutlet,
     SharedMaterialModule,
@@ -32,6 +35,7 @@ interface PublicNavItem {
 })
 export class PublicShellComponent {
   readonly layout = inject(ResponsiveLayoutService);
+  readonly themeService = inject(AdminThemeService);
 
   readonly navItems: PublicNavItem[] = [
     { label: 'Início', link: '/', fragment: 'inicio' },

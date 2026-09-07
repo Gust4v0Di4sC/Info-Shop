@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { User } from '@supabase/supabase-js';
 import compression from 'compression';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 import { Database } from './app/core/supabase/database.types';
 import { environment } from './environments/environment';
@@ -9,6 +10,9 @@ const isProduction = process.env['NODE_ENV'] === 'production' || process.env['EN
 const supabaseUrl = process.env['SUPABASE_URL'] || environment.supabaseUrl;
 const supabaseAnonKey = process.env['SUPABASE_ANON_KEY'] || process.env['SUPABASE_KEY'] || environment.supabaseAnonKey;
 const sentryDsn = process.env['SENTRY_DSN'] || environment.sentryDsn;
+const adminSessionCookieName = 'infoshop_admin_session';
+const loginIntentCookieName = 'infoshop_login_intent';
+const adminSessionDurationMs = 30 * 60 * 1000;
 const allowedProxyPrefixes = ['/rest/v1/', '/storage/v1/', '/functions/v1/'];
 const stateChangingMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 const publicProductSelect = [
@@ -94,7 +98,18 @@ app.get('/api/health', (_req, res) => {
 
 app.get('/api/auth/session', asyncHandler(async (req, res) => {
   try {
-    const { user } = await requireOptionalUser(req, res);
+    const { supabase, user } = await requireOptionalUser(req, res);
+
+    if (user) {
+      const admin = await loadActiveAdmin(supabase, user.id);
+
+      if (admin && !isValidAdminSessionCookie(req, user.id)) {
+        await supabase.auth.signOut();
+        clearAdminSessionCookie(res);
+        noStore(res).json({ user: null });
+        return;
+      }
+    }
     noStore(res).json({ user });
   } catch (error) {
     errorResponse(res, error, 401);
@@ -103,9 +118,10 @@ app.get('/api/auth/session', asyncHandler(async (req, res) => {
 
 app.post('/api/auth/login', asyncHandler(async (req, res) => {
   try {
-    const body = req.body as { email?: string; password?: string };
+    const body = req.body as { email?: string; password?: string; loginType?: string };
     const email = normalizeEmail(body.email);
     const password = normalizePassword(body.password);
+    const loginType = normalizeLoginType(body.loginType);
     const supabase = createRequestSupabaseClient(req, res);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -113,8 +129,50 @@ app.post('/api/auth/login', asyncHandler(async (req, res) => {
       throw error || new Error('Não foi possível autenticar.');
     }
 
+    const admin = await loadActiveAdmin(supabase, data.user.id);
+
+    if (loginType === 'client' && admin) {
+      await supabase.auth.signOut();
+      clearAdminSessionCookie(res);
+      throw new Error('Use a aba Administrador para acessar este perfil.');
+    }
+
+    if (loginType === 'admin') {
+      if (!admin) {
+        await supabase.auth.signOut();
+        clearAdminSessionCookie(res);
+        throw new Error('Acesso administrativo restrito.');
+      }
+
+      setAdminSessionCookie(res, data.user.id);
+    } else {
+      clearAdminSessionCookie(res);
+    }
+
     await ensurePublicUser(supabase, data.user);
     noStore(res).json({ user: data.user });
+  } catch (error) {
+    errorResponse(res, error, 401);
+  }
+}));
+
+app.get('/api/auth/admin-session', asyncHandler(async (req, res) => {
+  try {
+    const { supabase, user } = await requireUser(req, res);
+    const admin = await loadActiveAdmin(supabase, user.id);
+
+    if (!admin) {
+      noStore(res).json({ admin: null });
+      return;
+    }
+
+    if (!isValidAdminSessionCookie(req, user.id)) {
+      await supabase.auth.signOut();
+      clearAdminSessionCookie(res);
+      throw new Error('Sessao administrativa expirada. Entre novamente pela aba Administrador.');
+    }
+
+    noStore(res).json({ admin });
   } catch (error) {
     errorResponse(res, error, 401);
   }
@@ -213,6 +271,8 @@ app.post('/api/auth/logout', asyncHandler(async (req, res) => {
   try {
     const supabase = createRequestSupabaseClient(req, res);
     await supabase.auth.signOut();
+    clearAdminSessionCookie(res);
+    clearLoginIntentCookie(res);
     noStore(res).json({ ok: true });
   } catch (error) {
     errorResponse(res, error, 400);
@@ -237,6 +297,7 @@ app.get('/api/auth/oauth/google', asyncHandler(async (req, res) => {
       throw error || new Error('Não foi possível iniciar o login com o Google.');
     }
 
+    setLoginIntentCookie(res, 'client');
     noStore(res).json({ url: data.url });
   } catch (error) {
     errorResponse(res, error, 400);
@@ -269,14 +330,50 @@ app.post('/api/auth/callback', asyncHandler(async (req, res) => {
     }
 
     const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) {
+    const callbackUser = data.user;
+    const callbackAdmin = callbackUser ? await loadActiveAdmin(supabase, callbackUser.id) : null;
+    const loginIntent = readSignedCookie(req, loginIntentCookieName);
+
+    if (callbackAdmin && type !== 'recovery' && loginIntent !== 'admin') {
+      await supabase.auth.signOut();
+      clearAdminSessionCookie(res);
+      clearLoginIntentCookie(res);
+      throw new Error('Login administrativo permitido apenas pela aba Administrador.');
+    }
+
+    if (callbackAdmin && type === 'recovery') {
+      clearAdminSessionCookie(res);
+    }
+
+    clearLoginIntentCookie(res);
+    if (error || !callbackUser) {
       throw error || new Error('Sessão de login não encontrada.');
     }
 
-    await ensurePublicUser(supabase, data.user);
-    noStore(res).json({ user: data.user, type });
+    await ensurePublicUser(supabase, callbackUser);
+    noStore(res).json({ user: callbackUser, type });
   } catch (error) {
     errorResponse(res, error, 401);
+  }
+}));
+
+app.get('/api/public/personalization', asyncHandler(async (req, res) => {
+  try {
+    const supabase = createRequestSupabaseClient(req, res);
+    const { data, error } = await (supabase as any).rpc('get_public_personalization');
+
+    if (error) {
+      throw error;
+    }
+
+    const personalization = Array.isArray(data) ? data[0] : data;
+
+    publicCache(res).json({
+      themeId: typeof personalization?.theme_id === 'string' ? personalization.theme_id : 'corporate',
+      storeLogoUrl: typeof personalization?.store_logo_url === 'string' ? personalization.store_logo_url : null,
+    });
+  } catch {
+    publicCache(res).json({ themeId: 'corporate', storeLogoUrl: null });
   }
 }));
 
@@ -380,8 +477,27 @@ app.use('/api/supabase', asyncHandler(async (req, res) => {
     }
 
     const target = new URL(req.url, supabaseUrl);
-    const { session } = await requireOptionalSession(req, res);
+    const { supabase, session } = await requireOptionalSession(req, res);
     hasSession = Boolean(session);
+
+    if (session) {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user;
+
+      if (user) {
+        const admin = await loadActiveAdmin(supabase, user.id);
+
+        if (admin && !isValidAdminSessionCookie(req, user.id)) {
+          await supabase.auth.signOut();
+          clearAdminSessionCookie(res);
+          noStore(res).status(401).json({
+            message: 'Sessao administrativa expirada. Entre novamente pela aba Administrador.',
+          });
+          return;
+        }
+      }
+    }
+
     const headers = new Headers();
 
     for (const [name, value] of Object.entries(req.headers)) {
@@ -820,6 +936,114 @@ async function requireUser(req: Request, res: Response) {
   return { supabase, user };
 }
 
+async function loadActiveAdmin(supabase: ReturnType<typeof createRequestSupabaseClient>, userId: string) {
+  const { data, error } = await supabase
+    .from('admins')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('active', true)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+function setAdminSessionCookie(res: Response, userId: string): void {
+  setSignedCookie(res, adminSessionCookieName, userId, adminSessionDurationMs);
+}
+
+function clearAdminSessionCookie(res: Response): void {
+  clearCookie(res, adminSessionCookieName);
+}
+
+function setLoginIntentCookie(res: Response, intent: 'client' | 'admin'): void {
+  setSignedCookie(res, loginIntentCookieName, intent, 10 * 60 * 1000);
+}
+
+function clearLoginIntentCookie(res: Response): void {
+  clearCookie(res, loginIntentCookieName);
+}
+
+function isValidAdminSessionCookie(req: Request, userId: string): boolean {
+  return readSignedCookie(req, adminSessionCookieName) === userId;
+}
+
+function setSignedCookie(res: Response, name: string, value: string, maxAgeMs: number): void {
+  const expiresAt = Date.now() + maxAgeMs;
+  const payload = `${value}.${expiresAt}`;
+  const signedValue = `${payload}.${signCookiePayload(payload)}`;
+
+  res.cookie(name, signedValue, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: isProduction,
+    path: '/',
+    maxAge: maxAgeMs,
+  });
+}
+
+function clearCookie(res: Response, name: string): void {
+  res.clearCookie(name, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: isProduction,
+    path: '/',
+  });
+}
+
+function readSignedCookie(req: Request, name: string): string | null {
+  const cookie = parseCookies(req.headers.cookie || '').find(item => item.name === name);
+
+  if (!cookie?.value) {
+    return null;
+  }
+
+  const parts = cookie.value.split('.');
+
+  if (parts.length !== 3) {
+    return null;
+  }
+
+  const [value, expiresAtText, signature] = parts;
+  const expiresAt = Number(expiresAtText);
+  const payload = `${value}.${expiresAtText}`;
+
+  if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+    return null;
+  }
+
+  const expectedSignature = signCookiePayload(payload);
+  const signatureBuffer = Buffer.from(signature, 'hex');
+  const expectedBuffer = Buffer.from(expectedSignature, 'hex');
+
+  if (signatureBuffer.length !== expectedBuffer.length || !timingSafeEqual(signatureBuffer, expectedBuffer)) {
+    return null;
+  }
+
+  return value;
+}
+
+function signCookiePayload(payload: string): string {
+  return createHmac('sha256', cookieSigningSecret()).update(payload).digest('hex');
+}
+
+function cookieSigningSecret(): string {
+  const secret = process.env['ADMIN_SESSION_SECRET'] || process.env['SESSION_SECRET'];
+
+  if (secret) {
+    return secret;
+  }
+
+  if (isProduction) {
+    throw new Error('ADMIN_SESSION_SECRET precisa estar configurado para sessoes administrativas.');
+  }
+
+  return supabaseAnonKey || 'infoshop-local-admin-session-secret';
+}
+
 async function ensurePublicUser(supabase: ReturnType<typeof createRequestSupabaseClient>, user: User): Promise<void> {
   const metadata = user.user_metadata || {};
   const fullName = metadataValue(metadata, 'full_name') || metadataValue(metadata, 'name');
@@ -976,6 +1200,10 @@ function normalizePassword(value: string | undefined): string {
   }
 
   return password;
+}
+
+function normalizeLoginType(value: string | undefined): 'client' | 'admin' {
+  return value === 'admin' ? 'admin' : 'client';
 }
 
 function normalizeDisplayName(value: string | undefined): string {

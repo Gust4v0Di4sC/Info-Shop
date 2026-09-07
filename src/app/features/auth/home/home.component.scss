@@ -30,15 +30,20 @@
 }
 
 .store-button {
-  border-color: #cbd5e1;
+  @include mat.button-overrides((
+    outlined-label-text-color: #ffffff,
+    outlined-outline-color: #0f62cf,
+  ));
+
+  background: #0f62cf;
   border-radius: 12px;
-  color: #111827;
   font-size: 18px;
   font-weight: 850;
   height: 46px;
   padding: 0 18px;
 
   mat-icon {
+    color: #ffffff;
     margin-right: 6px;
   }
 }

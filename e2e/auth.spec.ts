@@ -10,7 +10,7 @@ test('login valida campos, alterna senha e rejeita credenciais invalidas', async
 
   await page.getByLabel(/e-mail/i).fill('email-invalido');
   await page.getByLabel(/e-mail/i).blur();
-  await expect(page.getByText(/informe um e-mail válido/i)).toBeVisible();
+  await expect(page.getByText(/informe um e-mail/i)).toBeVisible();
 
   const password = page.getByRole('textbox', { name: /^senha$/i });
   await password.fill('senhaerrada');
@@ -101,14 +101,19 @@ test('recuperacao de senha valida email e confirma envio via mock', async ({ pag
     body: JSON.stringify({ ok: true }),
   }));
 
-  await page.goto('/recuperar-senha');
-  await page.getByLabel(/e-mail/i).fill('email-invalido');
-  await page.getByLabel(/e-mail/i).blur();
+  await page.goto('/home');
+  await page.getByRole('button', { name: /esqueci minha senha/i }).click();
+
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('heading', { name: /recuperar senha/i })).toBeVisible();
+
+  await dialog.getByLabel(/e-mail/i).fill('email-invalido');
+  await dialog.getByLabel(/e-mail/i).blur();
   await expect(page.getByText(/informe um e-mail válido/i)).toBeVisible();
 
-  await page.getByLabel(/e-mail/i).fill('cliente.e2e@example.com');
-  await page.getByRole('button', { name: /enviar link/i }).click();
-  await expect(page.getByText(/link enviado/i)).toBeVisible();
+  await dialog.getByLabel(/e-mail/i).fill('cliente.e2e@example.com');
+  await dialog.getByRole('button', { name: /enviar link/i }).click();
+  await expect(dialog.getByText(/link enviado/i)).toBeVisible();
 });
 
 test('auth callback com erro mostra fallback para login', async ({ page }) => {

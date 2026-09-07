@@ -7,7 +7,6 @@ export const serverRoutes: ServerRoute[] = [
   ...[
     'home',
     'registro',
-    'recuperar-senha',
     'nova-senha',
     'auth/callback',
     'carrinho',
