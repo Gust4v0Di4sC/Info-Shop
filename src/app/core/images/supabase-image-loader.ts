@@ -2,7 +2,6 @@ import { ImageLoaderConfig } from '@angular/common';
 
 const SUPABASE_STORAGE_OBJECT_PATH = '/storage/v1/object/public/';
 const SUPABASE_STORAGE_RENDER_PATH = '/storage/v1/render/image/public/';
-const DEFAULT_IMAGE_QUALITY = 75;
 
 export function supabaseImageLoader(config: ImageLoaderConfig): string {
   const src = config.src;
@@ -12,16 +11,7 @@ export function supabaseImageLoader(config: ImageLoaderConfig): string {
     return src;
   }
 
-  const params = new URLSearchParams({
-    quality: String(config.loaderParams?.['quality'] ?? DEFAULT_IMAGE_QUALITY),
-    format: 'webp',
-  });
-
-  if (config.width) {
-    params.set('width', String(config.width));
-  }
-
-  return `/api/supabase${SUPABASE_STORAGE_RENDER_PATH}${storagePath}?${params.toString()}`;
+  return `/api/supabase${SUPABASE_STORAGE_OBJECT_PATH}${storagePath}`;
 }
 
 function supabaseStoragePath(src: string): string | null {
