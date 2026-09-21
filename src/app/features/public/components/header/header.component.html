@@ -17,10 +17,11 @@
 
     <a class="brand" routerLink="/">
       <img
-        [ngSrc]="themeService.publicLogoUrl()"
+        [ngSrc]="headerLogoUrl()"
         width="180"
         height="45"
         alt="InfoShop Logo"
+        (error)="useDefaultLogo()"
         class="logo-image">
     </a>
 

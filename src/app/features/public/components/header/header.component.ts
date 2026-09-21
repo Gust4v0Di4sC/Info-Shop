@@ -2,8 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  computed,
   inject,
   output,
+  signal,
 } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -24,9 +26,15 @@ import { CartServiceService } from '@app/services/cart-service.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements OnInit {
+  private readonly failedLogoUrl = signal<string | null>(null);
+
   readonly themeService = inject(AdminThemeService);
   readonly layout = inject(ResponsiveLayoutService);
   readonly menuRequested = output<void>();
+  readonly headerLogoUrl = computed(() => {
+    const logoUrl = this.themeService.publicLogoUrl();
+    return logoUrl === this.failedLogoUrl() ? '/Logo3.svg' : logoUrl;
+  });
   private readonly authService = inject(AuthService);
   private readonly cartService = inject(CartServiceService);
   readonly cartCount = toSignal(this.cartService.cartCount$, { initialValue: 0 });
@@ -60,6 +68,10 @@ export class HeaderComponent implements OnInit {
 
   requestMenu(): void {
     this.menuRequested.emit();
+  }
+
+  useDefaultLogo(): void {
+    this.failedLogoUrl.set(this.themeService.publicLogoUrl());
   }
 
   submitSearch(): void {
