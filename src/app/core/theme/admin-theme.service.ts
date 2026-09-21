@@ -1,5 +1,4 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, Injector, PLATFORM_ID, computed, signal } from '@angular/core';
 import {
   ADMIN_THEME_OPTIONS,
@@ -8,12 +7,6 @@ import {
   DEFAULT_ADMIN_THEME_ID,
   normalizeAdminThemeId,
 } from '@app/models/admin-theme.model';
-import { firstValueFrom } from 'rxjs';
-
-interface PublicPersonalizationResponse {
-  themeId: string;
-  storeLogoUrl: string | null;
-}
 
 const DEFAULT_PERSONALIZATION: AdminPersonalization = {
   themeId: DEFAULT_ADMIN_THEME_ID,
@@ -32,6 +25,7 @@ export class AdminThemeService {
   private readonly personalization = signal<AdminPersonalization>(DEFAULT_PERSONALIZATION);
   private readonly previewThemeId = signal<AdminThemeId | null>(null);
   private initializePromise: Promise<void> | null = null;
+  private activeUserId: string | null = null;
   private readonly isBrowser: boolean;
 
   readonly currentThemeId = computed(() => this.previewThemeId() || this.personalization().themeId);
@@ -51,7 +45,7 @@ export class AdminThemeService {
     private injector: Injector,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
-    this.restoreCachedPersonalization();
+    this.clearCachedPersonalization();
     this.applyTheme(this.currentThemeId());
   }
 
@@ -75,8 +69,10 @@ export class AdminThemeService {
     const authService = await this.authService();
 
     authService.currentUser$.subscribe(user => {
+      this.activeUserId = user?.id ?? null;
+
       if (!user) {
-        void this.loadPublicPersonalization();
+        this.usePublicDefaults();
         return;
       }
 
@@ -86,11 +82,12 @@ export class AdminThemeService {
     const user = await authService.getCurrentUserAsync();
 
     if (user) {
+      this.activeUserId = user.id;
       await this.loadForUser(user.id);
       return;
     }
 
-    await this.loadPublicPersonalization();
+    this.usePublicDefaults();
   }
 
   previewTheme(themeId: AdminThemeId): void {
@@ -153,6 +150,10 @@ export class AdminThemeService {
       .eq('active', true)
       .maybeSingle();
 
+    if (this.activeUserId !== userId) {
+      return;
+    }
+
     if (error || !data) {
       this.setPersonalization(DEFAULT_PERSONALIZATION);
       return;
@@ -164,19 +165,9 @@ export class AdminThemeService {
     });
   }
 
-  private async loadPublicPersonalization(): Promise<void> {
-    try {
-      const personalization = await firstValueFrom(
-        this.injector.get(HttpClient).get<PublicPersonalizationResponse>('/api/public/personalization'),
-      );
-
-      this.setPersonalization({
-        themeId: normalizeAdminThemeId(personalization.themeId),
-        storeLogoUrl: personalization.storeLogoUrl,
-      });
-    } catch {
-      this.setPersonalization(DEFAULT_PERSONALIZATION);
-    }
+  private usePublicDefaults(): void {
+    this.clearCachedPersonalization();
+    this.setPersonalization(DEFAULT_PERSONALIZATION);
   }
 
   private setPersonalization(personalization: AdminPersonalization): void {
@@ -186,7 +177,6 @@ export class AdminThemeService {
     });
     this.previewThemeId.set(null);
     this.applyTheme(this.currentThemeId());
-    this.cachePersonalization();
   }
 
   private applyTheme(themeId: AdminThemeId): void {
@@ -200,34 +190,12 @@ export class AdminThemeService {
     body.classList.add(`admin-theme-${normalizeAdminThemeId(themeId)}`);
   }
 
-  private restoreCachedPersonalization(): void {
+  private clearCachedPersonalization(): void {
     if (!this.isBrowser) {
       return;
     }
 
-    const rawValue = window.localStorage.getItem(STORAGE_KEY);
-
-    if (!rawValue) {
-      return;
-    }
-
-    try {
-      const cached = JSON.parse(rawValue) as Partial<AdminPersonalization>;
-      this.personalization.set({
-        themeId: normalizeAdminThemeId(cached.themeId),
-        storeLogoUrl: this.normalizeLogoUrl(cached.storeLogoUrl || null),
-      });
-    } catch {
-      window.localStorage.removeItem(STORAGE_KEY);
-    }
-  }
-
-  private cachePersonalization(): void {
-    if (!this.isBrowser) {
-      return;
-    }
-
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this.personalization()));
+    window.localStorage.removeItem(STORAGE_KEY);
   }
 
   private normalizeLogoUrl(url: string | null | undefined): string | null {
