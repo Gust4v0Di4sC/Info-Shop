@@ -4,9 +4,10 @@
   functions = "netlify/functions"
 
 [build.environment]
-  NODE_VERSION = "24"
+  NODE_VERSION = "24.13.1"
   NODE_ENV = "production"
   ENVIRONMENT = "production"
+  SKIP_SENTRY_SOURCEMAPS = "true"
 
 [dev]
   command = "npm run dev"
