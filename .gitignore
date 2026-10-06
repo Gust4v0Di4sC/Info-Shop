@@ -16,6 +16,7 @@ yarn-error.log
 .idea/
 .project
 .classpath
+/.codex/
 .c9/
 *.launch
 .settings/
@@ -52,3 +53,4 @@ AGENTS.MD
 # Local Netlify folder
 .netlify
 /deno.lock
+/supabase/seed.sql
