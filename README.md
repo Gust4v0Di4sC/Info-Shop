@@ -1,112 +1,113 @@
+<div align="center">
+
+<img src="./public/Logo1.svg" alt="Logo do Info-Shop" width="240">
+
 # Info-Shop
 
-Info-Shop é uma aplicação web de e-commerce para produtos de informática. O projeto combina loja pública, autenticação de clientes, carrinho, checkout, acompanhamento de entregas e um painel administrativo com controle de produtos, estoque, pedidos, clientes, ofertas e personalização visual.
+**E-commerce full-stack para produtos de tecnologia com storefront, checkout, rastreamento de pedidos e painel administrativo.**
 
-## Stack
+Angular · Supabase · Express · PostgreSQL
 
-- Angular 20.3 com componentes standalone, lazy loading, SSR, hydration e Service Worker.
-- TypeScript 5.9, SCSS, RxJS, Angular Material/CDK e Bootstrap.
-- Supabase para Auth, Postgres, Storage, RLS, RPCs, migrations e Edge Functions.
-- Express 5 como BFF same-origin para autenticação, cookies HttpOnly, headers de segurança e proxy Supabase.
-- Netlify para build, funções serverless e deploy.
-- Mercado Pago para pagamento.
-- Melhor Envio para cotação, autorização, checkout e webhooks de entrega.
-- Gemini para comparador de hardware com IA.
-- Sentry para observabilidade, tracing, replay e sourcemaps.
-- Playwright para testes E2E.
+[Ver demo](https://infoshop.netlify.app/) · [Documentação](docs/index.md) · [Reportar problema](https://github.com/Gust4v0Di4sC/Info-Shop/issues)
+
+</div>
+
+---
+
+<p align="center">
+  <img src="./docs/assets/preview.png" alt="Preview da página inicial do Info-Shop" width="900">
+</p>
+
+## Sobre
+
+**Info-Shop** é uma plataforma de e-commerce que reúne a experiência de compra e a administração da loja em uma única aplicação.
+
+O projeto permite explorar o catálogo, comprar e acompanhar entregas, além de gerenciar produtos, estoque, clientes e pedidos, com foco em **segurança, separação por domínio e uma experiência consistente entre loja e administração**.
+
+## Destaques
+
+- 🛒 **Loja e checkout** — catálogo, busca, carrinho e jornada de compra completa.
+- 📦 **Pedidos e entregas** — acompanhamento do pedido até a entrega ao cliente.
+- 📊 **Painel administrativo** — gestão de produtos, estoque, ofertas, clientes e pedidos.
+- 💳 **Mercado Pago** — criação e acompanhamento de pagamentos.
+- 🚚 **Melhor Envio** — cotação de frete, checkout logístico e webhooks.
+- 🤖 **Comparação com IA** — assistente com Gemini para comparar hardware.
+
+## Tecnologias
+
+| Área | Tecnologias |
+| --- | --- |
+| Front-end | Angular 20, TypeScript, RxJS |
+| UI | SCSS, Angular Material, Bootstrap, GSAP |
+| Back-end | Express 5, Angular SSR, Netlify Functions |
+| Banco e serviços | Supabase, PostgreSQL, Auth, Storage, Edge Functions |
+| Integrações | Mercado Pago, Melhor Envio, Gemini, Brevo, Sentry |
+| Testes | Jasmine, Karma, Playwright |
+| Deploy | Netlify, Supabase |
 
 ## Arquitetura
 
-O frontend Angular é dividido por áreas de negócio em `src/app/features`:
+```mermaid
+flowchart TD
+    Angular["Angular 20<br/>Storefront · Admin · SSR/PWA"]
+    BFF["Express 5 BFF<br/>Auth · cookies HttpOnly · proxy"]
+    Supabase["Supabase"]
 
-- `public`: landing page, catálogo, detalhe do produto, carrinho, perfil do cliente, entregas, retorno de pagamento, suporte e páginas de erro.
-- `auth`: login, cadastro, recuperação de senha, nova senha e callback OAuth/PKCE.
-- `admin`: shell administrativo, dashboard, produtos, estoque, pedidos, entregas, ofertas, clientes, perfil e personalização.
+    Angular -->|API same-origin| BFF
+    BFF --> Supabase
 
-O núcleo compartilhado fica em `src/app/core`:
+    Supabase --> Auth["Auth"]
+    Supabase --> Postgres[("PostgreSQL")]
+    Supabase --> Storage["Storage"]
+    Supabase --> Edge["Edge Functions"]
 
-- `auth`: sessão do usuário e guards.
-- `supabase`: client tipado, parser de respostas e proxy de chamadas REST/Storage/Functions.
-- `tenant`: contexto da loja administrativa selecionada.
-- `theme`: tema e logo por administrador/loja.
-- `observability`: request id e interceptor de telemetria.
-- `layout`: serviços responsivos para shell e dialogs.
-
-O backend Node/Express fica em `src/api-app.ts` e é reaproveitado por:
-
-- `src/server.local.ts`: SSR local com Express e Angular Node App Engine.
-- `src/server.ts`: SSR no Netlify Angular Runtime, encaminhando `/api/*` para `/.netlify/functions/api/*`.
-- `netlify/functions/api.ts`: função Netlify empacotada com `serverless-http`.
-
-As Edge Functions em `supabase/functions` concentram integrações sensíveis com Mercado Pago, Melhor Envio, Gemini e newsletter. Segredos como `SUPABASE_SERVICE_ROLE_KEY`, tokens de provedores e chaves de IA devem ficar apenas no ambiente das funções.
-
-## Estrutura Atual
-
-```text
-info-shop/
-|-- src/
-|   |-- app/
-|   |   |-- core/                 # Auth, Supabase, tenant, tema, layout e observabilidade
-|   |   |-- features/             # Áreas public, auth e admin
-|   |   |-- models/               # Tipos de domínio baseados no schema Supabase
-|   |   |-- services/             # Serviços de aplicação e acesso a dados
-|   |   |-- shared/               # Material module, pipes, diretivas, dialogs e utils
-|   |-- api-app.ts                # BFF Express compartilhado
-|   |-- server.ts                 # Handler SSR para Netlify
-|   |-- server.local.ts           # Handler SSR local
-|   |-- main.ts / main.server.ts  # Entradas browser e server
-|-- supabase/
-|   |-- migrations/               # Schema, RLS, seeds, índices e funções SQL
-|   |-- functions/                # Edge Functions e helpers compartilhados
-|-- netlify/functions/api.ts      # Adaptador serverless do BFF
-|-- e2e/                          # Testes Playwright
-|-- docs/                         # Documentação detalhada do projeto
-|-- public/                       # Assets públicos, ícones, logos e redirects/headers
-|-- scripts/                      # Automação de sourcemaps Sentry
-|-- angular.json                  # Build Angular SSR/PWA
-|-- ngsw-config.json              # Cache do Service Worker
-|-- netlify.toml                  # Build/deploy Netlify
-|-- set.env                       # Geração dos environments Angular
-|-- package.json                  # Scripts e dependências
+    Edge --> MercadoPago["Mercado Pago"]
+    Edge --> MelhorEnvio["Melhor Envio"]
+    Edge --> Gemini["Gemini"]
+    Edge --> Brevo["Brevo"]
 ```
 
-## Capturas Internas
+O Angular concentra as experiências pública e administrativa. O BFF Express mantém a sessão em cookies `HttpOnly`, expõe uma API same-origin e encaminha o acesso ao Supabase. As Edge Functions isolam credenciais e integrações externas.
 
-As capturas abaixo foram geradas a partir do SSR local com dados mockados para documentação visual.
+> Veja os fluxos de catálogo, autenticação, administração e renderização em [docs/architecture.md](docs/architecture.md).
+
+## Capturas do projeto
+
+<details>
+<summary>Ver landing page, catálogo, login e painel administrativo</summary>
 
 ### Landing page
 
-![Landing page](docs/assets/screenshots/landing-page.png)
+![Landing page do Info-Shop](docs/assets/screenshots/landing-page.png)
 
 ### Catálogo
 
-![Catálogo](docs/assets/screenshots/catalogo.png)
+![Catálogo de produtos do Info-Shop](docs/assets/screenshots/catalogo.png)
 
 ### Login
 
-![Login](docs/assets/screenshots/login.png)
+![Tela de login do Info-Shop](docs/assets/screenshots/login.png)
 
 ### Administração de produtos
 
-![Administração de produtos](docs/assets/screenshots/admin-produtos.png)
+![Painel administrativo de produtos do Info-Shop](docs/assets/screenshots/admin-produtos.png)
 
-## Requisitos
+</details>
 
-- Node.js `>=24.0.0`, conforme `package.json`.
-- npm.
-- Supabase CLI para ambiente local de banco e Edge Functions.
-- Conta/projeto Supabase configurado.
-- Variáveis públicas de frontend: `SUPABASE_URL` e `SUPABASE_ANON_KEY` ou `SUPABASE_KEY`.
+## Executando localmente
 
-## Execução Local
-
-Instale as dependências:
+Requisitos: Node.js `>= 24`, npm e um projeto Supabase configurado.
 
 ```bash
+git clone https://github.com/Gust4v0Di4sC/Info-Shop.git
+cd Info-Shop
 npm install
+npm run dev
 ```
 
-Configure `.env.development.local` para desenvolvimento:
+A aplicação estará disponível em `http://127.0.0.1:4200`.
+
+Crie `.env.development.local` com as variáveis públicas do ambiente:
 
 ```env
 SUPABASE_URL=http://127.0.0.1:54321
@@ -114,72 +115,20 @@ SUPABASE_ANON_KEY=your-local-anon-public-key
 PUBLIC_SITE_URL=http://127.0.0.1:4200
 ```
 
-Use `.env.production.local` apenas para simular build de producao contra servicos reais. No Netlify, configure `SUPABASE_URL` e `SUPABASE_ANON_KEY` nas variaveis do site.
-
-Rode o desenvolvimento local com Angular dev server usando o BFF Express local:
-
-```bash
-npm run dev
-```
-
-Por padrao, abre em `http://127.0.0.1:4200` e usa `src/server.local.ts`.
-
-Para testar o fluxo mais proximo do Netlify, com redirects e functions locais:
-
-```bash
-npm run dev:netlify
-```
-
-Para gerar e subir um bundle SSR local sem watch:
-
-```bash
-npm run start:ssr:dev
-```
-
-Por padrao, esse servidor usa `http://localhost:4300`, a menos que `PORT` ou `LOCAL_DEV_PORT` seja definido.
-
-Para rodar somente o servidor SPA sem BFF Express:
-
-```bash
-npm run start:spa
-```
-
-## Scripts Úteis
-
-```bash
-npm run build                 # build de produção Angular
-npm run build:ssr:local       # build local com src/server.local.ts
-npm run build:observability   # build + upload de sourcemaps Sentry
-npx netlify build             # valida netlify.toml/functions localmente
-npm run typecheck:netlify     # typecheck das funções Netlify
-npm run ci:verify             # typecheck + build local SSR + build producao
-npm run ci:smoke:local        # sobe SSR local e valida /api/health
-npm run test                  # testes unitários Karma/Jasmine
-npm run e2e                   # testes Playwright
-npm run supabase:start        # sobe Supabase local
-npm run supabase:db:reset     # reaplica migrations localmente
-npm run supabase:types:local  # regenera tipos a partir do Supabase local
-```
-
-Para validar o build do Netlify sem publicar sourcemaps no Sentry localmente, use `SKIP_SENTRY_SOURCEMAPS=true`.
-
-## Segurança e Variáveis
-
-O browser não recebe tokens de sessão Supabase. A autenticação passa pelo BFF em `/api/auth/*`, que grava cookies `HttpOnly`, `SameSite=Lax` e `Secure` em produção. Chamadas REST, Storage e Edge Functions do Supabase saem do navegador por `/api/supabase/*`; o servidor injeta o JWT da sessão ou a anon key.
-
-Nunca coloque `SUPABASE_SERVICE_ROLE_KEY` no Angular, em `src/environments/*`, em `.env.local` destinado ao build ou em qualquer arquivo servido ao navegador. Esse segredo pertence apenas às Edge Functions.
+Consulte [.env.example](.env.example) e a [documentação de deploy](docs/deployment.md) para a configuração completa. Segredos como `SUPABASE_SERVICE_ROLE_KEY`, tokens de pagamento e chaves de IA não devem ser expostos no front-end.
 
 ## Documentação
 
-A documentação detalhada está em [docs/index.md](docs/index.md):
-
 - [Visão geral](docs/overview.md)
 - [Arquitetura](docs/architecture.md)
-- [Frontend Angular](docs/frontend.md)
-- [Backend e API](docs/backend-api.md)
-- [Banco de dados e Supabase](docs/database.md)
+- [Front-end Angular](docs/frontend.md)
+- [Back-end e API](docs/backend-api.md)
+- [Banco de dados](docs/database.md)
 - [Integrações](docs/integrations.md)
 - [Segurança](docs/security.md)
 - [Testes](docs/testing.md)
 - [Deploy e operação](docs/deployment.md)
-- [Observabilidade](docs/observability.md)
+
+## Licença
+
+Este repositório ainda não possui uma licença definida.
