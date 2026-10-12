@@ -178,6 +178,69 @@ app.get('/api/auth/admin-session', asyncHandler(async (req, res) => {
   }
 }));
 
+app.post('/api/integrations/melhor-envio/authorization', asyncHandler(async (req, res) => {
+  try {
+    const { supabase, user } = await requireUser(req, res);
+    const admin = await loadActiveAdmin(supabase, user.id);
+
+    if (!admin || !['gerente', 'gerente_regional'].includes(String(admin.role))) {
+      noStore(res).status(403).json({
+        message: 'Apenas gerentes podem autorizar a integracao com o Melhor Envio.',
+      });
+      return;
+    }
+
+    if (!isValidAdminSessionCookie(req, user.id)) {
+      await supabase.auth.signOut();
+      clearAdminSessionCookie(res);
+      noStore(res).status(401).json({
+        message: 'Sessao administrativa expirada. Entre novamente pela aba Administrador.',
+      });
+      return;
+    }
+
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+
+    if (sessionError || !accessToken) {
+      throw sessionError || new Error('Sessao administrativa nao encontrada. Entre novamente.');
+    }
+
+    const upstream = await fetch(new URL('/functions/v1/melhor-envio-auth', supabaseUrl), {
+      method: 'POST',
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: 'start' }),
+      signal: AbortSignal.timeout(15000),
+    });
+    const responseBody = await upstream.json().catch(() => null) as Record<string, unknown> | null;
+
+    if (!upstream.ok) {
+      const message = typeof responseBody?.['message'] === 'string'
+        ? responseBody['message']
+        : 'Nao foi possivel iniciar a autorizacao do Melhor Envio.';
+      noStore(res).status(upstream.status).json({ message });
+      return;
+    }
+
+    const authorizationUrl = responseBody?.['authorizationUrl'];
+    if (typeof authorizationUrl !== 'string' || !authorizationUrl) {
+      noStore(res).status(502).json({
+        message: 'O Melhor Envio nao retornou uma URL de autorizacao valida.',
+      });
+      return;
+    }
+
+    noStore(res).json({ authorizationUrl });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '';
+    errorResponse(res, error, /sessao|entre novamente|entre na sua conta/i.test(message) ? 401 : 502);
+  }
+}));
+
 app.post('/api/auth/register', asyncHandler(async (req, res) => {
   try {
     const body = req.body as { email?: string; password?: string; fullName?: string };

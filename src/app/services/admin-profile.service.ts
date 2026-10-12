@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { from, map, Observable } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { getSupabaseData } from '@app/core/supabase/supabase-response';
 import { Admin, Store } from '@app/models/admin.model';
@@ -48,6 +49,7 @@ export class AdminProfileService {
   constructor(
     private tenantContext: TenantContextService,
     private authService: AuthService,
+    private http: HttpClient,
   ) {}
 
   getCurrentAdminProfile(): Observable<AdminProfile> {
@@ -59,7 +61,19 @@ export class AdminProfileService {
   }
 
   startMelhorEnvioAuthorization(): Observable<MelhorEnvioAuthorization> {
-    return from(this.requestMelhorEnvioAuthorization());
+    return this.http.post<MelhorEnvioAuthorization>(
+      '/api/integrations/melhor-envio/authorization',
+      {},
+      { withCredentials: true },
+    ).pipe(
+      map(data => {
+        if (!data.authorizationUrl || !this.isTrustedMelhorEnvioUrl(data.authorizationUrl)) {
+          throw new Error('O Melhor Envio nao retornou uma URL de autorizacao valida.');
+        }
+
+        return { authorizationUrl: data.authorizationUrl };
+      }),
+    );
   }
 
   private async loadCurrentAdminProfile(): Promise<AdminProfile> {
@@ -85,23 +99,6 @@ export class AdminProfileService {
       admin: getSupabaseData(adminResult),
       store,
     };
-  }
-
-  private async requestMelhorEnvioAuthorization(): Promise<MelhorEnvioAuthorization> {
-    const { data, error } = await supabase.functions.invoke<MelhorEnvioAuthorization>('melhor-envio-auth', {
-      body: { action: 'start' },
-    });
-
-    if (error) {
-      throw error;
-    }
-
-    const authorizationUrl = data?.authorizationUrl;
-    if (!authorizationUrl || !this.isTrustedMelhorEnvioUrl(authorizationUrl)) {
-      throw new Error('O Melhor Envio nao retornou uma URL de autorizacao valida.');
-    }
-
-    return { authorizationUrl };
   }
 
   private isTrustedMelhorEnvioUrl(value: string): boolean {

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { AuthService } from '@app/core/auth/auth.service';
@@ -14,6 +15,7 @@ describe('AdminShellComponent', () => {
       imports: [AdminShellComponent],
       providers: [
         provideRouter([]),
+        provideHttpClient(),
         provideNoopAnimations(),
         { provide: AuthService, useValue: { logout: () => Promise.resolve() } },
       ],

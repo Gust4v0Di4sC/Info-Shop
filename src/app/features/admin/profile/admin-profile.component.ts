@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { debounceTime, distinctUntilChanged, finalize, of, Subject, switchMap, takeUntil } from 'rxjs';
@@ -233,9 +234,9 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
       next: ({ authorizationUrl }) => {
         authorizationWindow.location.replace(authorizationUrl);
       },
-      error: () => {
+      error: (error: unknown) => {
         authorizationWindow.close();
-        this.showFeedback('Nao foi possivel iniciar a autorizacao do Melhor Envio. Entre novamente como gerente.');
+        this.showFeedback(this.melhorEnvioAuthorizationError(error));
       },
     });
   }
@@ -256,6 +257,14 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
       horizontalPosition: 'end',
       verticalPosition: 'top',
     });
+  }
+
+  private melhorEnvioAuthorizationError(error: unknown): string {
+    if (error instanceof HttpErrorResponse && typeof error.error?.message === 'string') {
+      return error.error.message;
+    }
+
+    return 'Nao foi possivel iniciar a autorizacao do Melhor Envio. Tente entrar novamente como gerente.';
   }
 
   formatPhoneField(): void {
