@@ -31,4 +31,20 @@ describe('HardwareBenchmarkService', () => {
     expect(invokeSpy).toHaveBeenCalledWith('hardware-benchmark-chat', request);
     expect(result.answer).toContain('CPU');
   });
+
+  it('should remove markdown artifacts from the answer', async () => {
+    spyOn<any>(service, 'invokeFunction').and.resolveTo({
+      answer: '**Desempenho**\n- Upgrade relevante\n`Recomendação final`',
+    });
+
+    const result = await firstValueFrom(service.compare({
+      productId: 12,
+      currentHardware: 'Ryzen 5 3600',
+      message: 'Vale a pena?',
+      history: [],
+    }));
+
+    expect(result.answer).toBe('Desempenho\n• Upgrade relevante\nRecomendação final');
+    expect(result.answer).not.toContain('*');
+  });
 });

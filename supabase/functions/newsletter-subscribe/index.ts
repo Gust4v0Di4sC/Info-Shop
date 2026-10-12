@@ -38,10 +38,10 @@ Deno.serve(async req => {
     }
 
     logInfo(logContext, 'NEWSLETTER_SUBSCRIBED', { provider: 'supabase' });
-    await sendWelcomeEmail(email, logContext);
+    const messageId = await sendWelcomeEmail(email, logContext);
 
     logCompleted(logContext, 'NEWSLETTER_SUBSCRIBE_COMPLETED', 200, { provider: 'brevo' });
-    return jsonResponse({ subscriber: data }, 200, req);
+    return jsonResponse({ subscriber: data, emailSent: true, messageId }, 200, req);
   } catch (error) {
     logError(logContext, 'NEWSLETTER_SUBSCRIBE_FAILED', error, {
       status: 400,
@@ -63,12 +63,12 @@ function normalizeEmail(email: string | undefined): string {
   return normalized;
 }
 
-async function sendWelcomeEmail(email: string, logContext: LogContext): Promise<void> {
+async function sendWelcomeEmail(email: string, logContext: LogContext): Promise<string | null> {
   const apiKey = Deno.env.get('BREVO_API_KEY');
   const templateId = Number(Deno.env.get('BREVO_NEWSLETTER_TEMPLATE_ID') || 0);
 
   if (!apiKey || !templateId) {
-    return;
+    throw new Error('O envio do e-mail de confirmação não está configurado.');
   }
 
   const response = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -86,12 +86,19 @@ async function sendWelcomeEmail(email: string, logContext: LogContext): Promise<
         STORE_NAME: 'InfoShop',
       },
     }),
+    signal: AbortSignal.timeout(8000),
   });
 
   if (!response.ok) {
+    const responseBody = await response.text();
     logWarn(logContext, 'NEWSLETTER_WELCOME_EMAIL_FAILED', {
       status: response.status,
       provider: 'brevo',
+      response: responseBody.slice(0, 500),
     });
+    throw new Error('A inscrição foi registrada, mas o e-mail de confirmação não pôde ser enviado. Tente novamente.');
   }
+
+  const result = await response.json().catch(() => null) as { messageId?: unknown } | null;
+  return typeof result?.messageId === 'string' ? result.messageId : null;
 }

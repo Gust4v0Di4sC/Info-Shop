@@ -39,13 +39,13 @@ export class ContactComponent {
 
     this.newsletterService.subscribe(this.newsletterForm.value.email).subscribe({
       next: () => {
-        this.showSnackbar('Inscrição realizada. Você recebera nossas ofertas por e-mail.');
+        this.showSnackbar('Inscrição confirmada. Enviamos um e-mail de boas-vindas para você.');
         this.newsletterForm.reset();
         this.isSubmitting = false;
         this.changeDetectorRef.markForCheck();
       },
       error: () => {
-        this.errorMessage = 'Não foi possível concluir sua inscrição agora. Tente novamente em alguns instantes.';
+        this.errorMessage = 'Não foi possível enviar o e-mail de confirmação agora. Tente novamente em alguns instantes.';
         this.isSubmitting = false;
         this.changeDetectorRef.markForCheck();
       },

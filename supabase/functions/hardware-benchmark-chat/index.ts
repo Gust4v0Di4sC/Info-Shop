@@ -4,8 +4,8 @@ import { assertRateLimit } from '../_shared/rate-limit.ts';
 import { createLogContext, logCompleted, logError, logInfo } from '../_shared/observability.ts';
 
 const FALLBACK_ANSWER = 'Nao possuo informacoes a respeito disso.';
-const DEFAULT_GEMINI_MODELS = ['gemini-3.7-flash', 'gemini-2.5-flash'];
-const GEMINI_TIMEOUT_MS = 10000;
+const DEFAULT_GEMINI_MODELS = ['gemini-2.5-flash-lite'];
+const GEMINI_TIMEOUT_MS = 12000;
 const MAX_HARDWARE_LENGTH = 1200;
 const MAX_MESSAGE_LENGTH = 600;
 const MAX_HISTORY_ITEMS = 8;
@@ -138,9 +138,10 @@ async function askGemini(product: ProductRow, request: BenchmarkRequest): Promis
     const textResponse = await safeRequestGemini(apiKey, model, buildGeminiTextPayload(product, request));
 
     if (textResponse?.ok) {
-      const textAnswer = extractTextAnswer(await parseJsonResponse(textResponse));
+      const responseBody = await parseJsonResponse(textResponse);
+      const textAnswer = isCompleteResponse(responseBody) ? extractTextAnswer(responseBody) : '';
       if (textAnswer && textAnswer !== FALLBACK_ANSWER) {
-        return textAnswer;
+        return normalizeAnswerFormatting(textAnswer);
       }
     }
   }
@@ -263,13 +264,18 @@ function buildGeminiTextPayload(product: ProductRow, request: BenchmarkRequest):
         text: [
           'Voce e o comparador de hardware da InfoShop.',
           'Responda em portugues do Brasil, com analise pratica de upgrade, gargalo, compatibilidade e custo-beneficio.',
-          'Entregue uma resposta completa em 4 a 6 topicos curtos, fechando com uma recomendacao objetiva.',
+          'Entregue uma resposta completa em 4 a 6 paragrafos curtos, fechando com uma recomendacao objetiva.',
+          'Use somente texto simples. Nao use Markdown, asteriscos, cerquilhas, crases ou tabelas.',
           'Nao invente numeros precisos de benchmark; compare qualitativamente quando faltarem dados.',
           'Se a pergunta estiver fora de hardware, responda exatamente: ' + FALLBACK_ANSWER,
         ].join('\n'),
       }],
     },
-    generationConfig: textConfig,
+    generationConfig: {
+      ...textConfig,
+      maxOutputTokens: 1024,
+      thinkingConfig: { thinkingBudget: 0 },
+    },
   };
 }
 
@@ -307,6 +313,32 @@ function extractTextAnswer(body: unknown): string {
   return stripMarkdownFence(text).trim();
 }
 
+function isCompleteResponse(body: unknown): boolean {
+  if (!isRecord(body)) {
+    return false;
+  }
+
+  const candidates = body['candidates'];
+  if (!Array.isArray(candidates) || !isRecord(candidates[0])) {
+    return false;
+  }
+
+  const finishReason = candidates[0]['finishReason'];
+  return finishReason === undefined || finishReason === 'STOP';
+}
+
+function normalizeAnswerFormatting(text: string): string {
+  return stripMarkdownFence(text)
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/^\s*[-*+]\s+/gm, '• ')
+    .replace(/\*+/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 function stripMarkdownFence(text: string): string {
   return text
     .replace(/^```(?:json)?/i, '')
@@ -316,12 +348,12 @@ function stripMarkdownFence(text: string): string {
 
 function buildLocalBenchmarkAnswer(product: ProductRow, request: BenchmarkRequest): string {
   return [
-    `Comparando seu setup (${request.currentHardware}) com o produto ${product.name}${product.model ? ` (${product.model})` : ''}:`,
-    'avalie primeiro se o produto melhora o gargalo principal do seu uso, especialmente CPU, GPU, memoria, armazenamento, placa-mae e fonte.',
-    'Para jogos, uma GPU/CPU mais forte tende a trazer mais FPS; para trabalho, RAM, SSD e processador costumam pesar mais.',
-    `Sobre sua pergunta: ${request.message}`,
-    'Se houver compatibilidade fisica e eletrica com o restante do setup e o preco fizer sentido frente ao ganho esperado, ele pode ser um upgrade relevante.',
-  ].join(' ');
+    `Comparação: seu setup (${request.currentHardware}) versus ${product.name}${product.model ? ` (${product.model})` : ''}.`,
+    'Desempenho: avalie se o produto melhora o gargalo principal do uso, especialmente CPU, GPU, memória e armazenamento.',
+    'Compatibilidade: confirme placa-mãe, fonte, dimensões físicas e conexões antes da compra.',
+    `Sua dúvida: ${request.message}`,
+    'Recomendação: o upgrade faz sentido quando resolve o gargalo principal e o ganho esperado justifica o preço.',
+  ].join('\n\n');
 }
 
 async function parseJsonResponse(response: Response): Promise<unknown> {
