@@ -24,6 +24,7 @@ interface AuthRegisterResponse extends AuthUserResponse {
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<SupabaseUser | null>(null);
   private sessionLoadPromise: Promise<SupabaseUser | null> | null = null;
+  private sessionLoaded = false;
   private adminProfileCache: Admin | null | undefined;
   private adminProfileCacheUserId = '';
   private adminProfilePromise: Promise<Admin | null> | null = null;
@@ -48,7 +49,12 @@ export class AuthService {
       return this.sessionLoadPromise;
     }
 
+    if (this.sessionLoaded) {
+      return this.currentUserSubject.value;
+    }
+
     this.sessionLoadPromise = this.fetchUserFromSession().finally(() => {
+      this.sessionLoaded = true;
       this.sessionLoadPromise = null;
     });
 
@@ -162,6 +168,7 @@ export class AuthService {
   }
 
   async forceSessionRefresh(): Promise<void> {
+    this.sessionLoaded = false;
     await this.loadUserFromSession();
   }
 

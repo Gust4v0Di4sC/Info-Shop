@@ -2,5 +2,7 @@ import { EnvironmentProviders, inject, provideAppInitializer } from '@angular/co
 import { AdminThemeService } from '@app/core/theme/admin-theme.service';
 
 export function provideAdminTheme(): EnvironmentProviders {
-  return provideAppInitializer(() => inject(AdminThemeService).initialize());
+  return provideAppInitializer(() => {
+    void inject(AdminThemeService).initialize();
+  });
 }

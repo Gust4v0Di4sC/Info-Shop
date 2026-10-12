@@ -440,6 +440,43 @@ app.get('/api/public/personalization', asyncHandler(async (req, res) => {
   }
 }));
 
+app.get('/api/public/products/landing', asyncHandler(async (req, res) => {
+  try {
+    const supabase = createRequestSupabaseClient(req, res);
+    const [featuredResult, offerResult] = await Promise.all([
+      supabase
+        .from('products')
+        .select(publicProductSelect)
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(4),
+      supabase
+        .from('products')
+        .select(publicProductSelect)
+        .eq('is_offer', true)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+
+    if (featuredResult.error) {
+      throw featuredResult.error;
+    }
+
+    if (offerResult.error) {
+      throw offerResult.error;
+    }
+
+    publicCache(res).json({
+      featured: (featuredResult.data || []).map(product =>
+        optimizePublicProductImage(product as PublicProductResponse)),
+      offer: optimizePublicProductImage(offerResult.data as PublicProductResponse | null),
+    });
+  } catch (error) {
+    errorResponse(res, error, 502);
+  }
+}));
+
 app.get('/api/public/products/offer', asyncHandler(async (req, res) => {
   try {
     const supabase = createRequestSupabaseClient(req, res);
