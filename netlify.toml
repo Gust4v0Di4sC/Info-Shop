@@ -27,6 +27,9 @@
   node_bundler = "esbuild"
   external_node_modules = ["express"]
 
+[[plugins]]
+  package = "@netlify/angular-runtime"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
