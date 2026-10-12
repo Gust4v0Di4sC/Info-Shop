@@ -142,14 +142,16 @@
             <strong>Autorização da transportadora</strong>
             <p>Renove o acesso quando o Melhor Envio informar que o token expirou.</p>
           </div>
-          <a
-            mat-stroked-button
-            [href]="melhorEnvioAuthorizationUrl"
-            target="_blank"
-            rel="noopener noreferrer">
-            <mat-icon>sync</mat-icon>
-            Reautorizar Melhor Envio
-          </a>
+          @if (canManageShippingIntegration()) {
+            <button
+              mat-stroked-button
+              type="button"
+              [disabled]="isAuthorizingMelhorEnvio"
+              (click)="authorizeMelhorEnvio()">
+              <mat-icon>sync</mat-icon>
+              {{ isAuthorizingMelhorEnvio ? 'Abrindo autorização...' : 'Reautorizar Melhor Envio' }}
+            </button>
+          }
         </div>
 
         <div class="field-row">

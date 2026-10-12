@@ -469,7 +469,13 @@ async function createDeliveryLabel(
     return;
   }
 
-  const user = { id: String(order['userId']), email: null, user_metadata: { full_name: order['name'] } } as User;
+  const user = {
+    id: String(order['userId']),
+    aud: 'authenticated',
+    created_at: String(order['created_at'] || new Date().toISOString()),
+    app_metadata: {},
+    user_metadata: { full_name: order['name'] },
+  } as User;
   const cart = await loadOrderAsCart(serviceClient, order, user);
   const quotes = await calculateQuotes(cart, address);
   const selectedQuote = quotes.find(quote => quote.id === selectedServiceId);
@@ -602,7 +608,7 @@ async function upsertLocalDelivery(
 async function loadOrderAsCart(serviceClient: SupabaseClient, order: JsonRecord, user: User) {
   const { data: items, error: itemsError } = await serviceClient
     .from('order_items')
-    .select('product_id, quantity')
+    .select('id, product_id, quantity')
     .eq('order_id', String(order['id']));
 
   if (itemsError) {

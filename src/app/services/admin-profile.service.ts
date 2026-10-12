@@ -37,6 +37,10 @@ export interface AdminProfileUpdate {
   };
 }
 
+export interface MelhorEnvioAuthorization {
+  authorizationUrl: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -52,6 +56,10 @@ export class AdminProfileService {
 
   updateCurrentAdminProfile(profile: AdminProfileUpdate): Observable<AdminProfile> {
     return from(this.updateAdminProfile(profile));
+  }
+
+  startMelhorEnvioAuthorization(): Observable<MelhorEnvioAuthorization> {
+    return from(this.requestMelhorEnvioAuthorization());
   }
 
   private async loadCurrentAdminProfile(): Promise<AdminProfile> {
@@ -77,6 +85,35 @@ export class AdminProfileService {
       admin: getSupabaseData(adminResult),
       store,
     };
+  }
+
+  private async requestMelhorEnvioAuthorization(): Promise<MelhorEnvioAuthorization> {
+    const { data, error } = await supabase.functions.invoke<MelhorEnvioAuthorization>('melhor-envio-auth', {
+      body: { action: 'start' },
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    const authorizationUrl = data?.authorizationUrl;
+    if (!authorizationUrl || !this.isTrustedMelhorEnvioUrl(authorizationUrl)) {
+      throw new Error('O Melhor Envio nao retornou uma URL de autorizacao valida.');
+    }
+
+    return { authorizationUrl };
+  }
+
+  private isTrustedMelhorEnvioUrl(value: string): boolean {
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' && [
+        'melhorenvio.com.br',
+        'sandbox.melhorenvio.com.br',
+      ].includes(url.hostname);
+    } catch {
+      return false;
+    }
   }
 
   private async updateAdminProfile(profile: AdminProfileUpdate): Promise<AdminProfile> {

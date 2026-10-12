@@ -8,7 +8,6 @@ import { AdminProfileService } from '@app/services/admin-profile.service';
 import { ViaCepService } from '@app/services/via-cep.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { formatCep, formatCpfCnpj, formatPhone, onlyDigits } from '@app/shared/utils/input-masks';
-import { environment } from '@environments/environment';
 
 interface AdminAddressForm {
   street: string;
@@ -23,8 +22,6 @@ interface AdminAddressForm {
   styleUrl: './admin-profile.component.scss',
 })
 export class AdminProfileComponent implements OnInit, OnDestroy {
-  readonly melhorEnvioAuthorizationUrl =
-    `${environment.supabaseUrl.replace(/\/$/, '')}/functions/v1/melhor-envio-auth`;
   readonly profileTabs: AdminSectionTab[] = [
     { label: 'Perfil', icon: 'account_circle', route: '/admin-profile' },
     { label: 'Personalização', icon: 'palette', route: '/customization' },
@@ -40,6 +37,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
   senderCepMessage = '';
   isFetchingUserCep = false;
   userCepMessage = '';
+  isAuthorizingMelhorEnvio = false;
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -206,6 +204,40 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
 
   roleLabel(): string {
     return this.adminRole ? ADMIN_ROLE_LABELS[this.adminRole] : 'Administrador';
+  }
+
+  canManageShippingIntegration(): boolean {
+    return this.adminRole === 'gerente' || this.adminRole === 'gerente_regional';
+  }
+
+  authorizeMelhorEnvio(): void {
+    const authorizationWindow = window.open(
+      'about:blank',
+      'melhor-envio-authorization',
+      'popup,width=760,height=820',
+    );
+
+    if (!authorizationWindow) {
+      this.showFeedback('Permita pop-ups neste site para autorizar o Melhor Envio.');
+      return;
+    }
+
+    authorizationWindow.opener = null;
+    this.isAuthorizingMelhorEnvio = true;
+    this.adminProfileService.startMelhorEnvioAuthorization().pipe(
+      finalize(() => {
+        this.isAuthorizingMelhorEnvio = false;
+      }),
+      takeUntil(this.destroy$),
+    ).subscribe({
+      next: ({ authorizationUrl }) => {
+        authorizationWindow.location.replace(authorizationUrl);
+      },
+      error: () => {
+        authorizationWindow.close();
+        this.showFeedback('Nao foi possivel iniciar a autorizacao do Melhor Envio. Entre novamente como gerente.');
+      },
+    });
   }
 
   initials(): string {

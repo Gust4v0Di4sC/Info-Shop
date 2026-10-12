@@ -31,6 +31,11 @@ Variáveis comuns:
 - `ME_BASE_URL`
 - `ME_REDIRECT_URI`
 - `ME_USER_AGENT`
+- `ME_CRON_SECRET`
+
+O OAuth do Melhor Envio so pode ser iniciado por gerentes autenticados. O `state` e armazenado como hash, expira em 10 minutos e e consumido uma unica vez no callback.
+
+O token e renovado automaticamente todos os dias as 03:17 UTC quando faltam sete dias ou menos para o vencimento. A renovacao usa uma trava distribuida de 60 segundos no Postgres e tambem permanece disponivel sob demanda durante cotacoes e checkouts.
 
 ## Gemini
 
