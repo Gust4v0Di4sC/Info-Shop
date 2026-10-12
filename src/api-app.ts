@@ -1055,7 +1055,12 @@ async function ensurePublicUser(supabase: ReturnType<typeof createRequestSupabas
       email: user.email || '',
       full_name: fullName,
       avatar_url: avatarUrl,
-    }, { onConflict: 'id' });
+    }, {
+      onConflict: 'id',
+      // Authentication metadata is only a fallback for the first profile creation.
+      // Never overwrite profile fields that the customer has edited in `public.users`.
+      ignoreDuplicates: true,
+    });
 
   if (error) {
     throw error;
