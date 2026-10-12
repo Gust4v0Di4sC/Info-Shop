@@ -149,6 +149,33 @@
   padding-top: 6px;
 }
 
+.integration-callout {
+  align-items: center;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 14px 16px;
+
+  strong {
+    color: var(--foreground);
+    display: block;
+    font-size: 14px;
+  }
+
+  p {
+    color: var(--muted-foreground);
+    font-size: 13px;
+    margin: 4px 0 0;
+  }
+
+  a {
+    flex: 0 0 auto;
+  }
+}
+
 .field-row {
   display: grid;
   gap: 16px;
@@ -256,6 +283,15 @@ mat-form-field {
 }
 
 @media (max-width: 680px) {
+  .integration-callout {
+    align-items: stretch;
+    flex-direction: column;
+
+    a {
+      justify-content: center;
+    }
+  }
+
   .field-row,
   .package-row,
   .address-row {

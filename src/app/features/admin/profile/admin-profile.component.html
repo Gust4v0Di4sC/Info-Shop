@@ -137,6 +137,21 @@
           <h2>Remetente da loja</h2>
         </div>
 
+        <div class="integration-callout">
+          <div>
+            <strong>Autorização da transportadora</strong>
+            <p>Renove o acesso quando o Melhor Envio informar que o token expirou.</p>
+          </div>
+          <a
+            mat-stroked-button
+            [href]="melhorEnvioAuthorizationUrl"
+            target="_blank"
+            rel="noopener noreferrer">
+            <mat-icon>sync</mat-icon>
+            Reautorizar Melhor Envio
+          </a>
+        </div>
+
         <div class="field-row">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Documento da loja</mat-label>

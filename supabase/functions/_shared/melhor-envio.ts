@@ -2,6 +2,21 @@ import { createClient, SupabaseClient, User } from 'https://esm.sh/@supabase/sup
 
 type JsonRecord = Record<string, unknown>;
 
+const ACCESS_TOKEN_REFRESH_WINDOW_MS = 5 * 60 * 1000;
+const MELHOR_ENVIO_AUTHORIZATION_REQUIRED =
+  'A autorizacao do Melhor Envio expirou. Reautorize a integracao no painel administrativo.';
+
+class OAuthTokenError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly code: string | null,
+  ) {
+    super(message);
+    this.name = 'OAuthTokenError';
+  }
+}
+
 export interface DeliveryAddress {
   postalCode: string;
   street: string;
@@ -377,6 +392,58 @@ export function requiredEnv(name: string): string {
 }
 
 async function getValidAccessToken(serviceClient: SupabaseClient): Promise<string> {
+  const data = await loadStoredToken(serviceClient);
+
+  if (!data) {
+    throw new Error('Autorize a conta Melhor Envio antes de calcular frete.');
+  }
+
+  const expiresAt = timestampValue(data['expires_at']);
+  if (expiresAt - Date.now() > ACCESS_TOKEN_REFRESH_WINDOW_MS) {
+    return requiredTokenValue(data, 'access_token');
+  }
+
+  const refreshToken = requiredTokenValue(data, 'refresh_token');
+  const refreshExpiresAt = timestampValue(data['refresh_expires_at']);
+  if (refreshExpiresAt && refreshExpiresAt <= Date.now()) {
+    throw new Error(MELHOR_ENVIO_AUTHORIZATION_REQUIRED);
+  }
+
+  const tokenBody = new URLSearchParams({
+    grant_type: 'refresh_token',
+    client_id: requiredEnv('ME_CLIENT_ID'),
+    client_secret: requiredEnv('ME_CLIENT_SECRET'),
+    refresh_token: refreshToken,
+  });
+
+  try {
+    const token = await requestOAuthToken(tokenBody);
+    await persistToken(serviceClient, token);
+    return requiredTokenValue(token, 'access_token');
+  } catch (error) {
+    // Melhor Envio rotates refresh tokens. If another request refreshed first,
+    // use the newly persisted access token instead of failing with invalid_grant.
+    if (isInvalidRefreshTokenError(error)) {
+      await delay(150);
+      const refreshedData = await loadStoredToken(serviceClient);
+      const replacementAccessToken = refreshedData &&
+        requiredTokenValue(refreshedData, 'refresh_token') !== refreshToken &&
+        timestampValue(refreshedData['expires_at']) - Date.now() > ACCESS_TOKEN_REFRESH_WINDOW_MS
+        ? requiredTokenValue(refreshedData, 'access_token')
+        : null;
+
+      if (replacementAccessToken) {
+        return replacementAccessToken;
+      }
+
+      throw new Error(MELHOR_ENVIO_AUTHORIZATION_REQUIRED);
+    }
+
+    throw error;
+  }
+}
+
+async function loadStoredToken(serviceClient: SupabaseClient): Promise<JsonRecord | null> {
   const { data, error } = await serviceClient
     .from('melhor_envio_tokens')
     .select('*')
@@ -387,25 +454,7 @@ async function getValidAccessToken(serviceClient: SupabaseClient): Promise<strin
     throw error;
   }
 
-  if (!data) {
-    throw new Error('Autorize a conta Melhor Envio Sandbox antes de calcular frete.');
-  }
-
-  const expiresAt = new Date(String(data['expires_at'])).getTime();
-  if (expiresAt - Date.now() > 5 * 60 * 1000) {
-    return String(data['access_token']);
-  }
-
-  const tokenBody = new URLSearchParams({
-    grant_type: 'refresh_token',
-    client_id: requiredEnv('ME_CLIENT_ID'),
-    client_secret: requiredEnv('ME_CLIENT_SECRET'),
-    refresh_token: String(data['refresh_token']),
-  });
-
-  const token = await requestOAuthToken(tokenBody);
-  await persistToken(serviceClient, token);
-  return String(token['access_token']);
+  return data as JsonRecord | null;
 }
 
 async function requestOAuthToken(body: URLSearchParams): Promise<JsonRecord> {
@@ -424,13 +473,22 @@ async function requestOAuthToken(body: URLSearchParams): Promise<JsonRecord> {
   const token = text ? JSON.parse(text) as JsonRecord : {};
 
   if (!response.ok) {
-    throw new Error(typeof token['message'] === 'string' ? token['message'] : 'Nao foi possivel obter token do Melhor Envio.');
+    const message = [token['message'], token['error_description'], token['error']]
+      .find(value => typeof value === 'string' && value.trim());
+    const code = typeof token['error'] === 'string' ? token['error'] : null;
+    throw new OAuthTokenError(
+      typeof message === 'string' ? message : 'Nao foi possivel obter token do Melhor Envio.',
+      response.status,
+      code,
+    );
   }
 
   return token;
 }
 
 async function persistToken(serviceClient: SupabaseClient, token: JsonRecord): Promise<void> {
+  const accessToken = requiredTokenValue(token, 'access_token');
+  const refreshToken = requiredTokenValue(token, 'refresh_token');
   const expiresIn = Number(token['expires_in'] || 30 * 24 * 60 * 60);
   const refreshExpiresIn = Number(token['refresh_token_expires_in'] || 45 * 24 * 60 * 60);
   const now = Date.now();
@@ -439,8 +497,8 @@ async function persistToken(serviceClient: SupabaseClient, token: JsonRecord): P
     .from('melhor_envio_tokens')
     .upsert({
       id: 'default',
-      access_token: String(token['access_token']),
-      refresh_token: String(token['refresh_token']),
+      access_token: accessToken,
+      refresh_token: refreshToken,
       expires_at: new Date(now + expiresIn * 1000).toISOString(),
       refresh_expires_at: new Date(now + refreshExpiresIn * 1000).toISOString(),
       scopes: typeof token['scope'] === 'string' ? token['scope'] : null,
@@ -449,6 +507,42 @@ async function persistToken(serviceClient: SupabaseClient, token: JsonRecord): P
   if (error) {
     throw error;
   }
+}
+
+function requiredTokenValue(token: JsonRecord, field: 'access_token' | 'refresh_token'): string {
+  const value = token[field];
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new Error(`Melhor Envio nao retornou ${field}.`);
+  }
+
+  return value;
+}
+
+function timestampValue(value: unknown): number {
+  if (typeof value !== 'string' || !value) {
+    return 0;
+  }
+
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+function isInvalidRefreshTokenError(error: unknown): boolean {
+  if (!(error instanceof OAuthTokenError)) {
+    return false;
+  }
+
+  const message = error.message.toLowerCase();
+  return error.code === 'invalid_grant' ||
+    (message.includes('refresh token') && (
+      message.includes('invalid') ||
+      message.includes('expired') ||
+      message.includes('revoked')
+    ));
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
 function buildCalculatePayload(cart: LoadedCart, address: DeliveryAddress, mode: 'products' | 'volumes'): JsonRecord {

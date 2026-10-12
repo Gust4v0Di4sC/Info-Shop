@@ -8,6 +8,7 @@ import { AdminProfileService } from '@app/services/admin-profile.service';
 import { ViaCepService } from '@app/services/via-cep.service';
 import { SharedMaterialModule } from '@app/shared/material/shared-material.module';
 import { formatCep, formatCpfCnpj, formatPhone, onlyDigits } from '@app/shared/utils/input-masks';
+import { environment } from '@environments/environment';
 
 interface AdminAddressForm {
   street: string;
@@ -22,6 +23,8 @@ interface AdminAddressForm {
   styleUrl: './admin-profile.component.scss',
 })
 export class AdminProfileComponent implements OnInit, OnDestroy {
+  readonly melhorEnvioAuthorizationUrl =
+    `${environment.supabaseUrl.replace(/\/$/, '')}/functions/v1/melhor-envio-auth`;
   readonly profileTabs: AdminSectionTab[] = [
     { label: 'Perfil', icon: 'account_circle', route: '/admin-profile' },
     { label: 'Personalização', icon: 'palette', route: '/customization' },
