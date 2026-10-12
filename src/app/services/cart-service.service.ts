@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, from, map, Observable, throwError, timeout } from 'rxjs';
+import { BehaviorSubject, catchError, from, map, Observable, tap, throwError, timeout } from 'rxjs';
 import { supabase } from '@app/core/supabase/supabase.client';
 import { AuthService } from '@app/core/auth/auth.service';
 import { getSupabaseList, throwSupabaseError } from '@app/core/supabase/supabase-response';
@@ -32,6 +32,8 @@ export class CartServiceService {
     this.incrementCart(normalizedQuantity);
 
     return from(this.addProductToCart(productId, normalizedQuantity)).pipe(
+      tap(cartTotal => this.setCartCount(cartTotal)),
+      map(() => undefined),
       catchError(error => {
         this.incrementCart(-normalizedQuantity);
         return throwError(() => error);
@@ -69,18 +71,7 @@ export class CartServiceService {
 
   private async getUserId(): Promise<string> {
     const user = await this.authService.requireCurrentUser('Entre na sua conta para usar o carrinho.');
-    const userId = user.id;
-    await this.ensureUserProfile(userId, user.email || '');
-
-    return userId;
-  }
-
-  private async ensureUserProfile(userId: string, email: string): Promise<void> {
-    const result = await supabase
-      .from('users')
-      .upsert({ id: userId, email }, { onConflict: 'id' });
-
-    throwSupabaseError(result);
+    return user.id;
   }
 
   private async loadCartCount(): Promise<number> {
@@ -133,50 +124,18 @@ export class CartServiceService {
     }));
   }
 
-  private async addProductToCart(productId: string | number, quantity: number): Promise<void> {
-    const userId = await this.getUserId();
-    const normalizedProductId = String(productId);
-    const productResult = await supabase
-      .from('products')
-      .select('id')
-      .eq('id', Number(normalizedProductId))
-      .maybeSingle();
+  private async addProductToCart(productId: string | number, quantity: number): Promise<number> {
+    await this.getUserId();
+    const result = await supabase.rpc('add_product_to_cart', {
+      product_id_value: String(productId),
+      quantity_value: quantity,
+    });
 
-    if (productResult.error) {
-      throw productResult.error;
+    if (result.error) {
+      throw result.error;
     }
 
-    if (!productResult.data) {
-      throw new Error('Produto não encontrado para adicionar ao carrinho.');
-    }
-
-    const existingResult = await supabase
-      .from('cart_items')
-      .select('id, quantity')
-      .eq('user_id', userId)
-      .eq('product_id', normalizedProductId)
-      .maybeSingle();
-
-    if (existingResult.error) {
-      throw existingResult.error;
-    }
-
-    if (existingResult.data) {
-      const updateResult = await supabase
-        .from('cart_items')
-        .update({ quantity: existingResult.data.quantity + quantity })
-        .eq('id', existingResult.data.id);
-
-      throwSupabaseError(updateResult);
-    } else {
-      const insertResult = await supabase
-        .from('cart_items')
-        .insert({ user_id: userId, product_id: normalizedProductId, quantity });
-
-      throwSupabaseError(insertResult);
-    }
-
-    await this.loadCartCount();
+    return Number(result.data || 0);
   }
 
   private async updateItemQuantity(itemId: string, quantity: number): Promise<void> {

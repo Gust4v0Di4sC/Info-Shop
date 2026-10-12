@@ -800,6 +800,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_product_to_cart: {
+        Args: { product_id_value: string; quantity_value?: number }
+        Returns: number
+      }
       clear_active_offer: {
         Args: { store_id_value: string }
         Returns: undefined

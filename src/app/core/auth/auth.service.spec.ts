@@ -37,6 +37,25 @@ describe('AuthService', () => {
     await expectAsync(resultPromise).toBeResolvedTo(null);
   });
 
+  it('should not request an anonymous session more than once', async () => {
+    const firstLoad = service.loadUserFromSession();
+    httpMock.expectOne('/api/auth/session').flush({ user: null });
+    await firstLoad;
+
+    await expectAsync(service.getCurrentUserAsync()).toBeResolvedTo(null);
+    httpMock.expectNone('/api/auth/session');
+  });
+
+  it('should request the session again when a refresh is forced', async () => {
+    const firstLoad = service.loadUserFromSession();
+    httpMock.expectOne('/api/auth/session').flush({ user: null });
+    await firstLoad;
+
+    const refresh = service.forceSessionRefresh();
+    httpMock.expectOne('/api/auth/session').flush({ user: null });
+    await refresh;
+  });
+
   afterEach(() => {
     httpMock.verify();
     window.history.pushState({}, '', originalUrl);

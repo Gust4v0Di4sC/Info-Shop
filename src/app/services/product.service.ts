@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable, Injector, Optional, REQUEST } from '@angular/core';
-import { from, map, Observable, switchMap, take } from 'rxjs';
+import { from, map, Observable, shareReplay, switchMap, take } from 'rxjs';
 import { Product } from '@app/models/product.model';
 
 @Injectable({
@@ -8,6 +8,7 @@ import { Product } from '@app/models/product.model';
 })
 export class ProductService {
   private readonly publicProductsUrl = '/api/public/products';
+  private landingProductsRequest?: Observable<{ featured: Product[]; offer: Product | null }>;
 
   constructor(
     private http: HttpClient,
@@ -72,11 +73,7 @@ export class ProductService {
   }
 
   getFeaturedProducts(limit = 4): Observable<Product[]> {
-    const params = new HttpParams()
-      .set('featured', 'true')
-      .set('limit', String(limit));
-
-    return this.http.get<Product[]>(this.publicProductsEndpoint(), { params });
+    return this.getLandingProducts().pipe(map(response => response.featured.slice(0, limit)));
   }
 
   getPublicCatalog(category?: string | null, searchTerm = ''): Observable<Product[]> {
@@ -95,7 +92,7 @@ export class ProductService {
   }
 
   getOfferProduct(): Observable<Product | null> {
-    return this.http.get<Product | null>(this.publicProductsEndpoint('/offer'));
+    return this.getLandingProducts().pipe(map(response => response.offer));
   }
 
   /**
@@ -109,6 +106,16 @@ export class ProductService {
     const endpoint = `${this.publicProductsUrl}${path}`;
 
     return this.request ? new URL(endpoint, this.request.url).toString() : endpoint;
+  }
+
+  private getLandingProducts(): Observable<{ featured: Product[]; offer: Product | null }> {
+    if (!this.landingProductsRequest) {
+      this.landingProductsRequest = this.http
+        .get<{ featured: Product[]; offer: Product | null }>(this.publicProductsEndpoint('/landing'))
+        .pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    }
+
+    return this.landingProductsRequest;
   }
 
   private async adminDependencies() {

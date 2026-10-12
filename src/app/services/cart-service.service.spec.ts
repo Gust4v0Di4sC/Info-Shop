@@ -39,6 +39,28 @@ describe('CartServiceService', () => {
     expect(quotes[0].company).toBe('Correios');
   });
 
+  it('should update the optimistic cart count with the total returned by the atomic operation', async () => {
+    spyOn<any>(service, 'addProductToCart').and.resolveTo(7);
+    const counts: number[] = [];
+    const subscription = service.cartCount$.subscribe(count => counts.push(count));
+
+    await firstValueFrom(service.addProduct(42, 2));
+
+    expect(counts).toEqual([0, 2, 7]);
+    subscription.unsubscribe();
+  });
+
+  it('should roll back the optimistic cart count when adding fails', async () => {
+    spyOn<any>(service, 'addProductToCart').and.rejectWith(new Error('Falha'));
+    const counts: number[] = [];
+    const subscription = service.cartCount$.subscribe(count => counts.push(count));
+
+    await expectAsync(firstValueFrom(service.addProduct(42, 2))).toBeRejected();
+
+    expect(counts).toEqual([0, 2, 0]);
+    subscription.unsubscribe();
+  });
+
 });
 
 function deliveryAddress(): DeliveryAddress {
