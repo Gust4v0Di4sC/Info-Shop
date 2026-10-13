@@ -18,6 +18,14 @@ describe('HardwareBenchmarkService', () => {
   it('should compare hardware through the edge function', async () => {
     const request = {
       productId: 12,
+      productContext: {
+        name: 'Notebook Gamer',
+        model: 'RTX 4060',
+        category: 'notebooks',
+        description: 'Notebook com GPU dedicada',
+        price: 5999,
+        offerPrice: null,
+      },
       currentHardware: 'Ryzen 5 3600, GTX 1660, 16GB RAM',
       message: 'Esse notebook e melhor para jogos?',
       history: [{ role: 'user' as const, text: 'Compare com meu PC.' }],
@@ -39,6 +47,14 @@ describe('HardwareBenchmarkService', () => {
 
     const result = await firstValueFrom(service.compare({
       productId: 12,
+      productContext: {
+        name: 'Notebook Gamer',
+        model: 'RTX 4060',
+        category: 'notebooks',
+        description: 'Notebook com GPU dedicada',
+        price: 5999,
+        offerPrice: null,
+      },
       currentHardware: 'Ryzen 5 3600',
       message: 'Vale a pena?',
       history: [],

@@ -5,6 +5,8 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 import { Database } from './app/core/supabase/database.types';
 import { environment } from './environments/environment';
+import { buildLocalHardwareComparison } from '../supabase/functions/_shared/hardware-comparison';
+import type { HardwareComparisonProduct } from '../supabase/functions/_shared/hardware-comparison';
 
 const isProduction = process.env['NODE_ENV'] === 'production' || process.env['ENVIRONMENT'] === 'production';
 const supabaseUrl = process.env['SUPABASE_URL'] || environment.supabaseUrl;
@@ -765,15 +767,16 @@ function localHardwareBenchmarkFallback(
   const productId = Number(requestJson?.['productId']);
   const currentHardware = String(requestJson?.['currentHardware'] || '').trim();
   const message = String(requestJson?.['message'] || '').trim();
+  const productContext = normalizeHardwareProductContext(requestJson?.['productContext']);
 
-  if (!Number.isInteger(productId) || productId <= 0 || !currentHardware || !message) {
+  if (!Number.isInteger(productId) || productId <= 0 || !currentHardware || !message || !productContext) {
     return null;
   }
 
   return {
     status: 200,
     body: {
-      answer: buildLocalHardwareBenchmarkAnswer(currentHardware, message),
+      answer: buildLocalHardwareComparison(productContext, { currentHardware, message }),
       localFallback: true,
     },
   };
@@ -814,15 +817,41 @@ function localPaymentPreferenceFallback(
   };
 }
 
-function buildLocalHardwareBenchmarkAnswer(currentHardware: string, message: string): string {
-  const hardware = currentHardware.slice(0, 180);
-  const question = message.slice(0, 160);
+function normalizeHardwareProductContext(value: unknown): HardwareComparisonProduct | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
 
-  return [
-    `Com base no hardware informado (${hardware}), a recomendacao depende do componente exato do produto e do uso esperado.`,
-    `Para a pergunta "${question}", compare principalmente CPU, GPU, memoria, armazenamento, compatibilidade da placa-mae e fonte.`,
-    'Se o produto tiver GPU/CPU mais recente ou corrigir um gargalo claro do seu setup, tende a ser um upgrade. Se o ganho for pequeno, priorize custo-beneficio e compatibilidade antes da compra.',
-  ].join(' ');
+  const context = value as Record<string, unknown>;
+  const name = String(context['name'] || '').trim().slice(0, 180);
+  const category = String(context['category'] || '').trim().slice(0, 80);
+
+  if (!name || !category) {
+    return null;
+  }
+
+  return {
+    name,
+    category,
+    model: nullableText(context['model'], 120),
+    description: nullableText(context['description'], 1200),
+    price: nullableNumber(context['price']),
+    offer_price: nullableNumber(context['offerPrice']),
+  };
+}
+
+function nullableText(value: unknown, maxLength: number): string | null {
+  const text = typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
+  return text || null;
+}
+
+function nullableNumber(value: unknown): number | null {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
 }
 
 function buildLocalShippingQuotes(address: Record<string, unknown>): Array<Record<string, unknown>> {

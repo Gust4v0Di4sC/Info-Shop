@@ -38,6 +38,7 @@ describe('HardwareBenchmarkChatComponent', () => {
       id: 7,
       name: 'Notebook Gamer',
       model: 'RTX 4060',
+      category: 'notebooks',
       description: 'Notebook com GPU dedicada',
       price: 5999,
       offer_price: null,
@@ -76,6 +77,14 @@ describe('HardwareBenchmarkChatComponent', () => {
 
     expect(benchmarkService.compare).toHaveBeenCalledWith({
       productId: 7,
+      productContext: {
+        name: 'Notebook Gamer',
+        model: 'RTX 4060',
+        category: 'notebooks',
+        description: 'Notebook com GPU dedicada',
+        price: 5999,
+        offerPrice: null,
+      },
       currentHardware: 'Ryzen 5 3600, GTX 1660',
       message: 'Compare para jogos.',
       history: [],

@@ -5,6 +5,14 @@ export interface HardwareBenchmarkMessage {
 
 export interface HardwareBenchmarkRequest {
   productId: number;
+  productContext: {
+    name: string;
+    model: string | null;
+    category: string;
+    description: string | null;
+    price: number | null;
+    offerPrice: number | null;
+  };
   currentHardware: string;
   message: string;
   history: HardwareBenchmarkMessage[];

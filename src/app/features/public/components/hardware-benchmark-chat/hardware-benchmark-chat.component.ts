@@ -88,6 +88,14 @@ export class HardwareBenchmarkChatComponent implements OnInit {
 
     this.benchmarkService.compare({
       productId: Number(this.product.id),
+      productContext: {
+        name: this.product.name,
+        model: this.product.model,
+        category: this.product.category,
+        description: this.product.description,
+        price: this.product.price,
+        offerPrice: this.product.offer_price,
+      },
       currentHardware,
       message,
       history,
