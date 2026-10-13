@@ -56,8 +56,8 @@ export class OfferManagementComponent implements OnInit, OnDestroy {
 
     this.offerForm.get('productId')?.valueChanges.pipe(
       takeUntil(this.destroy$),
-    ).subscribe(() => {
-      this.updateSelectedProduct();
+    ).subscribe(productId => {
+      this.updateSelectedProduct(productId);
     });
   }
 
@@ -205,8 +205,7 @@ export class OfferManagementComponent implements OnInit, OnDestroy {
     this.pageIndex = 0;
   }
 
-  private updateSelectedProduct(): void {
-    const productId = this.offerForm.value.productId;
+  private updateSelectedProduct(productId = this.offerForm.get('productId')?.value): void {
     this.selectedProduct = this.products.find(product => String(product.id) === String(productId)) || null;
   }
 
