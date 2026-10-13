@@ -242,10 +242,17 @@
 
         <div class="compact-list">
           @for (order of overview.recentOrders; track order.id) {
-            <div class="compact-row">
-              <span>{{ order.name }} - {{ order.product }}</span>
+            <button
+              class="compact-row compact-row-button"
+              type="button"
+              (click)="openOrderDetails(order)"
+              [attr.aria-label]="'Ver detalhes do pedido ' + order.id">
+              <span [title]="(order.name || 'Cliente não informado') + ' - ' + (order.product || 'Produto não informado')">
+                {{ order.name || 'Cliente não informado' }} - {{ order.product || 'Produto não informado' }}
+              </span>
               <strong>{{ order.total_amount | brlCurrency }}</strong>
-            </div>
+              <mat-icon aria-hidden="true">chevron_right</mat-icon>
+            </button>
           } @empty {
             <p class="empty-note"><mat-icon aria-hidden="true">receipt_long</mat-icon>Nenhum pedido recente.</p>
           }
@@ -275,3 +282,43 @@
     </div>
   }
 </section>
+
+<ng-template #orderDetailsTemplate>
+  @if (selectedOrder; as order) {
+    <div class="order-details-dialog">
+      <header class="order-details-header">
+        <div>
+          <p class="eyebrow">Pedido #{{ order.id }}</p>
+          <h2 mat-dialog-title>{{ order.product || 'Produto não informado' }}</h2>
+        </div>
+        <span class="order-status">{{ orderStatusLabel(order.status) }}</span>
+      </header>
+
+      <mat-dialog-content>
+        <dl class="order-details-grid">
+          <div>
+            <dt>Cliente</dt>
+            <dd>{{ order.name || 'Cliente não informado' }}</dd>
+          </div>
+          <div>
+            <dt>Total</dt>
+            <dd>{{ order.total_amount | brlCurrency }}</dd>
+          </div>
+          <div>
+            <dt>Quantidade</dt>
+            <dd>{{ order.quantity }}</dd>
+          </div>
+          <div>
+            <dt>Endereço</dt>
+            <dd>{{ order.address || 'Endereço não informado' }}</dd>
+          </div>
+        </dl>
+      </mat-dialog-content>
+
+      <mat-dialog-actions align="end">
+        <a mat-button routerLink="/orders" mat-dialog-close>Ver todos os pedidos</a>
+        <button mat-flat-button class="primary-action" type="button" mat-dialog-close>Fechar</button>
+      </mat-dialog-actions>
+    </div>
+  }
+</ng-template>

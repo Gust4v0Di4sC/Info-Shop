@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ChartData, ChartOptions } from 'chart.js';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { ResponsiveDialogService } from '@app/core/layout/responsive-dialog.service';
+import { Order } from '@app/models/order.model';
 import {
   AdminDashboardService,
   AdminOverview,
@@ -23,7 +26,10 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {
+  @ViewChild('orderDetailsTemplate') private orderDetailsTemplate?: TemplateRef<unknown>;
+
   overview: AdminOverview | null = null;
+  selectedOrder: Order | null = null;
   isLoading = true;
   errorMessage = '';
 
@@ -146,6 +152,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private dashboardService: AdminDashboardService,
     private changeDetectorRef: ChangeDetectorRef,
+    private dialog: MatDialog,
+    private responsiveDialog: ResponsiveDialogService,
   ) {}
 
   ngOnInit(): void {
@@ -182,6 +190,38 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   statusLabel(status: string): string {
     return DELIVERY_STATUS_LABELS[status] || status;
+  }
+
+  orderStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      open: 'Aberto',
+      payment_pending: 'Aguardando pagamento',
+      payment_failed: 'Pagamento não aprovado',
+      confirmed: 'Confirmado',
+      preparing: 'Em preparo',
+      shipped: 'Enviado',
+      delivered: 'Entregue',
+      canceled: 'Cancelado',
+    };
+
+    return labels[status] || status;
+  }
+
+  openOrderDetails(order: Order): void {
+    if (!this.orderDetailsTemplate) {
+      return;
+    }
+
+    this.selectedOrder = order;
+    this.dialog.open(this.orderDetailsTemplate, this.responsiveDialog.buildConfig({
+      desktopWidth: '560px',
+      panelClass: 'admin-form-dialog',
+      autoFocus: 'dialog',
+      restoreFocus: true,
+      ariaLabel: `Detalhes do pedido ${order.id}`,
+      enterAnimationDuration: '220ms',
+      exitAnimationDuration: '180ms',
+    }));
   }
 
   topSellingProduct(): ProductSalesMetric | null {
